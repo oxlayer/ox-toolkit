@@ -176,7 +176,7 @@ The shared-ui package contains all common UI components and utilities.
     "@radix-ui/react-slot": "^1.2.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.562.0",
+    "lucide-react": "0.562.0",
     "tailwind-merge": "^3.4.0",
     "tailwind-variants": "^3.2.2",
     "date-fns": "^4.1.0",

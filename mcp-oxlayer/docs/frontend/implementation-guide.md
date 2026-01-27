@@ -1004,7 +1004,7 @@ export function InboxView() {
     "class-variance-authority": "^0.7.0",
     "@radix-ui/react-slot": "^1.0.0",
     "date-fns": "^3.0.0",
-    "lucide-react": "^0.400.0"
+    "lucide-react": "0.562.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
