@@ -1,0 +1,8 @@
+//localhost:4873/:_authToken=${VERDACCIO_TOKEN}==
+# Docker npmrc configuration
+# Uses verdaccio service from docker-compose network
+@oxlayer:registry=http://host.docker.internal:4873/
+# Fallback to public npm registry for other packages
+registry=https://registry.npmjs.org/
+link-workspace-packages=false
+ignore-workspace=true

@@ -1,0 +1,43 @@
+{
+  "name": "@oxlayer/pro-tenancy",
+  "version": "1.0.0",
+  "description": "Multi-tenancy capability for Hono - tenant resolution and resource isolation",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependenciesMeta": {
+    "@oxlayer/capabilities-cache": {
+      "optional": true
+    },
+    "@oxlayer/capabilities-metrics": {
+      "optional": true
+    },
+    "@oxlayer/capabilities-telemetry": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "hono": "^4.0.0",
+    "@oxlayer/capabilities-cache": "workspace:*",
+    "@oxlayer/capabilities-metrics": "workspace:*",
+    "@oxlayer/capabilities-telemetry": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

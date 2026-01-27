@@ -1,0 +1,212 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": [
+      "ESNext"
+    ],
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowJs": false,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "verbatimModuleSyntax": true,
+    "paths": {
+      "@oxlayer/capabilities-internal": [
+        "./internal/src"
+      ],
+      "@oxlayer/capabilities-internal/*": [
+        "./internal/src/*"
+      ],
+      "@oxlayer/capabilities-auth": [
+        "./auth/src"
+      ],
+      "@oxlayer/capabilities-auth/*": [
+        "./auth/src/*"
+      ],
+      "@oxlayer/capabilities-cache": [
+        "./cache/src"
+      ],
+      "@oxlayer/capabilities-cache/*": [
+        "./cache/src/*"
+      ],
+      "@oxlayer/capabilities-docs": [
+        "./docs/src"
+      ],
+      "@oxlayer/capabilities-docs/*": [
+        "./docs/src/*"
+      ],
+      "@oxlayer/capabilities-events": [
+        "./events/src"
+      ],
+      "@oxlayer/capabilities-events/*": [
+        "./events/src/*"
+      ],
+      "@oxlayer/capabilities-metrics": [
+        "./metrics/src"
+      ],
+      "@oxlayer/capabilities-metrics/*": [
+        "./metrics/src/*"
+      ],
+      "@oxlayer/capabilities-queues": [
+        "./queues/src"
+      ],
+      "@oxlayer/capabilities-queues/*": [
+        "./queues/src/*"
+      ],
+      "@oxlayer/capabilities-search": [
+        "./search/src"
+      ],
+      "@oxlayer/capabilities-search/*": [
+        "./search/src/*"
+      ],
+      "@oxlayer/capabilities-telemetry": [
+        "./telemetry/src"
+      ],
+      "@oxlayer/capabilities-telemetry/*": [
+        "./telemetry/src/*"
+      ],
+      "@oxlayer/capabilities-vector": [
+        "./vector/src"
+      ],
+      "@oxlayer/capabilities-vector/*": [
+        "./vector/src/*"
+      ],
+      "@oxlayer/capabilities-adapters-bullmq": [
+        "./adapters/bullmq"
+      ],
+      "@oxlayer/capabilities-adapters-bullmq/*": [
+        "./adapters/bullmq/*"
+      ],
+      "@oxlayer/capabilities-adapters-eventemitter": [
+        "./adapters/eventemitter"
+      ],
+      "@oxlayer/capabilities-adapters-eventemitter/*": [
+        "./adapters/eventemitter/*"
+      ],
+      "@oxlayer/capabilities-adapters-influxdb": [
+        "./adapters/influxdb"
+      ],
+      "@oxlayer/capabilities-adapters-influxdb/*": [
+        "./adapters/influxdb/*"
+      ],
+      "@oxlayer/capabilities-adapters-mqtt": [
+        "./adapters/mqtt"
+      ],
+      "@oxlayer/capabilities-adapters-mqtt/*": [
+        "./adapters/mqtt/*"
+      ],
+      "@oxlayer/capabilities-adapters-rabbitmq": [
+        "./adapters/rabbitmq"
+      ],
+      "@oxlayer/capabilities-adapters-rabbitmq/*": [
+        "./adapters/rabbitmq/*"
+      ],
+      "@oxlayer/capabilities-adapters-redis": [
+        "./adapters/redis"
+      ],
+      "@oxlayer/capabilities-adapters-redis/*": [
+        "./adapters/redis/*"
+      ],
+      "@oxlayer/capabilities-adapters-s3": [
+        "./adapters/s3"
+      ],
+      "@oxlayer/capabilities-adapters-s3/*": [
+        "./adapters/s3/*"
+      ],
+      "@oxlayer/capabilities-adapters-sqs": [
+        "./adapters/sqs"
+      ],
+      "@oxlayer/capabilities-adapters-sqs/*": [
+        "./adapters/sqs/*"
+      ],
+      "@oxlayer/capabilities-adapters-clickhouse": [
+        "./adapters/clickhouse"
+      ],
+      "@oxlayer/capabilities-adapters-clickhouse/*": [
+        "./adapters/clickhouse/*"
+      ],
+      "@oxlayer/capabilities-adapters-mongo": [
+        "./adapters/mongo"
+      ],
+      "@oxlayer/capabilities-adapters-mongo/*": [
+        "./adapters/mongo/*"
+      ],
+      "@oxlayer/capabilities-adapters-postgres": [
+        "./adapters/postgres"
+      ],
+      "@oxlayer/capabilities-adapters-postgres/*": [
+        "./adapters/postgres/*"
+      ],
+      "@oxlayer/capabilities-adapters-qdrant": [
+        "./adapters/qdrant"
+      ],
+      "@oxlayer/capabilities-adapters-qdrant/*": [
+        "./adapters/qdrant/*"
+      ],
+      "@oxlayer/capabilities-adapters-quickwit": [
+        "./adapters/quickwit"
+      ],
+      "@oxlayer/capabilities-adapters-quickwit/*": [
+        "./adapters/quickwit/*"
+      ],
+      "@oxlayer/capabilities-adapters-bitwarden-secrets": [
+        "./adapters/bitwarden-secrets"
+      ],
+      "@oxlayer/capabilities-adapters-bitwarden-secrets/*": [
+        "./adapters/bitwarden-secrets/*"
+      ]
+    }
+  },
+  "include": [],
+  "exclude": [
+    "node_modules",
+    "**/dist",
+    "**/*.test.ts",
+    "**/node_modules"
+  ],
+  "references": [
+    {
+      "path": "./internal"
+    },
+    {
+      "path": "./auth"
+    },
+    {
+      "path": "./cache"
+    },
+    {
+      "path": "./docs"
+    },
+    {
+      "path": "./events"
+    },
+    {
+      "path": "./metrics"
+    },
+    {
+      "path": "./queues"
+    },
+    {
+      "path": "./search"
+    },
+    {
+      "path": "./telemetry"
+    },
+    {
+      "path": "./vector"
+    },
+    {
+      "path": "./adapters/bitwarden-secrets"
+    }
+  ]
+}

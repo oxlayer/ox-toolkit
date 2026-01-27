@@ -1,0 +1,41 @@
+# Verdaccio configuration for local oxlayer monorepo
+storage: /verdaccio/storage
+plugins: /verdaccio/plugins
+
+web:
+  title: Oxlayer Local Registry
+
+# Allow all packages with @oxlayer scope
+packages:
+  '@oxlayer/*':
+    access: $all
+    publish: $all
+    unpublish: $all
+
+  '@*/*':
+    access: $all
+    publish: $authenticated
+    unpublish: $authenticated
+
+  '**':
+    access: $all
+    publish: $authenticated
+    unpublish: $authenticated
+
+# No authentication required for local development
+auth:
+  type: memory
+  users:
+    admin:
+      name: admin
+      password: admin
+
+# Listen on all interfaces
+listen: 0.0.0.0:4873
+
+# EnableUPnP for easier local network access
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+
+log: { type: stdout, format: pretty, level: http }

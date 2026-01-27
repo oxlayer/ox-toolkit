@@ -1,0 +1,35 @@
+{
+  "name": "@oxlayer/snippets",
+  "version": "1.0.0",
+  "description": "Reusable code templates for OxLayer microservices",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./domain": "./dist/index.js",
+    "./use-cases": "./dist/index.js",
+    "./repositories": "./dist/index.js",
+    "./controllers": "./dist/index.js",
+    "./config": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@oxlayer/foundation-domain-kit": "workspace:*",
+    "@oxlayer/foundation-app-kit": "workspace:*",
+    "@oxlayer/foundation-http-kit": "workspace:*",
+    "@oxlayer/capabilities-events": "workspace:*",
+    "@oxlayer/capabilities-telemetry": "workspace:*",
+    "zod": "^3.22.0",
+    "hono": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "latest",
+    "typescript": "latest"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "name": "@oxlayer/foundation-domain-kit",
+  "version": "0.1.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oxlayer/foundation.git"
+  },
+  "publishConfig": {
+    "registry": "http://localhost:4873/"
+  },
+  "description": "Core domain primitives: entities, value objects, repository interfaces, and domain errors",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./entities": {
+      "types": "./dist/entities/index.d.ts",
+      "import": "./dist/entities/index.js"
+    },
+    "./values": {
+      "types": "./dist/values/index.d.ts",
+      "import": "./dist/values/index.js"
+    },
+    "./errors": {
+      "types": "./dist/errors/index.d.ts",
+      "import": "./dist/errors/index.js"
+    },
+    "./repositories": {
+      "types": "./dist/repositories/index.d.ts",
+      "import": "./dist/repositories/index.js"
+    }
+  },
+  "license": "Apache-2.0",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "bun-types": "1.3.6",
+    "tsup": "latest",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {}
+}

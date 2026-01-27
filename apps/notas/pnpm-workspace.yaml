@@ -1,0 +1,25 @@
+packages:
+  - apps/**/*
+  - ../../foundation/**
+  - ../../capabilities/**
+  - ../../proprietary/**
+  - ../../snippets/**
+
+overrides:
+  '@oxlayer/foundation-domain-kit': link:../../foundation/domain-kit
+  '@oxlayer/foundation-app-kit': link:../../foundation/app-kit
+  '@oxlayer/foundation-http-kit': link:../../foundation/http-kit
+  '@oxlayer/foundation-persistence-kit': link:../../foundation/persistence-kit
+  '@oxlayer/foundation-testing-kit': link:../../foundation/testing-kit
+  '@oxlayer/capabilities-adapters-postgres': link:../../capabilities/adapters/database/postgres
+  '@oxlayer/capabilities-adapters-bitwarden-secrets': link:../../capabilities/adapters/bitwarden-secrets
+  '@oxlayer/capabilities-adapters-redis': link:../../capabilities/adapters/database/redis
+  '@oxlayer/capabilities-adapters-rabbitmq': link:../../capabilities/adapters/messaging/rabbitmq
+  '@oxlayer/capabilities-auth': link:../../capabilities/auth
+  '@oxlayer/capabilities-cache': link:../../capabilities/cache
+  '@oxlayer/capabilities-events': link:../../capabilities/events
+  '@oxlayer/capabilities-internal': link:../../capabilities/internal
+  '@oxlayer/capabilities-search': link:../../capabilities/search
+  '@oxlayer/pro-adapters-postgres-tenancy': link:../../proprietary/adapters/database/postgres-tenancy
+  '@oxlayer/pro-tenancy': link:../../proprietary/tenancy
+  '@oxlayer/snippets': link:../../snippets

@@ -1,0 +1,41 @@
+{
+  "name": "@oxlayer/capabilities-events",
+  "version": "1.0.3",
+  "description": "Transport-agnostic event handling for Hono - defines EventBus contract and event primitives",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@oxlayer/capabilities-metrics": "workspace:*",
+    "@oxlayer/capabilities-telemetry": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@oxlayer/capabilities-metrics": {
+      "optional": true
+    },
+    "@oxlayer/capabilities-telemetry": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "hono": "^4.0.0"
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

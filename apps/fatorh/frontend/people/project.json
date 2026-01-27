@@ -1,0 +1,43 @@
+{
+    "name": "@fator-h/people",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/people/src",
+    "projectType": "application",
+    "targets": {
+        "dev": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "vite",
+                "cwd": "apps/people"
+            }
+        },
+        "build": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "tsc -b && vite build",
+                "cwd": "apps/people"
+            },
+            "outputs": [
+                "{projectRoot}/dist"
+            ]
+        },
+        "lint": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "eslint .",
+                "cwd": "apps/people"
+            }
+        },
+        "preview": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "vite preview",
+                "cwd": "apps/people"
+            }
+        }
+    },
+    "tags": [
+        "type:app",
+        "scope:web"
+    ]
+}

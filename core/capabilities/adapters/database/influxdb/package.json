@@ -1,0 +1,31 @@
+{
+  "name": "@oxlayer/capabilities-adapters-influxdb",
+  "version": "1.0.3",
+  "description": "InfluxDB adapter for @oxlayer/capabilities metrics",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "4.11.4",
+    "@oxlayer/capabilities-internal": "workspace:*",
+    "@influxdata/influxdb-client": "^1.33.0"
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "@oxlayer/capabilities-adapters-redis",
+  "version": "1.0.3",
+  "description": "Redis adapter for @oxlayer/capabilities",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@oxlayer/capabilities-cache": "workspace:*",
+    "hono": "4.11.4"
+  },
+  "peerDependenciesMeta": {
+    "@oxlayer/capabilities-cache": {
+      "optional": true
+    },
+    "hono": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@oxlayer/capabilities-internal": "workspace:*",
+    "ioredis": "^5.0.0"
+  },
+  "devDependencies": {
+    "hono": "4.11.4",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

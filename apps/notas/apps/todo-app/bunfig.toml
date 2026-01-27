@@ -1,0 +1,21 @@
+[name]
+suites = "src/__tests__/**"
+
+[test]
+# Add coverage for production code only
+coverage = true
+coverage_skip = "**/node_modules/**"
+
+# Coverage thresholds
+coverage_threshold = 80
+
+# Coverage output format
+coverage_out = "coverage"
+coverage_out_html = true
+
+# Only instrument production code
+# preload = ["./src/test/setup.ts"]
+
+[test.reporter]
+# Report test results to terminal
+_specify = [ { id = "bun-test-reporter.ts" } ]

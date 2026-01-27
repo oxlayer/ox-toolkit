@@ -1,0 +1,7 @@
+/* Configure Tailwind CSS v4 - enable dark mode */
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+/* Import Aurora styles after configuration */
+@import "@acme/ui/styles";

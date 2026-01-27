@@ -1,0 +1,10 @@
+packages:
+  - apps/**
+  - capabilities/**
+  - capabilities-web/**
+  - cli/**
+  - docs/**
+  - examples/**
+  - foundation/**
+  - proprietary/**
+  - snippets/**

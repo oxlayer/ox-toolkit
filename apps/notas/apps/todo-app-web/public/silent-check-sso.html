@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silent SSO Check</title>
+</head>
+<body>
+  <script>
+    // Keycloak silent SSO callback
+    // This file is used by Keycloak to silently check authentication status
+    // without causing a full page redirect
+    const parentOrigin = window.location.origin;
+    const message = { type: 'silent-sso-callback', status: 'success' };
+
+    // Post message back to parent window
+    if (window.opener) {
+      window.opener.postMessage(message, parentOrigin);
+    } else {
+      window.parent.postMessage(message, parentOrigin);
+    }
+  </script>
+</body>
+</html>

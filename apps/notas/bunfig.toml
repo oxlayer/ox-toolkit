@@ -1,0 +1,31 @@
+[install]
+# Use workspaces
+workspace = true
+
+# Production dependencies only (set to true for production installs)
+production = false
+
+# Install optional dependencies
+optional = true
+
+# Install dev dependencies (needed for development)
+dev = true
+
+# Install peer dependencies
+peer = true
+
+# Lockfile
+lockfile = "bun.lockb"
+
+# Cache directory
+cache = ".bun/install/cache"
+
+# Registry configuration
+registry = "https://registry.npmjs.org/"
+
+# Timeout for network requests (in milliseconds)
+timeout = 300000
+
+[install.scopes]
+# Configure scoped packages if needed
+

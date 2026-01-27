@@ -1,0 +1,31 @@
+{
+  "name": "@oxlayer/pro-adapters-redis-tenancy",
+  "version": "1.0.0",
+  "description": "Redis tenancy adapter for multi-tenant cache resolution",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oxlayer/capabilities-cache": "workspace:*",
+    "@oxlayer/pro-tenancy": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

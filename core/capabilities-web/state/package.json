@@ -1,0 +1,78 @@
+{
+  "name": "@oxlayer/capabilities-web-state",
+  "version": "1.0.0",
+  "description": "Local-first state management with Legend-State for OxLayer web apps",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./workspace": {
+      "types": "./dist/workspace/index.d.ts",
+      "import": "./dist/workspace/index.js"
+    },
+    "./data": {
+      "types": "./dist/data/index.d.ts",
+      "import": "./dist/data/index.js"
+    },
+    "./sync": {
+      "types": "./dist/sync/index.d.ts",
+      "import": "./dist/sync/index.js"
+    },
+    "./export": {
+      "types": "./dist/export/index.d.ts",
+      "import": "./dist/export/index.js"
+    },
+    "./persist": {
+      "types": "./dist/persist/index.d.ts",
+      "import": "./dist/persist/index.js"
+    },
+    "./persist/sqlite-wasm": {
+      "types": "./dist/persist/sqlite-wasm/index.d.ts",
+      "import": "./dist/persist/sqlite-wasm/index.js"
+    },
+    "./persist/offline-storage": {
+      "types": "./dist/persist/offline-storage/index.d.ts",
+      "import": "./dist/persist/offline-storage/index.js"
+    },
+    "./persist/pure-storage": {
+      "types": "./dist/persist/pure-storage.d.ts",
+      "import": "./dist/persist/pure-storage.js"
+    },
+    "./local-only": {
+      "types": "./dist/local-only/index.d.ts",
+      "import": "./dist/local-only/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@legendapp/state": "3.0.0-beta.43"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "peerDependencies": {
+    "@sqlite.org/sqlite-wasm": "3.51.2-build4",
+    "react": "^18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@sqlite.org/sqlite-wasm": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

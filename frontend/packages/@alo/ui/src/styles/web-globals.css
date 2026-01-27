@@ -1,0 +1,42 @@
+/**
+ * @acme/ui Web-specific Global Styles
+ *
+ * Imports shared web styles from @oxlayer/shared-ui
+ * and adds Alo-specific web overrides.
+ */
+
+/* Import shared web styles */
+@import '@oxlayer/shared-ui/web-styles';
+
+/* Import base brand styles */
+@import './globals.css';
+
+/* ============================================================================
+   ALO WEB-SPECIFIC OVERRIDES
+   ============================================================================ */
+
+/* Additional color tokens for Alo web apps */
+@theme inline {
+  --color-lime-400: #a3e635;
+  --color-lime-500: #84cc16;
+  --color-lime-600: #65a30d;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+}
+
+/* Alo web-specific animations */
+@theme inline {
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-shimmer: shimmer 4s linear infinite;
+  --animate-border-spin: border-spin 2.5s linear infinite;
+  --animate-border-beam: border-beam 2s infinite linear;
+
+  @keyframes shimmer {
+    to {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
+  }
+}

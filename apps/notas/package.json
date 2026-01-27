@@ -1,0 +1,39 @@
+{
+    "name": "notas",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "nx run-many --target=build --all",
+        "test": "nx run-many --target=test --all",
+        "lint": "nx run-many --target=lint --all",
+        "dev:web": "nx run @fator-h/people:dev",
+        "dev:app": "nx run @fator-h/app:dev",
+        "dev:api": "nx run @fator-h/core:dev",
+        "dev:api2": "nx run-many --target=dev --projects=@fator-h/core,@fator-h/database,@fator-h/metrics,@fator-h/scalar,@fator-h/evaluator,@fator-h/transcriber --parallel",
+        "clean": "nx reset && bun run clean:node-modules && bun run clean:build",
+        "clean:node-modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+        "clean:build": "find . -name 'dist' -type d -prune -exec rm -rf '{}' +",
+        "graph": "nx graph",
+        "affected:build": "nx affected --target=build",
+        "affected:test": "nx affected --target=test",
+        "affected:lint": "nx affected --target=lint"
+    },
+    "devDependencies": {
+        "@nx/js": "^20.3.0",
+        "@nx/node": "^20.3.0",
+        "@nx/workspace": "^20.3.0",
+        "lerna": "^9.0.0",
+        "nx": "^20.3.0",
+        "typescript": "^5.9.2"
+    },
+    "engines": {
+        "pnpm": ">=10.23.0",
+        "node": ">=18.0.0"
+    },
+    "packageManager": "pnpm@10.23.0",
+    "dependencies": {
+        "domain-kit": "link:../foundation/domain-kit",
+        "keycloak-js": "^26.2.2"
+    }
+}

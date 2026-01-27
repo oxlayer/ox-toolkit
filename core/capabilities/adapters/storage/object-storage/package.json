@@ -1,0 +1,41 @@
+{
+  "name": "@oxlayer/capabilities-adapters-object-storage",
+  "version": "1.0.3",
+  "description": "Object storage adapter for @oxlayer/capabilities",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "hono": "*"
+  },
+  "peerDependenciesMeta": {
+    "hono": {
+      "optional": true
+    }
+  },
+  "optionalDependencies": {
+    "hono": "^4.0.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.969.0",
+    "@oxlayer/capabilities-internal": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,6 @@
+packages:
+  - 'backend/**'
+  - 'frontend/**'
+  - 'packages/**'
+  - '../../frontend/packages/@acme/**'
+  - '../../frontend/packages/@oxlayer/**'

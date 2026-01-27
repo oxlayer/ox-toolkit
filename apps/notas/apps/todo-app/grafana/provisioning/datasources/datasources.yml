@@ -1,0 +1,63 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    uid: Prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      timeInterval: "15s"
+
+  - name: Traces
+    type: quickwit-quickwit-datasource
+    uid: todo-app-traces
+    access: proxy
+    url: http://quickwit:7280/api/v1
+    isDefault: false
+    editable: true
+    jsonData:
+      index: todo-app-traces
+      timeField: span_start_timestamp_nanos
+      derivedFields:
+        - field: trace_id
+          url: "/explore?schemaVersion=1&panes=%7B%226tb%22:%7B%22datasource%22:%22todo-app-logs%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22quickwit-quickwit-datasource%22,%22uid%22:%22todo-app-logs%22%7D,%22query%22:%22trace_id:$${__value.raw}%22,%22alias%22:%22%22,%22metrics%22:%5B%7B%22type%22:%22logs%22,%22id%22:%223%22,%22settings%22:%7B%22limit%22:%22100%22,%22sortDirection%22:%22desc%22%7D%7D%5D,%22bucketAggs%22:%5B%7B%22type%22:%22date_histogram%22,%22id%22:%222%22,%22settings%22:%7B%22interval%22:%22auto%22%7D,%22field%22:%22%22%7D%5D,%22timeField%22:%22%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D,%22compact%22:false%7D%7D&orgId=1"
+          title: Log
+          internal: false
+      dataLinks:
+        - field: trace_id
+          url: "/explore?schemaVersion=1&panes=%7B%226tb%22:%7B%22datasource%22:%22todo-app-logs%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22quickwit-quickwit-datasource%22,%22uid%22:%22todo-app-logs%22%7D,%22query%22:%22trace_id:$${__value.raw}%22,%22alias%22:%22%22,%22metrics%22:%5B%7B%22type%22:%22logs%22,%22id%22:%223%22,%22settings%22:%7B%22limit%22:%22100%22,%22sortDirection%22:%22desc%22%7D%7D%5D,%22bucketAggs%22:%5B%7B%22type%22:%22date_histogram%22,%22id%22:%222%22,%22settings%22:%7B%22interval%22:%22auto%22%7D,%22field%22:%22%22%7D%5D,%22timeField%22:%22%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D,%22compact%22:false%7D%7D&orgId=1"
+          base64TraceId: true
+          urlDisplayLabel: Log
+
+  - name: Logs
+    type: quickwit-quickwit-datasource
+    uid: todo-app-logs
+    access: proxy
+    url: http://quickwit:7280/api/v1
+    isDefault: false
+    editable: true
+    jsonData:
+      index: todo-app-logs
+      timeField: timestamp_nanos
+      derivedFields:
+        - field: trace_id
+          url: "$${__value.raw}"
+          title: Trace
+          internal: true
+      dataLinks:
+        - field: trace_id
+          url: "$${__value.raw}"
+          base64TraceId: true
+          urlDisplayLabel: Trace
+          datasourceUid: jaeger
+
+  - name: Jaeger
+    type: jaeger
+    uid: jaeger
+    access: proxy
+    url: http://quickwit:7280/api/v1/todo-app-traces/jaeger
+    isDefault: false
+    editable: true

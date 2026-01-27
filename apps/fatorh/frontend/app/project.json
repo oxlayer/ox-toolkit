@@ -1,0 +1,43 @@
+{
+    "name": "@fator-h/app",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/app/src",
+    "projectType": "application",
+    "targets": {
+        "dev": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "vite",
+                "cwd": "apps/app"
+            }
+        },
+        "build": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "tsc -b && vite build",
+                "cwd": "apps/app"
+            },
+            "outputs": [
+                "{projectRoot}/dist"
+            ]
+        },
+        "lint": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "eslint .",
+                "cwd": "apps/app"
+            }
+        },
+        "preview": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "vite preview",
+                "cwd": "apps/app"
+            }
+        }
+    },
+    "tags": [
+        "type:app",
+        "scope:web"
+    ]
+}

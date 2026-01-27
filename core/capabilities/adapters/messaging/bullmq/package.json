@@ -1,0 +1,48 @@
+{
+  "name": "@oxlayer/capabilities-adapters-bullmq",
+  "version": "1.0.3",
+  "description": "BullMQ adapter for @oxlayer/capabilities event bus",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@oxlayer/capabilities-queues": "workspace:*",
+    "hono": "*"
+  },
+  "peerDependenciesMeta": {
+    "@oxlayer/capabilities-queues": {
+      "optional": true
+    },
+    "hono": {
+      "optional": true
+    }
+  },
+  "optionalDependencies": {
+    "hono": "^4.0.0"
+  },
+  "dependencies": {
+    "@oxlayer/capabilities-events": "workspace:*",
+    "@oxlayer/capabilities-internal": "workspace:*",
+    "@oxlayer/capabilities-adapters-redis": "workspace:*",
+    "bullmq": "^5.0.0"
+  },
+  "devDependencies": {
+    "hono": "4.11.4",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

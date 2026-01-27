@@ -1,0 +1,31 @@
+{
+  "name": "@oxlayer/capabilities-adapters-postgres",
+  "version": "1.0.3",
+  "description": "PostgreSQL adapter for @oxlayer/capabilities",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oxlayer/capabilities-internal": "workspace:*",
+    "postgres": "^3.4.8",
+    "drizzle-orm": "^0.45.1"
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

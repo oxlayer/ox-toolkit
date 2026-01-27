@@ -1,0 +1,10 @@
+{
+    "mcpServers": {
+        "oxlayer": {
+            "command": "node",
+            "args": [
+                "${OXLAYER_REPO}/mcp_oxlayer/dist/index.js"
+            ]
+        }
+    }
+}

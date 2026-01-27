@@ -1,0 +1,33 @@
+{
+  "name": "@oxlayer/pro-adapters-postgres-tenancy",
+  "version": "1.0.0",
+  "description": "PostgreSQL tenancy adapter for multi-tenant database resolution",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oxlayer/pro-tenancy": "workspace:*",
+    "@oxlayer/capabilities-internal": "workspace:*",
+    "drizzle-orm": "^0.29.0",
+    "postgres": "^3.4.0"
+  },
+  "peerDependencies": {},
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

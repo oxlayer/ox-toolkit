@@ -1,0 +1,30 @@
+{
+  "name": "@oxlayer/pro-adapters-quickwit-tenancy",
+  "version": "1.0.0",
+  "description": "Quickwit multi-tenant search adapter for tenant-isolated log analytics",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oxlayer/pro-tenancy": "workspace:*",
+    "@oxlayer/capabilities-search": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

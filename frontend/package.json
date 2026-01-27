@@ -1,0 +1,19 @@
+{
+  "name": "oxlayer-frontend-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter './packages/**' dev",
+    "build": "pnpm --filter './packages/**' build",
+    "lint": "pnpm --filter './packages/**' lint",
+    "test": "pnpm --filter './packages/**' test",
+    "clean": "pnpm --filter './packages/**' clean",
+    "typecheck": "pnpm --filter './packages/**' typecheck"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.0"
+  }
+}

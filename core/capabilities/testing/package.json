@@ -1,0 +1,50 @@
+{
+  "name": "@oxlayer/capabilities-testing",
+  "version": "1.0.0",
+  "description": "Shared testing infrastructure for OxLayer apps",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./mock-tracer": "./dist/mock-tracer.js",
+    "./mock-event-bus": "./dist/mock-event-bus.js",
+    "./mock-emitters": "./dist/mock-emitters.js",
+    "./mock-repository": "./dist/mock-repository.js",
+    "./builders": "./dist/builders.js",
+    "./test-helpers": "./dist/test-helpers.js",
+    "./assertions": "./dist/assertions.js",
+    "./patterns/security": "./dist/patterns/security.js",
+    "./patterns/authorization": "./dist/patterns/authorization.js",
+    "./patterns/concurrency": "./dist/patterns/concurrency.js",
+    "./patterns/errors": "./dist/patterns/errors.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@oxlayer/capabilities-events": "workspace:*",
+    "@oxlayer/capabilities-telemetry": "workspace:*",
+    "@oxlayer/capabilities-metrics": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@oxlayer/capabilities-events": {
+      "optional": true
+    },
+    "@oxlayer/capabilities-telemetry": {
+      "optional": true
+    },
+    "@oxlayer/capabilities-metrics": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}
