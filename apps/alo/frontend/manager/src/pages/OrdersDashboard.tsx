@@ -249,7 +249,7 @@ export default function OrdersDashboard() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-            {allOrders?.length === 0 ? (
+            {!allOrders || allOrders.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                   No orders found

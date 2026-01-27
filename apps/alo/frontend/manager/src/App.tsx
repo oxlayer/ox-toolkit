@@ -1,21 +1,27 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Layout from './components/Layout';
-import Dashboard from './pages/Dashboard';
-import Establishments from './pages/Establishments';
-import EstablishmentForm from './pages/EstablishmentForm';
-import EstablishmentTypes from './pages/EstablishmentTypes';
-import Users from './pages/Users';
-import UserForm from './pages/UserForm';
-import DeliveryMen from './pages/DeliveryMen';
-import DeliveryManForm from './pages/DeliveryManForm';
-import ServiceProviders from './pages/ServiceProviders';
-import ServiceProviderForm from './pages/ServiceProviderForm';
-import ServiceCategories from './pages/ServiceCategories';
-import ServiceCatalog from './pages/ServiceCatalog';
-import ServiceProviderOrders from './pages/ServiceProviderOrders';
-import OrdersDashboard from './pages/OrdersDashboard';
-import Providers from './pages/Providers';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import {
+  ManagerLayout
+} from '@/components/manager'
+import {
+  DashboardView,
+  EstablishmentsView,
+  EstablishmentFormView,
+  UsersView,
+  UserFormView,
+  DeliveryMenView,
+  DeliveryManFormView,
+} from '@/views'
+
+// Import existing pages that haven't been refactored yet
+import EstablishmentTypes from './pages/EstablishmentTypes'
+import ServiceProviders from './pages/ServiceProviders'
+import ServiceProviderForm from './pages/ServiceProviderForm'
+import ServiceCategories from './pages/ServiceCategories'
+import ServiceCatalog from './pages/ServiceCatalog'
+import ServiceProviderOrders from './pages/ServiceProviderOrders'
+import OrdersDashboard from './pages/OrdersDashboard'
+import Providers from './pages/Providers'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,32 +30,32 @@ const queryClient = new QueryClient({
       retry: 1,
     },
   },
-});
+})
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Dashboard />} />
+          <Route path="/" element={<ManagerLayout />}>
+            <Route index element={<DashboardView />} />
             <Route path="orders" element={<OrdersDashboard />} />
             <Route path="providers" element={<Providers />} />
             <Route path="establishments">
-              <Route index element={<Establishments />} />
-              <Route path="new" element={<EstablishmentForm />} />
-              <Route path=":id" element={<EstablishmentForm />} />
+              <Route index element={<EstablishmentsView />} />
+              <Route path="new" element={<EstablishmentFormView />} />
+              <Route path=":id" element={<EstablishmentFormView />} />
               <Route path="types" element={<EstablishmentTypes />} />
             </Route>
             <Route path="users">
-              <Route index element={<Users />} />
-              <Route path="new" element={<UserForm />} />
-              <Route path=":id" element={<UserForm />} />
+              <Route index element={<UsersView />} />
+              <Route path="new" element={<UserFormView />} />
+              <Route path=":id" element={<UserFormView />} />
             </Route>
             <Route path="delivery-men">
-              <Route index element={<DeliveryMen />} />
-              <Route path="new" element={<DeliveryManForm />} />
-              <Route path=":id" element={<DeliveryManForm />} />
+              <Route index element={<DeliveryMenView />} />
+              <Route path="new" element={<DeliveryManFormView />} />
+              <Route path=":id" element={<DeliveryManFormView />} />
             </Route>
             <Route path="service-providers">
               <Route index element={<ServiceProviders />} />
@@ -64,7 +70,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
-  );
+  )
 }
 
-export default App;
+export default App
