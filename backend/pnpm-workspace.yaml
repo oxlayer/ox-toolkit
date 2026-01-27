@@ -1,0 +1,9 @@
+packages:
+  - foundation/**
+  - capabilities/**
+  - channels/**
+  - pro/**
+  - cli/**
+  - examples/**
+  - snippets/**
+  - docs/**
