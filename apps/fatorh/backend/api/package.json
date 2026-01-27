@@ -1,7 +1,7 @@
 {
-  "name": "@oxlayer/ox-globex-api",
+  "name": "@oxlayer/globex-api",
   "version": "1.0.0",
-  "description": "Fator-H API using oxlayer DDD architecture - Exams, evaluations, programs, users, workspaces",
+  "description": "Fator-H API",
   "private": true,
   "type": "module",
   "main": "src/server.ts",
@@ -43,7 +43,7 @@
     "@oxlayer/pro-tenancy": "workspace:*",
     "cpf-cnpj-validator": "1.0.3",
     "jsonwebtoken": "9.0.3",
-    "jwks-rsa":"3.2.2",
+    "jwks-rsa": "3.2.2",
     "csv-parse": "6.1.0",
     "dotenv": "17.2.3",
     "drizzle-orm": "0.44.7",

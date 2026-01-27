@@ -3,6 +3,12 @@
     "@types/node": "^25.0.10",
     "esbuild": "^0.27.2"
   },
+  "scripts": {
+    "alo": "pnpm --filter @acme* dev",
+    "globex": "pnpm --filter @globex* dev",
+    "backend": "pnpm -r --filter \"./backend/**\" --filter \"!./backend/release/**\" run build",
+    "build:keycloak-bootstrap": "pnpm --filter @oxlayer/cli-keycloak-bootstrap build"
+  },
   "pnpm": {
     "overrides": {
       "@repo/*": "npm:@empty*"
@@ -13,6 +19,9 @@
           "@less/test-data": "npm:@empty"
         }
       }
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

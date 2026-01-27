@@ -1,5 +1,5 @@
 {
-  "name": "@acmelabs/onboarding",
+  "name": "@acme/onboarding",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,9 +12,9 @@
   },
   "dependencies": {
     "@acme/ui": "workspace:*",
-    "next-themes": "^0.4.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "next-themes": "0.4.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

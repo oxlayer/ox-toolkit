@@ -142,6 +142,10 @@ export function fileUploadMiddleware(options: {
  * });
  * ```
  */
+function isFile(value: unknown): value is File {
+  return value instanceof File;
+}
+
 export function multiFileUploadMiddleware(options: {
   /**
    * Form field name for the files
@@ -169,7 +173,7 @@ export function multiFileUploadMiddleware(options: {
 
       // Iterate through all form fields
       for (const [key, value] of formData.entries()) {
-        if (key.startsWith(fieldName) && value instanceof File) {
+        if (key.startsWith(fieldName) && isFile(value)) {
           // Check file count
           if (options.maxFiles && files.length >= options.maxFiles) {
             return c.json({ error: `Too many files. Max: ${options.maxFiles}` }, 400);
