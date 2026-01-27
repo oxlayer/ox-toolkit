@@ -1,0 +1,29 @@
+{
+  "name": "@oxlayer/capabilities-adapters-web",
+  "version": "1.0.0",
+  "description": "Web channel adapter for progressive identity system",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./web-channel.adapter": "./dist/web-channel.adapter.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oxlayer/snippets": "workspace:*",
+    "hono": "^4.11.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "@oxlayer/capabilities-adapters-qdrant",
+  "version": "1.0.3",
+  "description": "Qdrant vector database adapter for @oxlayer/capabilities",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oxlayer/capabilities-internal": "workspace:*",
+    "@qdrant/js-client-rest": "^1.12.0"
+  },
+  "peerDependencies": {
+    "@oxlayer/capabilities-vector": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@oxlayer/capabilities-vector": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

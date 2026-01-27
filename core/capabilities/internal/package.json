@@ -1,0 +1,26 @@
+{
+  "name": "@oxlayer/capabilities-internal",
+  "version": "1.0.3",
+  "description": "Internal utilities for staples-hono packages",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

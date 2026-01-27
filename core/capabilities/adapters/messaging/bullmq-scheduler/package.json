@@ -1,0 +1,32 @@
+{
+  "name": "@oxlayer/capabilities-adapters-bullmq-scheduler",
+  "version": "1.0.3",
+  "description": "BullMQ scheduler adapter for @oxlayer/capabilities",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oxlayer/capabilities-scheduler": "workspace:*",
+    "@oxlayer/capabilities-internal": "workspace:*",
+    "@oxlayer/capabilities-adapters-redis": "workspace:*",
+    "bullmq": "^5.0.0"
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

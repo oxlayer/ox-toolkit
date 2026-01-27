@@ -1,0 +1,46 @@
+{
+  "name": "@oxlayer/foundation-persistence-kit",
+  "version": "0.1.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oxlayer/foundation.git"
+  },
+  "publishConfig": {
+    "registry": "http://localhost:4873/"
+  },
+  "description": "Persistence layer utilities: repository patterns, cursor pagination, query builders",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./adapters": {
+      "types": "./dist/adapters/index.d.ts",
+      "import": "./dist/adapters/index.js"
+    },
+    "./patterns": {
+      "types": "./dist/patterns/index.d.ts",
+      "import": "./dist/patterns/index.js"
+    }
+  },
+  "license": "Apache-2.0",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oxlayer/foundation-domain-kit": "workspace:*"
+  },
+  "devDependencies": {
+    "bun-types": "1.3.6",
+    "tsup": "latest",
+    "typescript": "^5.9.3"
+  }
+}

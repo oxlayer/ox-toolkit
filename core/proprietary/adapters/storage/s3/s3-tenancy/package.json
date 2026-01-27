@@ -1,0 +1,30 @@
+{
+  "name": "@oxlayer/pro-adapters-object-storage-tenancy",
+  "version": "1.0.0",
+  "description": "Object Storage multi-tenant storage adapter for tenant-isolated object storage",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oxlayer/pro-tenancy": "workspace:*",
+    "@oxlayer/capabilities-adapters-bitwarden-secrets": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

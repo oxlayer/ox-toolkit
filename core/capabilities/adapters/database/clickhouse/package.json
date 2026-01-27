@@ -1,0 +1,30 @@
+{
+  "name": "@oxlayer/capabilities-adapters-clickhouse",
+  "version": "1.0.3",
+  "description": "ClickHouse adapter for @oxlayer/capabilities",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oxlayer/capabilities-internal": "workspace:*",
+    "@clickhouse/client": "^1.2.0"
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

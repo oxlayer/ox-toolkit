@@ -1,0 +1,51 @@
+{
+  "name": "@oxlayer/foundation-testing-kit",
+  "version": "0.1.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oxlayer/foundation.git"
+  },
+  "publishConfig": {
+    "registry": "http://localhost:4873/"
+  },
+  "description": "Testing utilities: builders, mock repositories, test helpers",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./builders": {
+      "types": "./dist/builders/index.d.ts",
+      "import": "./dist/builders/index.js"
+    },
+    "./mocks": {
+      "types": "./dist/mocks/index.d.ts",
+      "import": "./dist/mocks/index.js"
+    },
+    "./assertions": {
+      "types": "./dist/assertions/index.d.ts",
+      "import": "./dist/assertions/index.js"
+    }
+  },
+  "license": "Apache-2.0",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oxlayer/foundation-domain-kit": "workspace:*",
+    "@oxlayer/foundation-app-kit": "workspace:*"
+  },
+  "devDependencies": {
+    "bun-types": "1.3.6",
+    "tsup": "latest",
+    "typescript": "^5.9.3"
+  }
+}

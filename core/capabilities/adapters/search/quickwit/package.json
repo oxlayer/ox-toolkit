@@ -1,0 +1,37 @@
+{
+  "name": "@oxlayer/capabilities-adapters-search-quickwit",
+  "version": "1.0.3",
+  "description": "Quickwit search adapter for @oxlayer/capabilities",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oxlayer/capabilities-internal": "workspace:*"
+  },
+  "peerDependencies": {
+    "@oxlayer/capabilities-search": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@oxlayer/capabilities-search": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "name": "@oxlayer/foundation-http-kit",
+  "version": "0.1.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oxlayer/foundation.git"
+  },
+  "publishConfig": {
+    "registry": "http://localhost:4873/"
+  },
+  "description": "HTTP layer primitives: controllers, error mapping, middleware utilities",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./controllers": {
+      "types": "./dist/controllers/index.d.ts",
+      "import": "./dist/controllers/index.js"
+    },
+    "./errors": {
+      "types": "./dist/errors/index.d.ts",
+      "import": "./dist/errors/index.js"
+    },
+    "./validation": {
+      "types": "./dist/validation/index.d.ts",
+      "import": "./dist/validation/index.js"
+    }
+  },
+  "license": "Apache-2.0",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oxlayer/foundation-domain-kit": "workspace:*"
+  },
+  "peerDependencies": {
+    "zod": "^3.0.0 || ^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "bun-types": "1.3.6",
+    "tsup": "latest",
+    "typescript": "^5.9.3",
+    "zod": "^4.1.9"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@oxlayer/foundation",
+  "private": true,
+  "description": "Foundation layer for the Oxlayer platform",
+  "type": "module",
+  "scripts": {
+    "build:packages": "pnpm --filter '@oxlayer/foundation-*' build",
+    "bump:packages": "pnpm --filter '@oxlayer/foundation-*' exec pnpm version patch",
+    "publish:packages": "pnpm --filter '@oxlayer/foundation-*' publish --registry http://localhost:4873/ --no-git-checks",
+    "dev": "bun --hot",
+    "typecheck": "tsc --build",
+    "clean": "rm -rf */dist */tsconfig.tsbuildinfo"
+  },
+  "devDependencies": {
+    "bun-types": "^1.3.6",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

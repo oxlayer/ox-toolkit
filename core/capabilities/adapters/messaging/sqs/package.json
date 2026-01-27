@@ -1,0 +1,39 @@
+{
+  "name": "@oxlayer/capabilities-adapters-sqs",
+  "version": "1.0.3",
+  "description": "AWS SQS adapter for @oxlayer/capabilities event bus",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oxlayer/capabilities-events": "workspace:*",
+    "@oxlayer/capabilities-internal": "workspace:*",
+    "@aws-sdk/client-sqs": "^3.0.0"
+  },
+  "peerDependencies": {
+    "@oxlayer/capabilities-queues": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@oxlayer/capabilities-queues": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

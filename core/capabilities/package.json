@@ -1,0 +1,21 @@
+{
+  "name": "@oxlayer/capabilities",
+  "description": "Hono-compatible staple plugins for the Aurora authentication API",
+  "type": "module",
+  "scripts": {
+    "build:packages": "pnpm --filter '@oxlayer/capabilities-*' build",
+    "bump:packages": "pnpm --filter '@oxlayer/capabilities-*' exec pnpm version patch",
+    "publish:packages": "pnpm --filter '@oxlayer/capabilities-*' publish --registry http://localhost:4873/ --no-git-checks",
+    "dev": "bun --hot",
+    "typecheck": "tsc --build",
+    "clean": "rm -rf */dist */tsconfig.tsbuildinfo adapters/*/dist"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "latest",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}
