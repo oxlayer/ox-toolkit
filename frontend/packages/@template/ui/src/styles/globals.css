@@ -1,0 +1,31 @@
+/**
+ * @template/ui Global Styles
+ *
+ * Imports shared styles from @oxlayer/shared-ui
+ * and adds Template-specific brand overrides.
+ */
+
+/* Import shared styles */
+@import '@oxlayer/shared-ui/styles';
+
+/* ============================================================================
+   TEMPLATE BRAND OVERRIDES
+   ============================================================================ */
+
+@font-face {
+  font-family: "Nippo";
+  src: url("/fonts/Nippo-Variable.woff2") format("woff2");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Alo brand colors */
+  --color-brand: #caea28;
+  --color-brand-hover: #b5d820;
+  --color-brand-foreground: #000000;
+
+  /* Alo-specific overrides */
+  --font-sans: 'Nippo', 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}

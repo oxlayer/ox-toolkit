@@ -2,13 +2,31 @@
 
 {{PROJECT_DESCRIPTION}}
 
-## Features
+## Tech Stack
 
-- React 19 with TypeScript
-- Vite for fast development and building
-- Tailwind CSS v4 with modern theming
-- ESLint with TypeScript support
-- Path aliases (`@/` for `./src/`)
+- React 19
+- Vite 6
+- TypeScript
+- Tailwind CSS v4
+- React Router v7
+- TanStack React Query
+- Axios
+- Keycloak JS for authentication
+
+## Project Structure
+
+```
+src/
+├── components/     # Reusable UI components
+├── hooks/          # Custom React hooks
+├── lib/            # Utility libraries (keycloak, api-client)
+├── pages/          # Page components
+├── services/       # API service functions
+├── types/          # TypeScript type definitions
+├── App.tsx         # Main app component
+├── main.tsx        # Entry point
+└── index.css       # Global styles
+```
 
 ## Getting Started
 
@@ -16,7 +34,10 @@
 # Install dependencies
 pnpm install
 
-# Start dev server
+# Copy environment variables and configure
+cp .env.example .env
+
+# Start development server
 pnpm dev
 
 # Build for production
@@ -27,50 +48,60 @@ pnpm preview
 
 # Run linter
 pnpm lint
+
+# Type check
+pnpm typecheck
 ```
 
-## Project Structure
+## Features
 
-```
-src/
-├── App.tsx          # Main app component
-├── main.tsx         # Entry point
-├── index.css        # Global styles
-└── components/      # Your components
-```
+- **Keycloak Authentication**: SSO integration with automatic token management
+- **React Query**: Server state management with caching and optimistic updates
+- **Axios API Client**: Automatic token injection and 401 redirect to Keycloak login
+- **React Router v7**: Client-side routing
+- **Tailwind CSS v4**: Modern utility-first CSS with dark mode support
 
-## Available Scripts
+## Environment Variables
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start development server |
-| `pnpm build` | Build for production |
-| `pnpm preview` | Preview production build |
-| `pnpm lint` | Run ESLint |
+See `.env.example` for required environment variables:
 
-## Customization
+- `VITE_KEYCLOAK_URL`: Keycloak server URL
+- `VITE_KEYCLOAK_REALM`: Keycloak realm name
+- `VITE_KEYCLOAK_CLIENT_ID`: Keycloak client ID
+- `VITE_API_BASE_URL`: Backend API base URL
 
-### Theme Colors
+## Authentication Flow
 
-Edit `src/index.css` to customize the theme:
+1. App initializes and calls `initKeycloak()`
+2. Keycloak checks for existing SSO session
+3. If not authenticated, user sees login button
+4. Clicking login redirects to Keycloak login page
+5. After successful login, user is redirected back to app
+6. Access token is automatically included in API requests
+7. On 401 response, user is redirected to Keycloak login again
 
-```css
-@theme {
-  --color-primary: oklch(47% 0.18 265);
-  /* ... other colors */
-}
-```
+## API Usage
 
-### Path Aliases
+```typescript
+import { api } from './lib/api-client'
 
-Use `@/` to import from the `src` directory:
+// GET request
+const data = await api.get<EstablishmentsResponse>('/establishments')
 
-```tsx
-import { Button } from '@/components/button';
+// POST request
+const result = await api.post<Establishment>('/establishments', { name: 'Test' })
+
+// PATCH request
+const updated = await api.patch<Establishment>('/establishments/1', { name: 'Updated' })
+
+// DELETE request
+await api.delete<void>('/establishments/1')
 ```
 
 ## Learn More
 
-- [Vite Documentation](https://vitejs.dev/)
+- [Vite Documentation](https://vite.dev/)
 - [React Documentation](https://react.dev/)
-- [Tailwind CSS v4](https://tailwindcss.com/docs/v4-beta)
+- [TanStack Query Documentation](https://tanstack.com/query/latest)
+- [Keycloak Documentation](https://www.keycloak.org/documentation)
+- [Tailwind CSS Documentation](https://tailwindcss.com/)

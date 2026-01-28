@@ -27,18 +27,13 @@ interface CreateOptions {
 const TEMPLATES = [
   {
     value: 'base',
-    title: 'Base',
-    description: 'Minimal React + Vite + Tailwind CSS v4 setup',
+    title: 'Base (Weather App)',
+    description: 'Simple weather app with API fetching - no auth',
   },
   {
     value: 'auth',
-    title: 'Auth',
-    description: 'Base + Keycloak authentication with SSO',
-  },
-  {
-    value: 'dashboard',
-    title: 'Dashboard',
-    description: 'Auth + React Router + Layout + TanStack Query',
+    title: 'Auth App',
+    description: 'Keycloak + React Query + Axios + Tailwind - full auth setup',
   },
 ] as const;
 
@@ -60,7 +55,7 @@ program
   .version(packageJson.version)
   .argument('[project-name]', 'Name of the project')
   .option('-d, --defaults', 'Use default options')
-  .option('-t, --template <name>', 'Template to use (base, auth, dashboard)')
+  .option('-t, --template <name>', 'Template to use (base, auth)')
   .action(async (projectName?: string, options) => {
     try {
       await createFrontend(projectName, options);
@@ -143,9 +138,9 @@ async function createFrontend(projectName: string | undefined, options: CreateOp
   let vars: TemplateVars;
 
   if (options.defaults) {
-    vars = getTemplateVars(projectName);
+    vars = getTemplateVars(projectName, template);
   } else {
-    vars = await promptForVars(projectName);
+    vars = await promptForVars(projectName, template);
   }
 
   // Create project
@@ -164,19 +159,21 @@ async function createFrontend(projectName: string | undefined, options: CreateOp
   }
 }
 
-function getTemplateVars(projectName: string): TemplateVars {
+function getTemplateVars(projectName: string, template: TemplateValue): TemplateVars {
   const slug = projectName.toLowerCase().replace(/[^a-z0-9-]/g, '-');
 
   return {
     PROJECT_NAME: toTitleCase(slug),
     PROJECT_SLUG: slug,
-    PROJECT_DESCRIPTION: `A new OxLayer frontend app`,
+    PROJECT_DESCRIPTION: template === 'auth'
+      ? `${toTitleCase(slug)} with Keycloak authentication`
+      : `A new OxLayer frontend app`,
     PROJECT_AUTHOR: '',
-    PORT: '5173',
+    PORT: template === 'auth' ? '5174' : '5173',
   };
 }
 
-async function promptForVars(projectName: string): Promise<TemplateVars> {
+async function promptForVars(projectName: string, template: TemplateValue): Promise<TemplateVars> {
   const slug = projectName.toLowerCase().replace(/[^a-z0-9-]/g, '-');
 
   const response = await prompts([
@@ -184,7 +181,9 @@ async function promptForVars(projectName: string): Promise<TemplateVars> {
       type: 'text',
       name: 'description',
       message: 'Description:',
-      initial: `A new OxLayer frontend app`,
+      initial: template === 'auth'
+        ? `${toTitleCase(slug)} with Keycloak authentication`
+        : `A new OxLayer frontend app`,
     },
     {
       type: 'text',
@@ -196,7 +195,7 @@ async function promptForVars(projectName: string): Promise<TemplateVars> {
       type: 'number',
       name: 'port',
       message: 'Dev Server Port:',
-      initial: 5173,
+      initial: template === 'auth' ? 5174 : 5173,
     },
   ]);
 

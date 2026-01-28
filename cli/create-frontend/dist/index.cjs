@@ -36,22 +36,17 @@ var packageJson = JSON.parse(
 var TEMPLATES = [
   {
     value: "base",
-    title: "Base",
-    description: "Minimal React + Vite + Tailwind CSS v4 setup"
+    title: "Base (Weather App)",
+    description: "Simple weather app with API fetching - no auth"
   },
   {
     value: "auth",
-    title: "Auth",
-    description: "Base + Keycloak authentication with SSO"
-  },
-  {
-    value: "dashboard",
-    title: "Dashboard",
-    description: "Auth + React Router + Layout + TanStack Query"
+    title: "Auth App",
+    description: "Keycloak + React Query + Axios + Tailwind - full auth setup"
   }
 ];
 var program = new import_commander.Command();
-program.name("create-frontend").description("Scaffold a new OxLayer frontend app with React and Vite").version(packageJson.version).argument("[project-name]", "Name of the project").option("-d, --defaults", "Use default options").option("-t, --template <name>", "Template to use (base, auth, dashboard)").action(async (projectName, options) => {
+program.name("create-frontend").description("Scaffold a new OxLayer frontend app with React and Vite").version(packageJson.version).argument("[project-name]", "Name of the project").option("-d, --defaults", "Use default options").option("-t, --template <name>", "Template to use (base, auth)").action(async (projectName, options) => {
   try {
     await createFrontend(projectName, options);
   } catch (error) {
@@ -120,9 +115,9 @@ async function createFrontend(projectName, options) {
   }
   let vars;
   if (options.defaults) {
-    vars = getTemplateVars(projectName);
+    vars = getTemplateVars(projectName, template);
   } else {
-    vars = await promptForVars(projectName);
+    vars = await promptForVars(projectName, template);
   }
   const spinner = (0, import_ora.default)("Creating project...").start();
   try {
@@ -134,24 +129,24 @@ async function createFrontend(projectName, options) {
     throw error;
   }
 }
-function getTemplateVars(projectName) {
+function getTemplateVars(projectName, template) {
   const slug = projectName.toLowerCase().replace(/[^a-z0-9-]/g, "-");
   return {
     PROJECT_NAME: toTitleCase(slug),
     PROJECT_SLUG: slug,
-    PROJECT_DESCRIPTION: `A new OxLayer frontend app`,
+    PROJECT_DESCRIPTION: template === "auth" ? `${toTitleCase(slug)} with Keycloak authentication` : `A new OxLayer frontend app`,
     PROJECT_AUTHOR: "",
-    PORT: "5173"
+    PORT: template === "auth" ? "5174" : "5173"
   };
 }
-async function promptForVars(projectName) {
+async function promptForVars(projectName, template) {
   const slug = projectName.toLowerCase().replace(/[^a-z0-9-]/g, "-");
   const response = await (0, import_prompts.default)([
     {
       type: "text",
       name: "description",
       message: "Description:",
-      initial: `A new OxLayer frontend app`
+      initial: template === "auth" ? `${toTitleCase(slug)} with Keycloak authentication` : `A new OxLayer frontend app`
     },
     {
       type: "text",
@@ -163,7 +158,7 @@ async function promptForVars(projectName) {
       type: "number",
       name: "port",
       message: "Dev Server Port:",
-      initial: 5173
+      initial: template === "auth" ? 5174 : 5173
     }
   ]);
   return {
