@@ -14,6 +14,37 @@ pnpm add @oxlayer/snippets
 
 ## Usage
 
+### AppResult Type
+
+All use case templates return `AppResult<T>` for explicit error handling:
+
+```typescript
+import type { AppResult } from '@oxlayer/snippets/use-cases';
+
+// AppResult is a discriminated union type:
+type AppResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: { code: string; message: string } };
+
+// Usage in use case
+export class CreateTodoUseCase extends CreateUseCaseTemplate<
+  CreateTodoInput,
+  Todo,
+  AppResult<TodoOutput>
+> {
+  // ...
+}
+
+// Usage in controller
+const result = await this.createTodoUseCase.execute(input);
+
+if (!result.success) {
+  return this.badRequest(result.error?.message || 'Failed to create todo');
+}
+
+return this.created({ todo: result.data });
+```
+
 ### Domain Layer
 
 Create entities using the template base classes:

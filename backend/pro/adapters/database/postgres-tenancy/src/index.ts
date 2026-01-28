@@ -2,7 +2,7 @@
  * PostgreSQL Tenancy Adapter
  *
  * Multi-tenant database resolution supporting shared, schema, and database isolation.
- * Works with ANY client database/schema - no auroraid dependency.
+ * Works with ANY client database/schema.
  *
  * @example
  * ```ts

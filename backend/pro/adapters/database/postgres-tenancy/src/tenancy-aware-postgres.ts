@@ -2,7 +2,7 @@
  * PostgreSQL Tenancy Adapter
  *
  * Provides tenant-aware database resolution supporting multiple isolation strategies.
- * Works with ANY client database/schema - no auroraid dependency.
+ * Works with ANY client database/schema.
  *
  * Features:
  * - **Shared isolation**: Single database with Row-Level Security (RLS) for B2C tenants
@@ -98,7 +98,7 @@ export interface TenancyAwarePostgresConfig {
  * PostgreSQL tenancy-aware database resolver
  *
  * Resolves tenant-specific database connections based on isolation strategy.
- * Works with any client database - no auroraid dependency.
+ * Works with any client database.
  *
  * Isolation strategies:
  * - **shared** (B2C): Returns shared database with RLS context set via SET LOCAL
@@ -165,7 +165,7 @@ export class TenancyAwarePostgres implements DatabaseResolver<Database> {
    * - Enables RLS on all tables
    * - Creates tenant isolation policies
    *
-   * Works with any client table structure - no auroraid dependency.
+   * Works with any client table structure.
    *
    * @returns Result of RLS application with details
    */

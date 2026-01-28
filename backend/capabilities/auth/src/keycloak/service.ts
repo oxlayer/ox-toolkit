@@ -176,10 +176,14 @@ export class KeycloakService {
         };
       }
 
-      // Validate client if clientId is configured
+      // Validate client if clientId is configured AND skipClientValidation is false
       // Check both audience (aud) and authorized party (azp) claims
       // For public clients, aud is typically "account" and azp contains the client ID
-      if (this.config.clientId) {
+      //
+      // When skipClientValidation is true (recommended for resource servers):
+      // - Validates by realm only - accepts tokens from any client in the same realm
+      // - Authorization should be done via realm_access.roles instead
+      if (this.config.clientId && !this.config.skipClientValidation) {
         const aud = Array.isArray(verifiedPayload.aud) ? verifiedPayload.aud : [verifiedPayload.aud];
         const azp = verifiedPayload.azp;
 

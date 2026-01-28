@@ -13,6 +13,14 @@ export interface KeycloakConfig {
   url: string;
   realm: string;
   clientId?: string;
+  /**
+   * Skip client validation (aud/azp checks).
+   * When true, validates by realm only - accepts tokens from any client in the same realm.
+   * Recommended for resource servers that serve multiple frontend clients.
+   *
+   * @default false
+   */
+  skipClientValidation?: boolean;
 }
 
 /**

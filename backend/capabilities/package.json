@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities",
-  "description": "Hono-compatible staple plugins for the Aurora authentication API",
+  "description": "Core capabilities staples for backend",
   "type": "module",
   "scripts": {
     "build:packages": "pnpm --filter '@oxlayer/capabilities-*' build",

@@ -2,7 +2,7 @@
  * Database Pool Abstraction
  *
  * Generic database connection pool management for multi-tenant applications.
- * Works with any PostgreSQL database - no auroraid dependency.
+ * Works with any PostgreSQL database.
  *
  * @example
  * ```ts
@@ -70,7 +70,7 @@ export interface ConnectionResult {
  * Connections are cached and reused based on connection key.
  *
  * This is a generic implementation that works with any PostgreSQL database.
- * It does NOT depend on auroraid - clients provide their own schema.
+ * clients provide their own schema.
  */
 export class DatabasePool {
   private pools = new Map<string, PoolDatabase>();
