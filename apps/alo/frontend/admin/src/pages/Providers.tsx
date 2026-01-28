@@ -1,7 +1,10 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent } from '@acme/ui';
-import { onboardingLeadsService } from '../services/onboardingLeads';
+import {
+  useOnboardingLeads,
+  useUpdateOnboardingLead,
+  useDeleteOnboardingLead,
+} from '../hooks/use-onboarding-leads';
 import type { OnboardingLead, OnboardingLeadStatus, OnboardingLeadUserType } from '../types';
 
 type StatusFilter = 'all' | OnboardingLeadStatus;
@@ -13,39 +16,26 @@ const typeLabels: Record<OnboardingLeadUserType, string> = {
 };
 
 export default function Providers() {
-  const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [notesModal, setNotesModal] = useState<{ lead: OnboardingLead; notes: string } | null>(null);
 
-  const { data: leads, isLoading } = useQuery({
-    queryKey: ['onboarding-leads'],
-    queryFn: onboardingLeadsService.getAll,
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: { status: OnboardingLeadStatus; notes?: string } }) =>
-      onboardingLeadsService.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['onboarding-leads'] });
-      setNotesModal(null);
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: onboardingLeadsService.delete,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['onboarding-leads'] });
-    },
-  });
+  const { data: leads, isLoading } = useOnboardingLeads();
+  const updateMutation = useUpdateOnboardingLead();
+  const deleteMutation = useDeleteOnboardingLead();
 
   const handleStatusChange = (lead: OnboardingLead, newStatus: OnboardingLeadStatus) => {
-    updateMutation.mutate({
-      id: lead.id,
-      data: {
-        status: newStatus,
+    updateMutation.mutate(
+      {
+        id: lead.id,
+        input: {
+          status: newStatus,
+        },
       },
-    });
+      {
+        onSuccess: () => setNotesModal(null),
+      }
+    );
   };
 
   const filteredLeads = leads?.filter((lead) => {
@@ -395,13 +385,18 @@ export default function Providers() {
                 <button
                   onClick={() => {
                     if (notesModal) {
-                      updateMutation.mutate({
-                        id: notesModal.lead.id,
-                        data: {
-                          status: notesModal.lead.status,
-                          notes: notesModal.notes,
+                      updateMutation.mutate(
+                        {
+                          id: notesModal.lead.id,
+                          input: {
+                            status: notesModal.lead.status,
+                            notes: notesModal.notes,
+                          },
                         },
-                      });
+                        {
+                          onSuccess: () => setNotesModal(null),
+                        }
+                      );
                     }
                   }}
                   disabled={updateMutation.isPending}

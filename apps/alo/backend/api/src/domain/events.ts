@@ -89,14 +89,14 @@ export abstract class OnboardingLeadEvent<TPayload> extends DomainEventTemplate<
 
 export class OnboardingLeadCreatedEvent extends OnboardingLeadEvent<{
   userType: string;
-  email: string;
+  email: string | null;
   phone: string;
 }> {
   readonly name = 'OnboardingLeadCreated';
 
   constructor(
     public readonly aggregateId: number,
-    public readonly payload: { userType: string; email: string; phone: string }
+    public readonly payload: { userType: string; email: string | null; phone: string }
   ) {
     super(aggregateId, payload);
   }

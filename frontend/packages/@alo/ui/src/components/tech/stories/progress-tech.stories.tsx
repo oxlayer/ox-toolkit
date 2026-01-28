@@ -103,7 +103,7 @@ export const TrialDaysExample: Story = {
         </span>
       </div>
       <div className="flex items-baseline gap-1.5">
-        <span className="font-nippo text-2xl font-bold tabular-nums leading-none">10</span>
+        <span className="font-custom text-2xl font-bold tabular-nums leading-none">10</span>
         <span className="text-xs text-muted-foreground">days left</span>
       </div>
       <ProgressTech value={10} max={14} variant="default" size="sm" />
@@ -120,7 +120,7 @@ export const UrgentTrialExample: Story = {
         </span>
       </div>
       <div className="flex items-baseline gap-1.5">
-        <span className="font-nippo text-2xl font-bold tabular-nums leading-none text-warning">
+        <span className="font-custom text-2xl font-bold tabular-nums leading-none text-warning">
           2
         </span>
         <span className="text-xs text-muted-foreground">days left</span>

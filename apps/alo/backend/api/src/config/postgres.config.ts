@@ -5,13 +5,14 @@
 import { createPostgres } from '@oxlayer/capabilities-adapters-postgres';
 import postgres from 'postgres';
 import { ENV } from './app.config.js';
-import { createTableSQLString } from '../db/schema.js';
+import { runMigrations } from '../db/drizzle-migrate.js';
 
 /**
  * Create PostgreSQL connection with auto-migration and database creation
  */
 export async function createPostgresConnection() {
   const { POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DATABASE, POSTGRES_USER, POSTGRES_PASSWORD } = ENV;
+  const connectionString = `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}`;
 
   // First, connect to the default 'postgres' database to create the target database if it doesn't exist
   const adminSql = postgres({
@@ -43,7 +44,15 @@ export async function createPostgresConnection() {
     await adminSql.end();
   }
 
-  // Now connect to the target database
+  // Run drizzle migrations
+  try {
+    await runMigrations({ connectionString });
+  } catch (error) {
+    console.error('[Postgres] Error running migrations:', error);
+    throw error;
+  }
+
+  // Now connect to the target database (without inline SQL migration)
   return createPostgres({
     host: POSTGRES_HOST,
     port: POSTGRES_PORT,
@@ -53,6 +62,5 @@ export async function createPostgresConnection() {
     max: 20,
     idle_timeout: 30,
     connect_timeout: 10,
-    migrationSQL: createTableSQLString,
   });
 }

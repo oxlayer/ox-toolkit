@@ -14,7 +14,7 @@ export interface OnboardingLeadProps {
   categoryId: number | null;
   establishmentTypeId: number | null;
   document: string;
-  email: string;
+  email: string | null;
   name: string | null;
   phone: string;
   termsAccepted: boolean;
@@ -32,7 +32,7 @@ export interface CreateOnboardingLeadInput {
   categoryId?: number;
   establishmentTypeId?: number;
   document: string;
-  email: string;
+  email?: string;
   name?: string;
   phone: string;
   termsAccepted: boolean;
@@ -64,7 +64,7 @@ export class OnboardingLeadEntity extends CrudEntityTemplate<number> {
   get categoryId(): number | null { return this.props.categoryId; }
   get establishmentTypeId(): number | null { return this.props.establishmentTypeId; }
   get document(): string { return this.props.document; }
-  get email(): string { return this.props.email; }
+  get email(): string | null { return this.props.email; }
   get name(): string | null { return this.props.name; }
   get phone(): string { return this.props.phone; }
   get termsAccepted(): boolean { return this.props.termsAccepted; }
@@ -112,17 +112,37 @@ export class OnboardingLeadEntity extends CrudEntityTemplate<number> {
     this.touch();
   }
 
+  updateNotes(notes: string): void {
+    this.props.notes = notes;
+    this.touch();
+  }
+
+  updateContactedAt(contactedAt: Date): void {
+    this.props.contactedAt = contactedAt;
+    this.touch();
+  }
+
   // Factory method
   static create(input: CreateOnboardingLeadInput): OnboardingLeadEntity {
+    // Remove formatting masks from document (CPF) and phone
+    const cleanDocument = input.document.replace(/\D/g, ''); // Remove non-digits
+    const cleanPhone = input.phone.replace(/\D/g, ''); // Remove non-digits
+
+    // Handle email: convert undefined or empty string to null
+    const email = input.email?.trim().toLowerCase();
+    const emailValue = (email && email.length > 0) ? email : null;
+
+    console.log('[OnboardingLeadEntity.create] input.email:', input.email, '-> emailValue:', emailValue);
+
     return new OnboardingLeadEntity({
       id: 0, // Will be set by database
       userType: input.userType,
       categoryId: input.categoryId ?? null,
       establishmentTypeId: input.establishmentTypeId ?? null,
-      document: input.document.trim(),
-      email: input.email.trim().toLowerCase(),
+      document: cleanDocument,
+      email: emailValue,
       name: input.name?.trim() ?? null,
-      phone: input.phone.trim(),
+      phone: cleanPhone,
       termsAccepted: input.termsAccepted,
       privacyAccepted: input.privacyAccepted,
       status: 'new',
@@ -138,42 +158,42 @@ export class OnboardingLeadEntity extends CrudEntityTemplate<number> {
   static fromPersistence(data: OnboardingLead): OnboardingLeadEntity {
     return new OnboardingLeadEntity({
       id: data.id,
-      userType: data.user_type as OnboardingLeadUserType,
-      categoryId: data.category_id,
-      establishmentTypeId: data.establishment_type_id,
+      userType: data.userType as OnboardingLeadUserType,
+      categoryId: data.categoryId,
+      establishmentTypeId: data.establishmentTypeId,
       document: data.document,
       email: data.email,
       name: data.name,
       phone: data.phone,
-      termsAccepted: data.terms_accepted,
-      privacyAccepted: data.privacy_accepted,
+      termsAccepted: data.termsAccepted,
+      privacyAccepted: data.privacyAccepted,
       status: data.status as OnboardingLeadStatus,
-      contactedAt: data.contacted_at ? new Date(data.contacted_at) : null,
+      contactedAt: data.contactedAt ? new Date(data.contactedAt) : null,
       notes: data.notes,
       metadata: (data.metadata as Record<string, unknown>) ?? {},
-      createdAt: new Date(data.created_at),
-      updatedAt: new Date(data.updated_at),
+      createdAt: new Date(data.createdAt),
+      updatedAt: new Date(data.updatedAt),
     });
   }
 
   toPersistence(): Partial<OnboardingLead> {
     return {
       id: this.props.id,
-      user_type: this.props.userType,
-      category_id: this.props.categoryId,
-      establishment_type_id: this.props.establishmentTypeId,
+      userType: this.props.userType,
+      categoryId: this.props.categoryId,
+      establishmentTypeId: this.props.establishmentTypeId,
       document: this.props.document,
       email: this.props.email,
       name: this.props.name,
       phone: this.props.phone,
-      terms_accepted: this.props.termsAccepted,
-      privacy_accepted: this.props.privacyAccepted,
+      termsAccepted: this.props.termsAccepted,
+      privacyAccepted: this.props.privacyAccepted,
       status: this.props.status,
-      contacted_at: this.props.contactedAt,
+      contactedAt: this.props.contactedAt,
       notes: this.props.notes,
       metadata: this.props.metadata as any,
-      created_at: this.props.createdAt,
-      updated_at: this.props.updatedAt,
+      createdAt: this.props.createdAt,
+      updatedAt: this.props.updatedAt,
     };
   }
 }

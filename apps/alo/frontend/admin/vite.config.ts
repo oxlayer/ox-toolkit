@@ -13,8 +13,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      // '@acme/ui': path.resolve(__dirname, '../../../../frontend/packages/@acme/ui/src'),
-      // '@oxlayer/ui': path.resolve(__dirname, '../../../../frontend/packages/@oxlayer/ui/src'),
     },
   },
   server: {

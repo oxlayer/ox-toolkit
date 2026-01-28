@@ -27,19 +27,14 @@ export function SidebarNav() {
   return (
     <aside className="fixed left-0 top-0 h-full w-64 bg-linear-to-b from-gray-900 to-gray-800 text-white p-6 shadow-2xl z-50">
       {/* Logo Section */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-primary-500 to-primary-400 shadow-primary">
-            <span className="text-lg font-bold text-white">A</span>
-          </div>
-          <div>
-            <img src="/logo.svg" alt="Logo" className="w-20 h-20" />
-          </div>
+      <div className="mb-4">
+        <div className="flex items-center justify-center">
+          <img src="/logo.svg" alt="Alô" className="h-24 w-24" />
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="space-y-1">
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || location.pathname.startsWith(`${item.path}/`)
           const Icon = item.icon

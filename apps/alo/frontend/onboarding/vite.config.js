@@ -1,15 +1,21 @@
+import 'dotenv/config'
+
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import path from 'node:path'
+
+const PORT = Number(process.env.PORT)
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   server: {
-    host: true,
-    port: 5174,
-    allowedHosts: [
-      '.ngrok-free.app'
-    ]
+    port: PORT,
   }
 })

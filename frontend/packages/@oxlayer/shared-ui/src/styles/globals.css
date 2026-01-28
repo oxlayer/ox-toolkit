@@ -138,9 +138,9 @@
    BASE STYLES
    ============================================================================ */
 
-* {
+/* * {
   border-color: rgb(var(--color-border));
-}
+} */
 
 body {
   font-family: var(--font-sans);

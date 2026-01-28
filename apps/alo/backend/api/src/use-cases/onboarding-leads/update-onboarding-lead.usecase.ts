@@ -38,7 +38,8 @@ export class UpdateOnboardingLeadUseCase extends UpdateUseCaseTemplate<
       findEntity: async (id) => {
         return await onboardingLeadRepository.findById(Number(id));
       },
-      updateEntity: async (entity, { input }) => {
+      updateEntity: async (entity, data) => {
+        const input = data.input as UpdateOnboardingLeadInput;
         // Store the input for use in createEvent
         (this as any)._lastInput = input;
 
@@ -57,25 +58,22 @@ export class UpdateOnboardingLeadUseCase extends UpdateUseCaseTemplate<
               entity.markAsRejected(input.notes);
               break;
             default:
-              // For 'new' status or other cases, we need to handle it directly
-              if (input.notes !== undefined) {
-                entity.notes = input.notes;
-              }
-              if (input.contactedAt !== undefined) {
-                entity.contactedAt = input.contactedAt;
-              }
-          }
-        } else {
-          if (input.notes !== undefined) {
-            entity.notes = input.notes;
-          }
-          if (input.contactedAt !== undefined) {
-            entity.contactedAt = input.contactedAt;
+              // For 'new' status or same status, just update other fields
+              break;
           }
         }
+
+        // Handle independent field updates
+        if (input.notes !== undefined && input.status !== 'rejected') {
+          entity.updateNotes(input.notes);
+        }
+        if (input.contactedAt !== undefined) {
+          entity.updateContactedAt(input.contactedAt);
+        }
       },
-      persistEntity: async (_entity) => {
-        // Database update is handled separately
+      persistEntity: async (entity) => {
+        // Persist the updated entity to database
+        await onboardingLeadRepository.update(entity.id, entity);
       },
       publishEvent: async (event) => {
         try {

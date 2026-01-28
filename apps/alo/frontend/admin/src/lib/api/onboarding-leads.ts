@@ -50,7 +50,7 @@ export const onboardingLeadsApi = {
    * Update onboarding lead
    */
   update: async (id: number, input: UpdateOnboardingLeadInput): Promise<OnboardingLead> => {
-    const { data } = await apiClient.put<OnboardingLead>(`/onboarding-leads/${id}`, input)
+    const { data } = await apiClient.patch<OnboardingLead>(`/onboarding-leads/${id}`, input)
     return data
   },
 

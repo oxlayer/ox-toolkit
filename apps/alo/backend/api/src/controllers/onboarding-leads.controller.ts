@@ -21,24 +21,37 @@ const logger = new Logger('OnboardingLeadsController');
 
 /**
  * Create Onboarding Lead Schema
+ * Accepts snake_case from frontend and transforms to camelCase
  */
 const createOnboardingLeadSchema = z.object({
-  userType: z.enum(['provider', 'company']),
-  categoryId: z.number().int().positive().optional(),
-  establishmentTypeId: z.number().int().positive().optional(),
+  user_type: z.enum(['provider', 'company']),
+  category: z.string().transform(Number).pipe(z.number().int().positive()).optional(),
+  establishment_type: z.string().transform(Number).pipe(z.number().int().positive()).optional(),
   document: z.string().min(11),
-  email: z.string().email(),
+  email: z.string().email().optional(),
   name: z.string().min(1).max(200).optional(),
   phone: z.string().min(10),
-  termsAccepted: z.boolean().refine((v) => v === true, {
+  terms_accepted: z.boolean().refine((v) => v === true, {
     message: 'Terms must be accepted',
   }),
-  privacyAccepted: z.boolean().refine((v) => v === true, {
+  privacy_accepted: z.boolean().refine((v) => v === true, {
     message: 'Privacy policy must be accepted',
   }),
   notes: z.string().optional(),
   metadata: z.record(z.unknown()).optional(),
-});
+}).transform((data) => ({
+  userType: data.user_type,
+  categoryId: data.category,
+  establishmentTypeId: data.establishment_type,
+  document: data.document,
+  email: data.email,
+  name: data.name,
+  phone: data.phone,
+  termsAccepted: data.terms_accepted,
+  privacyAccepted: data.privacy_accepted,
+  notes: data.notes,
+  metadata: data.metadata,
+}));
 
 /**
  * Update Onboarding Lead Schema

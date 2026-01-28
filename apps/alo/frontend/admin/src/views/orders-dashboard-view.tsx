@@ -63,8 +63,8 @@ export function OrdersDashboardView() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Orders Dashboard"
-        description="Monitor orders in real-time"
+        title="Dashboard de Pedidos"
+        description="Monitorize os pedidos em tempo real"
       />
 
       {/* Filters */}
@@ -72,14 +72,14 @@ export function OrdersDashboardView() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Filter by Service Provider
+              Filtre por prestador de serviço
             </label>
             <select
               value={selectedProviderId ?? ''}
               onChange={(e) => setSelectedProviderId(e.target.value ? Number(e.target.value) : undefined)}
               className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-4 py-2 text-gray-900 dark:text-white focus:border-transparent focus:ring-2 focus:ring-primary-500 transition-all"
             >
-              <option value="">All Providers</option>
+              <option value="">Todos os prestadores</option>
               {providers.map((provider: ServiceProvider) => (
                 <option key={provider.id} value={provider.id}>{provider.name}</option>
               ))}
@@ -88,14 +88,14 @@ export function OrdersDashboardView() {
 
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Filter by Status
+              Filtre por status
             </label>
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
               className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-4 py-2 text-gray-900 dark:text-white focus:border-transparent focus:ring-2 focus:ring-primary-500 transition-all"
             >
-              <option value="all">All Status</option>
+              <option value="all">Todos os status</option>
               <option value="pending">Pendente</option>
               <option value="confirmed">Confirmado</option>
               <option value="in_progress">Em Andamento</option>
@@ -130,7 +130,7 @@ export function OrdersDashboardView() {
       <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
         <div className="border-b border-gray-200 dark:border-gray-700 p-6">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Recent Orders {totalOrders > 0 && `(${totalOrders})`}
+            Pedidos Recentes {totalOrders > 0 && `(${totalOrders})`}
           </h2>
         </div>
 
@@ -139,25 +139,25 @@ export function OrdersDashboardView() {
             <thead className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Order ID
+                  ID do Pedido
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Customer
+                  Cliente
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Phone
+                  Telefone
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Address
+                  Endereço
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Scheduled Date
+                  Data Agendada
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   Status
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Actions
+                  Ações
                 </th>
               </tr>
             </thead>
@@ -165,13 +165,13 @@ export function OrdersDashboardView() {
               {isLoading ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                    Loading...
+                    Carregando...
                   </td>
                 </tr>
               ) : filteredOrders.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                    No orders found
+                    Nenhum pedido encontrado
                   </td>
                 </tr>
               ) : (
@@ -222,7 +222,7 @@ export function OrdersDashboardView() {
       <div className="mt-6 text-sm text-gray-500 dark:text-gray-400">
         <span className="inline-flex items-center">
           <span className="mr-2 h-2 w-2 animate-pulse rounded-full bg-green-500" />
-          Auto-refresh every 10 seconds
+          Atualização automática a cada 10 segundos
         </span>
       </div>
     </div>

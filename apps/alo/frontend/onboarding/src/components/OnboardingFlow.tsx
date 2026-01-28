@@ -39,7 +39,7 @@ const OnboardingFlow = () => {
           {step === 2 && userType === 'company' && (
             <CompanyForm onSubmit={handleFormSubmit} onBack={handleBack} />
           )}
-          {step === 4 && <SuccessPage />}
+          {step === 4 && <SuccessPage type={userType as 'provider' | 'company'} />}
         </div>
         <p className="text-center text-gray-500 text-sm mt-4">
           Se cadastre no catálogo digital de Montes Claros.

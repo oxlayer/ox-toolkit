@@ -41,7 +41,7 @@ export const serviceProvidersApi = {
    * Update a service provider
    */
   update: async (id: number, input: Partial<CreateServiceProviderInput>): Promise<ServiceProvider> => {
-    const { data } = await apiClient.put<ServiceProvider>(`/service-providers/${id}`, input)
+    const { data } = await apiClient.patch<ServiceProvider>(`/service-providers/${id}`, input)
     return data
   },
 
@@ -72,7 +72,7 @@ export const serviceProvidersApi = {
    * Update service category
    */
   updateCategory: async (id: number, input: Partial<CreateServiceCategoryInput>): Promise<ServiceProviderCategory> => {
-    const { data } = await apiClient.put<ServiceProviderCategory>(`/service-categories/${id}`, input)
+    const { data } = await apiClient.patch<ServiceProviderCategory>(`/service-categories/${id}`, input)
     return data
   },
 
@@ -103,7 +103,7 @@ export const serviceProvidersApi = {
    * Update catalog item
    */
   updateCatalogItem: async (id: number, input: Partial<CreateCatalogItemInput>): Promise<ServiceCatalogItem> => {
-    const { data } = await apiClient.put<ServiceCatalogItem>(`/catalog-items/${id}`, input)
+    const { data } = await apiClient.patch<ServiceCatalogItem>(`/catalog-items/${id}`, input)
     return data
   },
 

@@ -15,7 +15,7 @@ export function TechStepHeader({ title, description, className }: TechStepHeader
         <div className="flex gap-3">
           <div className="h-6 w-1 bg-primary/80 shrink-0 mt-2" />
           <div className="space-y-1">
-            <h3 className="text-2xl text-muted-foreground uppercase tracking-tight font-nippo leading-none pt-1">
+            <h3 className="text-2xl text-muted-foreground uppercase tracking-tight font-custom leading-none pt-1">
               {title}
             </h3>
             {description && (

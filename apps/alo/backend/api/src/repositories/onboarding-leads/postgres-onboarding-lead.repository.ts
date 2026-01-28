@@ -2,57 +2,50 @@
  * PostgreSQL Onboarding Lead Repository Implementation
  */
 
-import { eq, ilike, sql, and, or } from 'drizzle-orm';
-import { PostgresRepositoryTemplate } from '@oxlayer/snippets/repositories';
+import { eq, ilike, sql, or } from 'drizzle-orm';
 import { OnboardingLead } from '@/db/schema.js';
-import { OnboardingLeadRepository, OnboardingLeadFilters } from './onboarding-lead.repository.interface.js';
+import type { OnboardingLeadRepository, OnboardingLeadFilters } from './onboarding-lead.repository.interface.js';
 import { OnboardingLeadEntity } from '@/domain/index.js';
 
-export class PostgresOnboardingLeadRepository
-  extends PostgresRepositoryTemplate<OnboardingLeadEntity, OnboardingLeadFilters, any>
-  implements OnboardingLeadRepository
-{
-  constructor(db: any, tracer?: unknown | null) {
-    super(db, tracer, {
-      tableName: 'onboarding_leads',
-      dbSystem: 'postgresql',
-      dbName: 'alo_manager',
-    });
-  }
+export class PostgresOnboardingLeadRepository implements OnboardingLeadRepository {
+  constructor(
+    private db: any,
+    _tracer?: unknown | null
+  ) {}
 
-  protected override get tableSchema() {
+  private get tableSchema() {
     return OnboardingLead;
   }
 
-  protected override mapRowToEntity(row: any): OnboardingLeadEntity {
+  private mapRowToEntity(row: any): OnboardingLeadEntity {
     return OnboardingLeadEntity.fromPersistence(row);
   }
 
-  protected override mapEntityToProps(entity: OnboardingLeadEntity): any {
+  private mapEntityToProps(entity: OnboardingLeadEntity): any {
     return entity.toPersistence();
   }
 
-  protected override applyFilters(query: any, filters: OnboardingLeadFilters): any {
-    let q = super.applyFilters(query, filters);
+  private buildQuery(filters: OnboardingLeadFilters = {} as OnboardingLeadFilters): any {
+    let query = this.db.select().from(this.tableSchema);
 
     if (filters?.userType) {
-      q = q.where(eq(OnboardingLead.userType, filters.userType));
+      query = query.where(eq(OnboardingLead.userType, filters.userType));
     }
 
     if (filters?.status) {
-      q = q.where(eq(OnboardingLead.status, filters.status));
+      query = query.where(eq(OnboardingLead.status, filters.status));
     }
 
     if (filters?.categoryId) {
-      q = q.where(eq(OnboardingLead.categoryId, filters.categoryId));
+      query = query.where(eq(OnboardingLead.categoryId, filters.categoryId));
     }
 
     if (filters?.establishmentTypeId) {
-      q = q.where(eq(OnboardingLead.establishmentTypeId, filters.establishmentTypeId));
+      query = query.where(eq(OnboardingLead.establishmentTypeId, filters.establishmentTypeId));
     }
 
     if (filters?.search) {
-      q = q.where(
+      query = query.where(
         or(
           ilike(OnboardingLead.name, `%${filters.search}%`),
           ilike(OnboardingLead.email, `%${filters.search}%`),
@@ -61,11 +54,54 @@ export class PostgresOnboardingLeadRepository
       );
     }
 
-    return q;
+    if (filters?.limit) {
+      query = query.limit(filters.limit);
+    }
+
+    if (filters?.offset) {
+      query = query.offset(filters.offset);
+    }
+
+    return query.orderBy(sql`created_at DESC`);
   }
 
-  protected override applySorting(query: any): any {
-    return query.orderBy(sql`created_at DESC`);
+  async create(entity: OnboardingLeadEntity): Promise<OnboardingLeadEntity> {
+    const props = entity.toPersistence();
+
+    // Exclude fields that PostgreSQL generates automatically
+    const { id, createdAt, updatedAt, ...rest } = props;
+
+    console.log('[OnboardingLeadRepo.create] insertProps:', rest);
+
+    try {
+      const result = await this.db
+        .insert(this.tableSchema)
+        .values(rest)
+        .returning();
+
+      if (result[0]) {
+        return OnboardingLeadEntity.fromPersistence(result[0]);
+      }
+
+      return entity;
+    } catch (error) {
+      console.error('[OnboardingLeadRepo.create] Error:', error);
+      throw error;
+    }
+  }
+
+  async findById(id: number): Promise<OnboardingLeadEntity | null> {
+    const [row] = await this.db
+      .select()
+      .from(this.tableSchema)
+      .where(eq(OnboardingLead.id, id))
+      .limit(1);
+
+    if (!row) {
+      return null;
+    }
+
+    return this.mapRowToEntity(row);
   }
 
   async findByEmail(email: string): Promise<OnboardingLeadEntity | null> {
@@ -76,10 +112,72 @@ export class PostgresOnboardingLeadRepository
       .orderBy(sql`created_at DESC`)
       .limit(1);
 
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       return null;
     }
 
-    return this.mapRowToEntity(result.rows[0]);
+    return this.mapRowToEntity(result[0]);
+  }
+
+  async findAll(filters?: OnboardingLeadFilters): Promise<OnboardingLeadEntity[]> {
+    const query = this.buildQuery(filters);
+    const rows = await query;
+    return rows.map((row: any) => this.mapRowToEntity(row));
+  }
+
+  async count(filters?: OnboardingLeadFilters): Promise<number> {
+    let query = this.db.select({ count: sql`count(*)::int` }).from(this.tableSchema);
+
+    if (filters?.userType) {
+      query = query.where(eq(OnboardingLead.userType, filters.userType));
+    }
+
+    if (filters?.status) {
+      query = query.where(eq(OnboardingLead.status, filters.status));
+    }
+
+    if (filters?.categoryId) {
+      query = query.where(eq(OnboardingLead.categoryId, filters.categoryId));
+    }
+
+    if (filters?.establishmentTypeId) {
+      query = query.where(eq(OnboardingLead.establishmentTypeId, filters.establishmentTypeId));
+    }
+
+    if (filters?.search) {
+      query = query.where(
+        or(
+          ilike(OnboardingLead.name, `%${filters.search}%`),
+          ilike(OnboardingLead.email, `%${filters.search}%`),
+          ilike(OnboardingLead.phone, `%${filters.search}%`)
+        )
+      );
+    }
+
+    const [result] = await query;
+    return (result?.count as number) || 0;
+  }
+
+  async update(id: number, entity: Partial<OnboardingLeadEntity>): Promise<OnboardingLeadEntity> {
+    const props = this.mapEntityToProps(entity as OnboardingLeadEntity);
+    // Don't update id, createdAt, updatedAt
+    const { id: _, createdAt, updatedAt, ...updateProps } = props;
+
+    await this.db
+      .update(this.tableSchema)
+      .set(updateProps)
+      .where(eq(OnboardingLead.id, id));
+
+    const updated = await this.findById(id);
+    if (!updated) {
+      throw new Error(`Entity with id ${id} not found after update`);
+    }
+    return updated;
+  }
+
+  async delete(id: number): Promise<void> {
+    await this.db
+      .deleteFrom(this.tableSchema)
+      .where(eq(OnboardingLead.id, id));
   }
 }

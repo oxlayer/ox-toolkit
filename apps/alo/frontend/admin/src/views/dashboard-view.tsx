@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { CardTech, CardTechHeader, CardTechTitle, CardTechContent } from '@acme/ui'
+import { CardTech, CardTechHeader, CardTechTitle, CardTechContent, TechButton } from '@acme/ui'
 import { PageHeader, StatCard } from '@/components/shared'
 import { useEstablishments, useUsers, useDeliveryMen, useOnboardingLeads } from '@/hooks'
 import { Building2, Users, UserMinus, Wrench } from 'lucide-react'
@@ -17,44 +17,44 @@ export function DashboardView() {
 
   const stats = [
     {
-      title: 'Establishments',
+      title: 'Empresas',
       value: establishments?.length ?? 0,
       gradient: 'blue' as const,
       link: '/establishments',
       icon: <Building2 className="size-6" />,
     },
     {
-      title: 'Users',
+      title: 'Prestadores de Serviço',
       value: users?.length ?? 0,
       gradient: 'green' as const,
       link: '/users',
       icon: <Users className="size-6" />,
     },
     {
-      title: 'Delivery Men',
+      title: 'Entregadores',
       value: deliveryMen?.length ?? 0,
       gradient: 'purple' as const,
       link: '/delivery-men',
       icon: <UserMinus className="size-6" />,
     },
     {
-      title: 'New Leads',
+      title: 'Novos Leads',
       value: newLeadsCount,
-      gradient: 'primary' as const,
+      gradient: 'orange' as const,
       link: '/providers',
       icon: <Wrench className="size-6" />,
     },
   ]
 
   const quickActions = [
-    { to: '/establishments/new', label: 'Add Establishment', variant: 'default' as const },
-    { to: '/users/new', label: 'Add User', variant: 'default' as const },
-    { to: '/delivery-men/new', label: 'Add Delivery Man', variant: 'default' as const },
+    { to: '/establishments/new', label: 'Adicionar Empresa' },
+    { to: '/users/new', label: 'Adicionar Usuário' },
+    { to: '/delivery-men/new', label: 'Adicionar Entregador' },
   ]
 
   return (
     <div className="space-y-8">
-      <PageHeader title="Dashboard" description="Welcome to Alô Manager Portal" />
+      <PageHeader title="Dashboard" description="Bem-vindo, Robert" />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -66,17 +66,15 @@ export function DashboardView() {
       {/* Quick Actions */}
       <CardTech className="border-border bg-surface">
         <CardTechHeader>
-          <CardTechTitle>Quick Actions</CardTechTitle>
+          <CardTechTitle>Ações rápidas</CardTechTitle>
         </CardTechHeader>
         <CardTechContent>
           <div className="flex flex-wrap gap-4">
             {quickActions.map((action) => (
-              <Link
-                key={action.to}
-                to={action.to}
-                className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-primary-500 to-primary-400 px-6 py-3 font-medium text-white transition-all hover:shadow-lg"
-              >
-                <span>{action.label}</span>
+              <Link key={action.to} to={action.to}>
+                <TechButton variant="solid" size="lg">
+                  <span>{action.label}</span>
+                </TechButton>
               </Link>
             ))}
           </div>
@@ -87,7 +85,7 @@ export function DashboardView() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <CardTech className="border-border bg-surface">
           <CardTechHeader>
-            <CardTechTitle>Recent Establishments</CardTechTitle>
+            <CardTechTitle>Empresas recentes</CardTechTitle>
           </CardTechHeader>
           <CardTechContent>
             {establishments && establishments.length > 0 ? (
@@ -111,14 +109,14 @@ export function DashboardView() {
                 ))}
               </div>
             ) : (
-              <p className="py-4 text-center text-gray-500 dark:text-gray-400">No establishments yet</p>
+              <p className="py-4 text-center text-gray-500 dark:text-gray-400">Nenhuma empresa cadastrada</p>
             )}
           </CardTechContent>
         </CardTech>
 
         <CardTech className="border-border bg-surface">
           <CardTechHeader>
-            <CardTechTitle>Pending Leads</CardTechTitle>
+            <CardTechTitle>Leads pendentes</CardTechTitle>
           </CardTechHeader>
           <CardTechContent>
             {leads && leads.length > 0 ? (
@@ -153,7 +151,7 @@ export function DashboardView() {
                   ))}
               </div>
             ) : (
-              <p className="py-4 text-center text-gray-500 dark:text-gray-400">No pending leads</p>
+              <p className="py-4 text-center text-gray-500 dark:text-gray-400">Nenhum lead pendente</p>
             )}
           </CardTechContent>
         </CardTech>
