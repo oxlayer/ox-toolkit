@@ -42,7 +42,7 @@ export function SectionTitle({
       )}
       <h2
         className={cn(
-          "text-3xl md:text-5xl font-light text-white tracking-tighter mb-6 uppercase font-nippo",
+          "text-3xl md:text-5xl font-light text-white tracking-tighter mb-6 uppercase font-custom",
           className
         )}
       >

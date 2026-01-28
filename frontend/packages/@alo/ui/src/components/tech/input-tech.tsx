@@ -9,9 +9,9 @@ const inputTech = tv({
   slots: {
     wrapper: "relative inline-flex w-full group",
     input: [
-      "w-full bg-stone-900/80 border border-stone-800 text-stone-200 placeholder:text-stone-600",
+      "w-full bg-stone-500/10 border border-stone-800 text-stone-900 placeholder:text-stone-600",
       "font-mono text-sm transition-colors outline-none",
-      "focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/20",
+      "focus:border-green-500/10 focus:ring-1 focus:ring-green-500/10",
       "disabled:opacity-50 disabled:cursor-not-allowed",
     ],
   },
@@ -32,7 +32,7 @@ const inputTech = tv({
         input: "",
       },
       error: {
-        input: "border-red-500/50 focus:border-red-500/70 focus:ring-red-500/20",
+        input: "border-green-500/50 focus:border-green-500/70 focus:ring-green-500/10",
       },
     },
   },
@@ -55,7 +55,7 @@ function AnimatedCorners() {
       >
         <TechCorner
           position="top-left"
-          className="border-stone-700 group-focus-within:border-lime-500/50"
+          className="border-stone-700 group-focus-within:border-green-500/50"
         />
       </motion.div>
       <motion.div
@@ -66,7 +66,7 @@ function AnimatedCorners() {
       >
         <TechCorner
           position="bottom-right"
-          className="border-stone-700 group-focus-within:border-lime-500/50"
+          className="border-stone-700 group-focus-within:border-green-500/50"
         />
       </motion.div>
     </>

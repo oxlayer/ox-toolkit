@@ -106,7 +106,7 @@ function DialogFooter({
         "mt-2 flex flex-col-reverse gap-2 px-6 sm:flex-row sm:justify-end sm:rounded-b-xl",
         variant === "default" && "border-t bg-muted/50 py-4",
         variant === "bare" &&
-          "in-[[data-slot=dialog-popup]:has([data-slot=dialog-panel])]:pt-3 pt-4 pb-6",
+        "in-[[data-slot=dialog-popup]:has([data-slot=dialog-panel])]:pt-3 pt-4 pb-6",
         className
       )}
       data-slot="dialog-footer"
@@ -118,7 +118,7 @@ function DialogFooter({
 function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
   return (
     <DialogPrimitive.Title
-      className={cn("text-xl leading-none font-nippo tracking-tight uppercase", className)}
+      className={cn("text-xl leading-none font-custom tracking-tight uppercase", className)}
       data-slot="dialog-title"
       {...props}
     />
