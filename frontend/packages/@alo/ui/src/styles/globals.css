@@ -7,6 +7,8 @@
 
 /* Import shared styles */
 @import '@oxlayer/shared-ui/styles';
+@source "../../../../@oxlayer/shared-ui/**/*.{ts,tsx}";
+
 
 /* ============================================================================
    ALO BRAND OVERRIDES

@@ -21,6 +21,41 @@ export interface KeycloakConfig {
    * @default false
    */
   skipClientValidation?: boolean;
+  /** Admin credentials for user management */
+  adminUsername?: string;
+  adminPassword?: string;
+  /** Client ID for admin operations (confidential client) */
+  adminClientId?: string;
+  /** Client secret for admin operations */
+  adminClientSecret?: string;
+}
+
+/**
+ * Keycloak user creation options
+ */
+export interface CreateKeycloakUserOptions {
+  username: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  password: string;
+  enabled?: boolean;
+  emailVerified?: boolean;
+  attributes?: Record<string, string[]>;
+}
+
+/**
+ * Keycloak user representation
+ */
+export interface KeycloakUser {
+  id: string;
+  username: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  enabled: boolean;
+  emailVerified: boolean;
+  attributes?: Record<string, string[]>;
 }
 
 /**

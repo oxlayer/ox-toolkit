@@ -20,7 +20,9 @@
   "pnpm": {
     "overrides": {
       "@repo/*": "npm:@empty*",
-      "ora": "^5.4.1"
+      "ora": "^5.4.1",
+      "react": "19.2.3",
+      "react-dom": "19.2.3"
     },
     "packageExtensions": {
       "less": {
