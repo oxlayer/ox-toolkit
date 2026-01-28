@@ -8,7 +8,10 @@ packages:
   # Backend workspaces
   - 'backend/**'
 
-  # MCP workspaces
+  # CLI packages
+  - 'cli/**'
+
+  # MCP packages
   - 'mcp-oxlayer/**'
 
   # Foundation packages

@@ -1,0 +1,166 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: {{PROJECT_SLUG}}-api
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "{{PORT}}:3001"
+    networks:
+      - {{PROJECT_SLUG}}-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: {{PROJECT_SLUG}}-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: {{DB_NAME}}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - {{PROJECT_SLUG}}-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: {{PROJECT_SLUG}}-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - {{PROJECT_SLUG}}-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: {{PROJECT_SLUG}}-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - {{PROJECT_SLUG}}-network
+
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: {{PROJECT_SLUG}}-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - {{PROJECT_SLUG}}-network
+
+  grafana:
+    image: grafana/grafana:12.3.1
+    container_name: {{PROJECT_SLUG}}-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - {{PROJECT_SLUG}}-network
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.53
+    container_name: {{PROJECT_SLUG}}-jaeger
+    ports:
+      - "16686:16686"
+      - "4318:4318"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - {{PROJECT_SLUG}}-network
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.143.0
+    container_name: {{PROJECT_SLUG}}-otel-collector
+    ports:
+      - "14317:4317"   # OTLP gRPC receiver
+      - "14318:4318"   # OTLP HTTP receiver
+      - "8888:8888"    # Prometheus metrics
+      - "8889:8889"    # Prometheus metrics
+    volumes:
+      - ./collector-observability.yaml:/etc/otelcol-contrib/config.yaml
+    command:
+      - "--config=/etc/otelcol-contrib/config.yaml"
+    networks:
+      - {{PROJECT_SLUG}}-network
+
+  quickwit:
+    image: quickwit/quickwit:0.8.2
+    container_name: {{PROJECT_SLUG}}-quickwit
+    ports:
+      - "7280:7280"
+    command:
+      - "run"
+      - "--indexer"
+      - "--searcher"
+      - "--rest"
+    volumes:
+      - quickwit_data:/quickwit_data
+    networks:
+      - {{PROJECT_SLUG}}-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  quickwit_data:
+    driver: local
+
+networks:
+  {{PROJECT_SLUG}}-network:
+    driver: bridge

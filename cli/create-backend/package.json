@@ -1,0 +1,42 @@
+{
+  "name": "@oxlayer/create-backend",
+  "version": "1.0.0",
+  "description": "Scaffold a new OxLayer backend API with PostgreSQL, Redis, RabbitMQ, and observability",
+  "type": "module",
+  "bin": "./dist/index.cjs",
+  "files": [
+    "dist",
+    "template"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "fs-extra": "^11.2.0",
+    "prompts": "^2.4.2",
+    "template-file": "^6.0.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.11.0",
+    "@types/prompts": "^2.4.9",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "oxlayer",
+    "backend",
+    "api",
+    "scaffold",
+    "template",
+    "generator"
+  ]
+}

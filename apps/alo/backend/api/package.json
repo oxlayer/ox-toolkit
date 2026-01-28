@@ -13,7 +13,8 @@
     "test": "bun test",
     "test:unit": "bun test ./src/**/*.unit.test.ts",
     "test:integration": "bun test ./src/**/*.integration.test.ts",
-    "test:coverage": "bun test --coverage"
+    "test:coverage": "bun test --coverage",
+    "keycloak": "bun node_modules/@oxlayer/cli-keycloak-bootstrap/bin/index.ts bootstrap --config keycloak.config.json"
   },
   "dependencies": {
     "@oxlayer/foundation-app-kit": "workspace:*",
@@ -40,6 +41,7 @@
     "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
+    "@oxlayer/cli-keycloak-bootstrap": "workspace:*",
     "@types/node": "^20.0.0",
     "@types/bun": "1.3.6",
     "@types/bcryptjs": "^2.4.6",

@@ -1,0 +1,86 @@
+# OpenTelemetry Collector Configuration for {{PROJECT_NAME}}
+#
+# This configures the collector to receive metrics, traces, and logs
+# and export them to various backends.
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+  # Prometheus metrics receiver
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'otel-collector'
+          static_configs:
+            - targets: ['0.0.0.0:8889']
+
+processors:
+  batch:
+
+  # Memory limiter
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 80
+
+  # Attributes processing
+  attributes:
+    batch:
+      actions:
+        - key: environment
+          value: staging
+
+exporters:
+  # Metrics to Prometheus
+  prometheus:
+    endpoint: "prometheus:9090"
+    const_labels:
+      env: "{{PROJECT_SLUG}}"
+
+  # Traces to Jaeger
+  otlp/jaeger:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
+
+  # Logs to Quickwit
+  otlp/quickwit:
+    endpoint: quickwit:7280
+    tls:
+      insecure: true
+    headers:
+      X-Quickwit-Index-ID: "{{PROJECT_SLUG}}-logs"
+
+extensions:
+  # Health check
+  health_check:
+    endpoint: 0.0.0.0:13133
+    # Including a port is optional but recommended
+    # port: 13133
+
+  # Performance diagnostics
+  pprof:
+    endpoint: 0.0.0.0:1777
+    block_profile_rate: 1
+
+# Service telemetry pipelines for observability (Log + Trace)
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp/jaeger]
+
+    metrics:
+      receivers: [otlp, prometheus]
+      processors: [batch, memory_limiter]
+      exporters: [prometheus]
+
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp/quickwit]

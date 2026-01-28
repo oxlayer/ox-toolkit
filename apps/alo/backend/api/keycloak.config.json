@@ -1,0 +1,72 @@
+{
+  "keycloak": {
+    "url": "http://localhost:8080",
+    "admin": {
+      "username": "admin",
+      "password": "admin"
+    }
+  },
+  "realm": {
+    "name": "alo",
+    "displayName": "Alo Manager Application",
+    "type": "platform",
+    "sslRequired": "none",
+    "security": {
+      "loginWithEmailAllowed": true,
+      "duplicateEmailsAllowed": false,
+      "resetPasswordAllowed": true,
+      "editUsernameAllowed": false,
+      "bruteForceProtected": true,
+      "permanentLockout": false
+    }
+  },
+  "clients": [
+    {
+      "name": "alo-manager",
+      "template": "api-client",
+      "overrides": {
+        "description": "Backend API client for Alo Manager",
+        "redirectUris": [
+          "http://localhost:3001/*"
+        ],
+        "webOrigins": [
+          "http://localhost:3001"
+        ],
+        "clientSecret": "alo-manager-secret"
+      }
+    },
+    {
+      "name": "alo-manager-web",
+      "template": "web-client",
+      "overrides": {
+        "description": "Web application client for Alo Manager",
+        "publicClient": true,
+        "standardFlowEnabled": true,
+        "directAccessGrantsEnabled": false,
+        "redirectUris": [
+          "http://localhost:5174/*"
+        ],
+        "webOrigins": [
+          "http://localhost:5174"
+        ],
+        "validPostLogoutRedirectUris": [
+          "http://localhost:5174"
+        ]
+      }
+    }
+  ],
+  "roles": [
+    {
+      "name": "user",
+      "description": "Standard user role"
+    },
+    {
+      "name": "admin",
+      "description": "Application administrator"
+    },
+    {
+      "name": "manager",
+      "description": "Establishment manager"
+    }
+  ]
+}
