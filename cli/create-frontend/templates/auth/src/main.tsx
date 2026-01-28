@@ -2,13 +2,14 @@
  * Main App Component
  */
 
+import './index.css'
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './lib/auth-provider'
 import App from './App'
-import './index.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {

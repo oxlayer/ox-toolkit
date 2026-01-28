@@ -352,7 +352,7 @@ async function apiRequest<T>(endpoint: string, options: ApiRequestOptions = {}):
     requestHeaders['Authorization'] = `Bearer ${token}`;
   }
 
-  const url = `${import.meta.env.VITE_API_BASE_URL}/api${endpoint}`;
+  const url = `${import.meta.env.VITE_PUBLIC_API_BASE_URL}/api${endpoint}`;
 
   const response = await fetch(url, {
     method,

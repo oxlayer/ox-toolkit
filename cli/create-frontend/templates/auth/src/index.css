@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@template/ui/web-styles";
 
 @theme {
   --color-background: #ffffff;

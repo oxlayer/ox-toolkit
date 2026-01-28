@@ -68,7 +68,7 @@ See `.env.example` for required environment variables:
 - `VITE_KEYCLOAK_URL`: Keycloak server URL
 - `VITE_KEYCLOAK_REALM`: Keycloak realm name
 - `VITE_KEYCLOAK_CLIENT_ID`: Keycloak client ID
-- `VITE_API_BASE_URL`: Backend API base URL
+- `VITE_PUBLIC_API_BASE_URL`: Backend API base URL
 
 ## Authentication Flow
 
