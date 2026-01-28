@@ -2,13 +2,29 @@
 
 {{PROJECT_DESCRIPTION}}
 
-## Features
+## Tech Stack
 
-- React 19 with TypeScript
-- Vite for fast development and building
-- Tailwind CSS v4 with modern theming
-- ESLint with TypeScript support
-- Path aliases (`@/` for `./src/`)
+- React 19
+- Vite 6
+- TypeScript
+- Tailwind CSS v4
+- Axios
+- TanStack React Query
+
+## Project Structure
+
+```
+src/
+├── components/     # Reusable UI components
+├── hooks/          # Custom React hooks
+├── lib/            # Utility libraries
+├── pages/          # Page components
+├── services/       # API service functions
+├── types/          # TypeScript type definitions
+├── App.tsx         # Main app component
+├── main.tsx        # Entry point
+└── index.css       # Global styles
+```
 
 ## Getting Started
 
@@ -16,7 +32,7 @@
 # Install dependencies
 pnpm install
 
-# Start dev server
+# Start development server
 pnpm dev
 
 # Build for production
@@ -27,50 +43,26 @@ pnpm preview
 
 # Run linter
 pnpm lint
+
+# Type check
+pnpm typecheck
 ```
 
-## Project Structure
+## Features
 
-```
-src/
-├── App.tsx          # Main app component
-├── main.tsx         # Entry point
-├── index.css        # Global styles
-└── components/      # Your components
-```
+- Weather app that fetches real-time data from Open-Meteo API
+- 5-day weather forecast
+- React Query for data fetching and caching
+- Responsive design with dark mode support
+- Clean, modern UI with Tailwind CSS v4
 
-## Available Scripts
+## API
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start development server |
-| `pnpm build` | Build for production |
-| `pnpm preview` | Preview production build |
-| `pnpm lint` | Run ESLint |
-
-## Customization
-
-### Theme Colors
-
-Edit `src/index.css` to customize the theme:
-
-```css
-@theme {
-  --color-primary: oklch(47% 0.18 265);
-  /* ... other colors */
-}
-```
-
-### Path Aliases
-
-Use `@/` to import from the `src` directory:
-
-```tsx
-import { Button } from '@/components/button';
-```
+Uses the free Open-Meteo API (no API key required).
 
 ## Learn More
 
-- [Vite Documentation](https://vitejs.dev/)
+- [Vite Documentation](https://vite.dev/)
 - [React Documentation](https://react.dev/)
-- [Tailwind CSS v4](https://tailwindcss.com/docs/v4-beta)
+- [TanStack Query Documentation](https://tanstack.com/query/latest)
+- [Tailwind CSS Documentation](https://tailwindcss.com/)
