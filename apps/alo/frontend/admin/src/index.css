@@ -3,5 +3,5 @@
 
 @variant dark (&:where(.dark, .dark *));
 
-/* Import Aurora styles after configuration */
+/* Import Alo styles after configuration */
 @import "@acme/ui/styles";

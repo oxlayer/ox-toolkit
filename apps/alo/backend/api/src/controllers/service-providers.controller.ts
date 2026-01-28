@@ -4,7 +4,7 @@
  * This controller follows the OxLayer DDD patterns.
  */
 
-import { BaseController } from '@oxlayer/foundation-http-kit';
+import { BaseController, buildPageInfo, buildPaginatedPayload } from '@oxlayer/foundation-http-kit';
 import type { Context } from 'hono';
 import { z } from 'zod';
 import { Logger } from '@oxlayer/capabilities-internal';
@@ -15,6 +15,7 @@ import type {
   UpdateServiceProviderUseCase,
   DeleteServiceProviderUseCase,
 } from '../use-cases/index.js';
+import type { ServiceProviderRepository } from '../repositories/index.js';
 
 const logger = new Logger('ServiceProvidersController');
 
@@ -66,6 +67,7 @@ const querySchema = z.object({
   search: z.string().optional(),
   limit: z.string().transform(Number).optional(),
   offset: z.string().transform(Number).optional(),
+  include: z.string().transform((val) => val ? val.split(',') : []).optional(),
 });
 
 /**
@@ -89,7 +91,8 @@ export class ServiceProvidersController extends BaseController {
     private listServiceProvidersUseCase: ListServiceProvidersUseCase,
     private getServiceProviderUseCase: GetServiceProviderUseCase,
     private updateServiceProviderUseCase: UpdateServiceProviderUseCase,
-    private deleteServiceProviderUseCase: DeleteServiceProviderUseCase
+    private deleteServiceProviderUseCase: DeleteServiceProviderUseCase,
+    private serviceProviderRepository: ServiceProviderRepository
   ) {
     super();
   }
@@ -103,13 +106,37 @@ export class ServiceProvidersController extends BaseController {
       return this.validationError(formatZodErrors(query.error.errors));
     }
 
-    const result = await this.listServiceProvidersUseCase.execute(query.data);
+    const { include, ...filters } = query.data;
+
+    // Only fetch total if explicitly requested via include=count
+    let total: number | undefined;
+    if (include?.includes('count')) {
+      total = await this.serviceProviderRepository.count(filters);
+    }
+
+    const result = await this.listServiceProvidersUseCase.execute(filters);
 
     if (!result.success) {
       return this.badRequest(result.error?.message || 'Failed to fetch service providers');
     }
 
-    return this.ok({ serviceProviders: result.data?.items || [], total: result.data?.total || 0 });
+    const items = result.data?.items || [];
+    const limit = filters.limit || 50;
+    const offset = filters.offset || 0;
+
+    const pageInfo = buildPageInfo({
+      itemsLength: items.length,
+      limit,
+      nextCursorPayload: { offset: offset + limit, limit },
+    });
+
+    return this.ok(
+      buildPaginatedPayload({
+        data: items,
+        pageInfo,
+        total,
+      })
+    );
   }
 
   /**
@@ -122,7 +149,7 @@ export class ServiceProvidersController extends BaseController {
       return this.badRequest('Invalid service provider ID');
     }
 
-    const result = await this.getServiceProviderUseCase.execute(id);
+    const result = await this.getServiceProviderUseCase.execute({ id: String(id) });
 
     if (!result.success) {
       return this.notFound(result.error?.message || 'Service provider not found');
@@ -176,7 +203,7 @@ export class ServiceProvidersController extends BaseController {
     }
 
     const result = await this.updateServiceProviderUseCase.execute({
-      id,
+      id: String(id),
       input: input.data,
     });
 
@@ -200,7 +227,7 @@ export class ServiceProvidersController extends BaseController {
       return this.badRequest('Invalid service provider ID');
     }
 
-    const result = await this.deleteServiceProviderUseCase.execute(id);
+    const result = await this.deleteServiceProviderUseCase.execute({ id: String(id) });
 
     if (!result.success) {
       if (result.error?.code === 'NOT_FOUND') {

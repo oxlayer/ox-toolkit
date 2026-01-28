@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useEstablishment, useEstablishmentTypes, useCreateEstablishment, useUpdateEstablishment } from '@/hooks'
 import { PageHeader } from '@/components/shared'
-import { Button, Input, Textarea, Select, Field, Label, Card } from '@acme/ui'
+import { Button, Input, Textarea, Select, SelectTrigger, SelectValue, SelectPopup, SelectItem, Field, Label, Card } from '@acme/ui'
 import { useState, useEffect } from 'react'
 import type { CreateEstablishmentInput } from '@/types'
 
@@ -91,27 +91,25 @@ export function EstablishmentFormView() {
           {/* Establishment Type */}
           <Field>
             <Label htmlFor="establishment_type_id">Establishment Type</Label>
-            <Select.Root
+            <Select
               name="establishment_type_id"
               value={formData.establishment_type_id?.toString() ?? ''}
               onValueChange={(value) =>
                 setFormData((prev) => ({ ...prev, establishment_type_id: value ? Number(value) : undefined }))
               }
             >
-              <Select.Trigger>
-                <Select.Value placeholder="Select a type..." />
-              </Select.Trigger>
-              <Select.Portal>
-                <Select.Popup>
-                  <Select.Item value="">Select a type...</Select.Item>
-                  {establishmentTypes.map((type) => (
-                    <Select.Item key={type.id} value={type.id.toString()}>
-                      {type.name}
-                    </Select.Item>
-                  ))}
-                </Select.Popup>
-              </Select.Portal>
-            </Select.Root>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a type..." />
+              </SelectTrigger>
+              <SelectPopup>
+                <SelectItem value="">Select a type...</SelectItem>
+                {establishmentTypes.map((type) => (
+                  <SelectItem key={type.id} value={type.id.toString()}>
+                    {type.name}
+                  </SelectItem>
+                ))}
+              </SelectPopup>
+            </Select>
           </Field>
 
           {/* Name */}

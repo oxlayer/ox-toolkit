@@ -9,8 +9,8 @@ export const deliveryMenApi = {
    * Get all delivery men
    */
   getAll: async (): Promise<DeliveryMan[]> => {
-    const { data } = await apiClient.get<DeliveryMan[]>('/deliverymen')
-    return data
+    const { data } = await apiClient.get<{ data: DeliveryMan[] }>('/deliverymen')
+    return data.data
   },
 
   /**

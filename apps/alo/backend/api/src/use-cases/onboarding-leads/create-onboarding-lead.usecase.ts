@@ -3,6 +3,7 @@
  */
 
 import { CreateUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 import { OnboardingLeadRepository } from '@/repositories/index.js';
 import { EventBus } from '@oxlayer/capabilities-events';
 import { OnboardingLeadEntity, OnboardingLeadCreatedEvent } from '@/domain/index.js';
@@ -33,7 +34,7 @@ export interface CreateOnboardingLeadOutput {
 export class CreateOnboardingLeadUseCase extends CreateUseCaseTemplate<
   CreateOnboardingLeadInput,
   OnboardingLeadEntity,
-  Promise<CreateOnboardingLeadOutput>
+  AppResult<CreateOnboardingLeadOutput>
 > {
   constructor(
     private onboardingLeadRepository: OnboardingLeadRepository,

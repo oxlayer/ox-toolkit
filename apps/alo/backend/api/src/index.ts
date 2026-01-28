@@ -166,11 +166,11 @@ api.patch('/users/:id', (c) => container.createUsersController().updateUser(c));
 api.delete('/users/:id', (c) => container.createUsersController().deleteUser(c));
 
 // Delivery Men routes
-api.get('/delivery-men', (c) => container.createDeliveryMenController().listDeliveryMen(c));
-api.get('/delivery-men/:id', (c) => container.createDeliveryMenController().getDeliveryMan(c));
-api.post('/delivery-men', (c) => container.createDeliveryMenController().createDeliveryMan(c));
-api.patch('/delivery-men/:id', (c) => container.createDeliveryMenController().updateDeliveryMan(c));
-api.delete('/delivery-men/:id', (c) => container.createDeliveryMenController().deleteDeliveryMan(c));
+api.get('/deliverymen', (c) => container.createDeliveryMenController().listDeliveryMen(c));
+api.get('/deliverymen/:id', (c) => container.createDeliveryMenController().getDeliveryMan(c));
+api.post('/deliverymen', (c) => container.createDeliveryMenController().createDeliveryMan(c));
+api.patch('/deliverymen/:id', (c) => container.createDeliveryMenController().updateDeliveryMan(c));
+api.delete('/deliverymen/:id', (c) => container.createDeliveryMenController().deleteDeliveryMan(c));
 
 // Service Provider routes
 api.get('/service-providers', (c) => container.createServiceProvidersController().listServiceProviders(c));

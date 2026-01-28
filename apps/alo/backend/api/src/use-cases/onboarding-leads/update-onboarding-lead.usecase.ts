@@ -3,6 +3,7 @@
  */
 
 import { UpdateUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 import { OnboardingLeadRepository } from '@/repositories/index.js';
 import { EventBus } from '@oxlayer/capabilities-events';
 import { OnboardingLeadEntity, OnboardingLeadStatusChangedEvent } from '@/domain/index.js';
@@ -22,24 +23,24 @@ export interface UpdateOnboardingLeadOutput {
 }
 
 export class UpdateOnboardingLeadUseCase extends UpdateUseCaseTemplate<
-  { id: number; input: UpdateOnboardingLeadInput },
+  { id: string; input: UpdateOnboardingLeadInput },
   OnboardingLeadEntity,
-  Promise<UpdateOnboardingLeadOutput>
+  AppResult<UpdateOnboardingLeadOutput & Record<string, unknown>>
 > {
   constructor(
     private onboardingLeadRepository: OnboardingLeadRepository,
     eventBus: EventBus,
+    _domainEvents: any,
+    businessMetrics: any,
     tracer?: unknown | null
   ) {
     super({
-      fetchEntity: async (id) => {
-        return await onboardingLeadRepository.findById(id);
+      findEntity: async (id) => {
+        return await onboardingLeadRepository.findById(Number(id));
       },
-      updateEntity: async (id, input) => {
-        const entity = await onboardingLeadRepository.findById(id);
-        if (!entity) {
-          throw new Error('Onboarding lead not found');
-        }
+      updateEntity: async (entity, { input }) => {
+        // Store the input for use in createEvent
+        (this as any)._lastInput = input;
 
         const previousStatus = entity.status;
 
@@ -72,14 +73,22 @@ export class UpdateOnboardingLeadUseCase extends UpdateUseCaseTemplate<
             entity.contactedAt = input.contactedAt;
           }
         }
-
-        return await onboardingLeadRepository.update(id, entity);
+      },
+      persistEntity: async (_entity) => {
+        // Database update is handled separately
       },
       publishEvent: async (event) => {
         try {
           await eventBus.emit(event);
         } catch (error) {
           console.warn('Failed to publish event:', error);
+        }
+      },
+      recordMetric: async (name, value) => {
+        try {
+          await businessMetrics?.recordMetric(name, value);
+        } catch (error) {
+          console.warn('Failed to record metric:', error);
         }
       },
       toOutput: (entity) => ({
@@ -93,11 +102,12 @@ export class UpdateOnboardingLeadUseCase extends UpdateUseCaseTemplate<
     });
   }
 
-  protected override createEvent(entity: OnboardingLeadEntity, params: { id: number; input: UpdateOnboardingLeadInput }): OnboardingLeadStatusChangedEvent | null {
+  protected override createEvent(entity: OnboardingLeadEntity, _changes: Record<string, unknown>): OnboardingLeadStatusChangedEvent | null {
     // Only emit status changed event if status actually changed
-    if (params.input.status && params.input.status !== entity.status) {
+    const input = (this as any)._lastInput as UpdateOnboardingLeadInput | undefined;
+    if (input?.status && input.status !== entity.status) {
       return new OnboardingLeadStatusChangedEvent(entity.id, {
-        status: params.input.status,
+        status: input.status,
         previousStatus: entity.status,
       });
     }

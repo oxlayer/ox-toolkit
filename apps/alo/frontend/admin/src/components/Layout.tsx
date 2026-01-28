@@ -27,7 +27,7 @@ export default function Layout() {
             </div>
             <div>
               <h1 className="text-xl font-bold bg-linear-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                Aurora
+                Alô
               </h1>
               <p className="text-gray-400 text-xs">Manager Portal</p>
             </div>

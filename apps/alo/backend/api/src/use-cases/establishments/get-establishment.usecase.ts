@@ -3,6 +3,7 @@
  */
 
 import { GetByIdUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 import { EstablishmentRepository } from '@/repositories/index.js';
 import { EstablishmentEntity } from '@/domain/index.js';
 
@@ -29,18 +30,19 @@ export interface GetEstablishmentOutput {
 }
 
 export class GetEstablishmentUseCase extends GetByIdUseCaseTemplate<
-  number,
+  { id: string },
   EstablishmentEntity,
-  Promise<GetEstablishmentOutput | null>
+  AppResult<GetEstablishmentOutput & Record<string, unknown>>
 > {
   constructor(
     private establishmentRepository: EstablishmentRepository,
     tracer?: unknown | null
   ) {
     super({
-      fetchEntity: async (id) => {
-        return await establishmentRepository.findById(id);
+      findEntity: async (id) => {
+        return await establishmentRepository.findById(Number(id));
       },
+      checkAccess: (_entity, _input) => true,
       toOutput: (entity) => ({
         id: entity.id,
         name: entity.name,
@@ -66,7 +68,7 @@ export class GetEstablishmentUseCase extends GetByIdUseCaseTemplate<
     });
   }
 
-  async execute(id: number): Promise<GetEstablishmentOutput | null> {
-    return super.execute(id);
+  protected getUseCaseName(): string {
+    return 'GetEstablishment';
   }
 }

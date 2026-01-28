@@ -4,7 +4,7 @@
  * This controller follows the OxLayer DDD patterns.
  */
 
-import { BaseController } from '@oxlayer/foundation-http-kit';
+import { BaseController, buildPageInfo, buildPaginatedPayload } from '@oxlayer/foundation-http-kit';
 import type { Context } from 'hono';
 import { z } from 'zod';
 import { Logger } from '@oxlayer/capabilities-internal';
@@ -15,6 +15,7 @@ import type {
   UpdateEstablishmentUseCase,
   DeleteEstablishmentUseCase,
 } from '../use-cases/index.js';
+import type { EstablishmentRepository } from '../repositories/index.js';
 
 const logger = new Logger('EstablishmentsController');
 
@@ -71,6 +72,7 @@ const querySchema = z.object({
   search: z.string().optional(),
   limit: z.string().transform(Number).optional(),
   offset: z.string().transform(Number).optional(),
+  include: z.string().transform((val) => val ? val.split(',') : []).optional(),
 });
 
 /**
@@ -94,13 +96,21 @@ export class EstablishmentsController extends BaseController {
     private listEstablishmentsUseCase: ListEstablishmentsUseCase,
     private getEstablishmentUseCase: GetEstablishmentUseCase,
     private updateEstablishmentUseCase: UpdateEstablishmentUseCase,
-    private deleteEstablishmentUseCase: DeleteEstablishmentUseCase
+    private deleteEstablishmentUseCase: DeleteEstablishmentUseCase,
+    private establishmentRepository: EstablishmentRepository
   ) {
     super();
   }
 
   /**
    * GET /api/establishments - List establishments
+   *
+   * Query params:
+   * - include: comma-separated values, e.g., "count" to include total in meta
+   * - limit: number of items per page
+   * - offset: offset for pagination
+   *
+   * @example GET /api/establishments?limit=10&offset=0&include=count
    */
   async listEstablishments(c: Context): Promise<Response> {
     const query = querySchema.safeParse(c.req.query());
@@ -108,13 +118,38 @@ export class EstablishmentsController extends BaseController {
       return this.validationError(formatZodErrors(query.error.errors));
     }
 
-    const result = await this.listEstablishmentsUseCase.execute(query.data);
+    const { include, ...filters } = query.data;
+
+    // Only fetch total if explicitly requested via include=count
+    // Backend rule of thumb: avoid expensive count queries unless needed
+    let total: number | undefined;
+    if (include?.includes('count')) {
+      total = await this.establishmentRepository.count(filters);
+    }
+
+    const result = await this.listEstablishmentsUseCase.execute(filters);
 
     if (!result.success) {
       return this.badRequest(result.error?.message || 'Failed to fetch establishments');
     }
 
-    return this.ok({ establishments: result.data?.items || [], total: result.data?.total || 0 });
+    const items = result.data?.items || [];
+    const limit = filters.limit || 50;
+    const offset = filters.offset || 0;
+
+    const pageInfo = buildPageInfo({
+      itemsLength: items.length,
+      limit,
+      nextCursorPayload: { offset: offset + limit, limit },
+    });
+
+    return this.ok(
+      buildPaginatedPayload({
+        data: items,
+        pageInfo,
+        total,
+      })
+    );
   }
 
   /**
@@ -127,7 +162,7 @@ export class EstablishmentsController extends BaseController {
       return this.badRequest('Invalid establishment ID');
     }
 
-    const result = await this.getEstablishmentUseCase.execute(id);
+    const result = await this.getEstablishmentUseCase.execute({ id: String(id) });
 
     if (!result.success) {
       return this.notFound(result.error?.message || 'Establishment not found');
@@ -181,7 +216,7 @@ export class EstablishmentsController extends BaseController {
     }
 
     const result = await this.updateEstablishmentUseCase.execute({
-      id,
+      id: String(id),
       input: input.data,
     });
 
@@ -205,7 +240,7 @@ export class EstablishmentsController extends BaseController {
       return this.badRequest('Invalid establishment ID');
     }
 
-    const result = await this.deleteEstablishmentUseCase.execute(id);
+    const result = await this.deleteEstablishmentUseCase.execute({ id: String(id) });
 
     if (!result.success) {
       if (result.error?.code === 'NOT_FOUND') {

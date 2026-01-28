@@ -54,7 +54,7 @@ export function DashboardView() {
 
   return (
     <div className="space-y-8">
-      <PageHeader title="Dashboard" description="Welcome to Aurora Manager Portal" />
+      <PageHeader title="Dashboard" description="Welcome to Alô Manager Portal" />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -133,16 +133,14 @@ export function DashboardView() {
                       className="flex items-center gap-4 rounded-lg p-3 transition-colors hover:bg-muted/50"
                     >
                       <div
-                        className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                          lead.user_type === 'provider'
+                        className={`flex h-10 w-10 items-center justify-center rounded-lg ${lead.user_type === 'provider'
                             ? 'bg-linear-to-br from-primary-500/20 to-primary-400/20'
                             : 'bg-linear-to-br from-blue-500/20 to-indigo-600/20'
-                        }`}
+                          }`}
                       >
                         <div
-                          className={`size-4 rounded-full ${
-                            lead.user_type === 'provider' ? 'bg-primary-500' : 'bg-blue-500'
-                          }`}
+                          className={`size-4 rounded-full ${lead.user_type === 'provider' ? 'bg-primary-500' : 'bg-blue-500'
+                            }`}
                         />
                       </div>
                       <div className="min-w-0 flex-1">

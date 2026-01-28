@@ -2,9 +2,10 @@
  * Get Delivery Man Use Case
  */
 
-import { GetUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import { GetByIdUseCaseTemplate } from '@oxlayer/snippets/use-cases';
 import { DeliveryManRepository } from '@/repositories/index.js';
 import { DeliveryManEntity } from '@/domain/index.js';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 
 export interface GetDeliveryManOutput {
   id: number;
@@ -17,19 +18,20 @@ export interface GetDeliveryManOutput {
   updatedAt: Date;
 }
 
-export class GetDeliveryManUseCase extends GetUseCaseTemplate<
-  number,
+export class GetDeliveryManUseCase extends GetByIdUseCaseTemplate<
+  { id: string },
   DeliveryManEntity,
-  Promise<GetDeliveryManOutput>
+  AppResult<GetDeliveryManOutput & Record<string, unknown>>
 > {
   constructor(
     private deliveryManRepository: DeliveryManRepository,
     tracer?: unknown | null
   ) {
     super({
-      fetchEntity: async (id) => {
-        return await deliveryManRepository.findById(id);
+      findEntity: async (id) => {
+        return await deliveryManRepository.findById(Number(id));
       },
+      checkAccess: (_entity, _input) => true, // TODO: implement access control
       toOutput: (entity) => ({
         id: entity.id,
         name: entity.name,
@@ -42,5 +44,9 @@ export class GetDeliveryManUseCase extends GetUseCaseTemplate<
       }),
       tracer,
     });
+  }
+
+  protected getUseCaseName(): string {
+    return 'GetDeliveryMan';
   }
 }

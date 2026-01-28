@@ -353,10 +353,6 @@ See [examples/todo-app/keycloak.config.json](../../examples/todo-app/keycloak.co
 npx @oxlayer/cli-keycloak-bootstrap init --type dedicated --output enterprise-acme.json
 ```
 
-### Aurora Migration
-
-See [examples/keycloak.aurora.config.json](../../examples/keycloak.aurora.config.json) for migrating from the old `keycloak-seed.ts` script.
-
 ## Programmatic Usage
 
 You can also use the CLI as a library:

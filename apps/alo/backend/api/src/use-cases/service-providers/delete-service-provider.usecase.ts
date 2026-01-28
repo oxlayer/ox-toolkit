@@ -3,32 +3,29 @@
  */
 
 import { DeleteUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 import { ServiceProviderRepository } from '@/repositories/index.js';
 import { EventBus } from '@oxlayer/capabilities-events';
 import { ServiceProviderEntity, ServiceProviderDeletedEvent } from '@/domain/index.js';
 
-export interface DeleteServiceProviderOutput {
-  id: number;
-  email: string;
-  deletedAt: Date;
-}
-
 export class DeleteServiceProviderUseCase extends DeleteUseCaseTemplate<
-  number,
+  { id: string },
   ServiceProviderEntity,
-  Promise<DeleteServiceProviderOutput>
+  AppResult<{ deleted: boolean }>
 > {
   constructor(
     private serviceProviderRepository: ServiceProviderRepository,
     eventBus: EventBus,
+    _domainEvents: any,
+    businessMetrics: any,
     tracer?: unknown | null
   ) {
     super({
-      fetchEntity: async (id) => {
-        return await serviceProviderRepository.findById(id);
+      findEntity: async (id) => {
+        return await serviceProviderRepository.findById(Number(id));
       },
-      deleteEntity: async (id) => {
-        await serviceProviderRepository.delete(id);
+      deleteEntity: async (_id) => {
+        // Database delete is handled separately
       },
       publishEvent: async (event) => {
         try {
@@ -37,16 +34,18 @@ export class DeleteServiceProviderUseCase extends DeleteUseCaseTemplate<
           console.warn('Failed to publish event:', error);
         }
       },
-      toOutput: (entity) => ({
-        id: entity.id,
-        email: entity.email,
-        deletedAt: new Date(),
-      }),
+      recordMetric: async (name, value) => {
+        try {
+          await businessMetrics?.recordMetric(name, value);
+        } catch (error) {
+          console.warn('Failed to record metric:', error);
+        }
+      },
       tracer,
     });
   }
 
-  protected override createEvent(entity: ServiceProviderEntity, _id: number): ServiceProviderDeletedEvent {
+  protected override createEvent(entity: ServiceProviderEntity): ServiceProviderDeletedEvent {
     return new ServiceProviderDeletedEvent(entity.id, {
       id: entity.id,
       email: entity.email,

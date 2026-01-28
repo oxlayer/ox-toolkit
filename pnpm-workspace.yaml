@@ -7,6 +7,10 @@ packages:
 
   # Backend workspaces
   - 'backend/**'
+  - '!backend/release/**'
+
+  # Snippets
+  - 'backend/snippets'
 
   # CLI packages
   - 'cli/**'
@@ -53,5 +57,4 @@ packages:
   # - core/proprietary/tenancy
   # - core/proprietary/adapters/database/postgres-tenancy
 
-  # # Snippets
   # - core/snippets

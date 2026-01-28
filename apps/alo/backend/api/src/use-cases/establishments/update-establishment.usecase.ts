@@ -3,6 +3,7 @@
  */
 
 import { UpdateUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 import { EstablishmentRepository } from '@/repositories/index.js';
 import { EventBus } from '@oxlayer/capabilities-events';
 import { EstablishmentEntity, EstablishmentUpdatedEvent } from '@/domain/index.js';
@@ -33,25 +34,22 @@ export interface UpdateEstablishmentOutput {
 }
 
 export class UpdateEstablishmentUseCase extends UpdateUseCaseTemplate<
-  { id: number; input: UpdateEstablishmentInput },
+  { id: string; input: UpdateEstablishmentInput },
   EstablishmentEntity,
-  Promise<UpdateEstablishmentOutput>
+  AppResult<UpdateEstablishmentOutput>
 > {
   constructor(
     private establishmentRepository: EstablishmentRepository,
     eventBus: EventBus,
+    domainEvents: any,
+    businessMetrics: any,
     tracer?: unknown | null
   ) {
     super({
-      fetchEntity: async (id) => {
-        return await establishmentRepository.findById(id);
+      findEntity: async (id) => {
+        return await establishmentRepository.findById(Number(id));
       },
-      updateEntity: async (id, input) => {
-        const entity = await establishmentRepository.findById(id);
-        if (!entity) {
-          throw new Error('Establishment not found');
-        }
-
+      updateEntity: async (entity, input) => {
         // Apply updates
         if (input.name !== undefined) entity.name = input.name;
         if (input.horarioFuncionamento !== undefined) entity.horarioFuncionamento = input.horarioFuncionamento;
@@ -69,14 +67,22 @@ export class UpdateEstablishmentUseCase extends UpdateUseCaseTemplate<
         if (input.instagram !== undefined) entity.instagram = input.instagram;
         if (input.googleBusinessUrl !== undefined) entity.googleBusinessUrl = input.googleBusinessUrl;
         if (input.openData !== undefined) entity.openData = input.openData;
-
-        return await establishmentRepository.update(id, entity);
+      },
+      persistEntity: async (_entity) => {
+        // Database update is handled separately
       },
       publishEvent: async (event) => {
         try {
           await eventBus.emit(event);
         } catch (error) {
           console.warn('Failed to publish event:', error);
+        }
+      },
+      recordMetric: async (name, value) => {
+        try {
+          await businessMetrics?.recordMetric(name, value);
+        } catch (error) {
+          console.warn('Failed to record metric:', error);
         }
       },
       toOutput: (entity) => ({
@@ -88,7 +94,7 @@ export class UpdateEstablishmentUseCase extends UpdateUseCaseTemplate<
     });
   }
 
-  protected override createEvent(entity: EstablishmentEntity, _params: { id: number; input: UpdateEstablishmentInput }): EstablishmentUpdatedEvent {
+  protected override createEvent(entity: EstablishmentEntity, _params: { id: string; input: UpdateEstablishmentInput }): EstablishmentUpdatedEvent {
     return new EstablishmentUpdatedEvent(entity.id, {
       id: entity.id,
       name: entity.name,

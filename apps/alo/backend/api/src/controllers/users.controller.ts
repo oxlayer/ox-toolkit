@@ -4,7 +4,7 @@
  * This controller follows the OxLayer DDD patterns.
  */
 
-import { BaseController } from '@oxlayer/foundation-http-kit';
+import { BaseController, buildPageInfo, buildPaginatedPayload } from '@oxlayer/foundation-http-kit';
 import type { Context } from 'hono';
 import { z } from 'zod';
 import { Logger } from '@oxlayer/capabilities-internal';
@@ -14,6 +14,7 @@ import type {
   UpdateUserUseCase,
   DeleteUserUseCase,
 } from '../use-cases/index.js';
+import type { UserRepository } from '../repositories/index.js';
 
 const logger = new Logger('UsersController');
 
@@ -44,11 +45,12 @@ const updateUserSchema = z.object({
  */
 const querySchema = z.object({
   establishmentId: z.string().transform(Number).optional(),
-  role: z.string().optional(),
+  role: z.enum(['admin', 'manager', 'staff']).optional(),
   isActive: z.string().transform((v) => v === 'true').optional(),
   search: z.string().optional(),
   limit: z.string().transform(Number).optional(),
   offset: z.string().transform(Number).optional(),
+  include: z.string().transform((val) => val ? val.split(',') : []).optional(),
 });
 
 /**
@@ -71,7 +73,8 @@ export class UsersController extends BaseController {
     private createUserUseCase: CreateUserUseCase,
     private listUsersUseCase: ListUsersUseCase,
     private updateUserUseCase: UpdateUserUseCase,
-    private deleteUserUseCase: DeleteUserUseCase
+    private deleteUserUseCase: DeleteUserUseCase,
+    private userRepository: UserRepository
   ) {
     super();
   }
@@ -85,13 +88,37 @@ export class UsersController extends BaseController {
       return this.validationError(formatZodErrors(query.error.errors));
     }
 
-    const result = await this.listUsersUseCase.execute(query.data);
+    const { include, ...filters } = query.data;
+
+    // Only fetch total if explicitly requested via include=count
+    let total: number | undefined;
+    if (include?.includes('count')) {
+      total = await this.userRepository.count(filters);
+    }
+
+    const result = await this.listUsersUseCase.execute(filters);
 
     if (!result.success) {
       return this.badRequest(result.error?.message || 'Failed to fetch users');
     }
 
-    return this.ok({ users: result.data?.items || [], total: result.data?.total || 0 });
+    const items = result.data?.items || [];
+    const limit = filters.limit || 50;
+    const offset = filters.offset || 0;
+
+    const pageInfo = buildPageInfo({
+      itemsLength: items.length,
+      limit,
+      nextCursorPayload: { offset: offset + limit, limit },
+    });
+
+    return this.ok(
+      buildPaginatedPayload({
+        data: items,
+        pageInfo,
+        total,
+      })
+    );
   }
 
   /**
@@ -163,7 +190,7 @@ export class UsersController extends BaseController {
     }
 
     const result = await this.updateUserUseCase.execute({
-      id,
+      id: String(id),
       input: input.data,
     });
 
@@ -187,7 +214,7 @@ export class UsersController extends BaseController {
       return this.badRequest('Invalid user ID');
     }
 
-    const result = await this.deleteUserUseCase.execute(id);
+    const result = await this.deleteUserUseCase.execute({ id: String(id) });
 
     if (!result.success) {
       if (result.error?.code === 'NOT_FOUND') {

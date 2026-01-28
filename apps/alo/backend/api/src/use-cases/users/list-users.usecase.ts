@@ -5,67 +5,48 @@
 import { ListUseCaseTemplate } from '@oxlayer/snippets/use-cases';
 import { UserRepository, UserFilters } from '@/repositories/index.js';
 import { UserEntity } from '@/domain/index.js';
-
-export interface ListUsersFilters {
-  establishmentId?: number;
-  role?: 'admin' | 'manager' | 'staff';
-  isActive?: boolean;
-  search?: string;
-  limit?: number;
-  offset?: number;
-}
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 
 export interface ListUsersOutput {
-  items: Array<{
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-    establishmentId: number | null;
-    isActive: boolean;
-    createdAt: Date;
-  }>;
-  total: number;
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  establishmentId: number | null;
+  isActive: boolean;
+  createdAt: Date;
 }
 
 export class ListUsersUseCase extends ListUseCaseTemplate<
-  ListUsersFilters,
+  UserFilters,
   UserEntity,
-  Promise<ListUsersOutput>
+  AppResult<{ items: ListUsersOutput[]; total: number }>
 > {
   constructor(
     private userRepository: UserRepository,
     tracer?: unknown | null
   ) {
     super({
-      fetchEntities: async (filters) => {
+      findEntities: async (filters) => {
         return await userRepository.findAll(filters);
       },
-      toOutput: (entities) => ({
-        items: entities.map((e) => ({
-          id: e.id,
-          name: e.name,
-          email: e.email,
-          role: e.role,
-          establishmentId: e.establishmentId,
-          isActive: e.isActive,
-          createdAt: e.createdAt,
-        })),
-        total: entities.length,
+      countEntities: async (filters) => {
+        return await userRepository.count(filters);
+      },
+      toOutput: (entity) => ({
+        id: entity.id,
+        name: entity.name,
+        email: entity.email,
+        role: entity.role,
+        establishmentId: entity.establishmentId,
+        isActive: entity.isActive,
+        createdAt: entity.createdAt,
       }),
       tracer,
     });
   }
 
-  async execute(filters?: ListUsersFilters): Promise<ListUsersOutput> {
-    const parsedFilters: UserFilters = {
-      establishmentId: filters?.establishmentId,
-      role: filters?.role,
-      isActive: filters?.isActive,
-      search: filters?.search,
-      limit: filters?.limit || 50,
-      offset: filters?.offset || 0,
-    };
-    return super.execute(parsedFilters);
+  protected getUseCaseName(): string {
+    return 'ListUsers';
   }
 }

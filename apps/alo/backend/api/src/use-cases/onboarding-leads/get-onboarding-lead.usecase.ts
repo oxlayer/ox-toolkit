@@ -2,9 +2,10 @@
  * Get Onboarding Lead Use Case
  */
 
-import { GetUseCaseTemplate } from '@oxlayer/snippets/use-cases';
-import { OnboardingLeadRepository } from '@/repositories/index.js';
+import { GetByIdUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import type { OnboardingLeadRepository } from '@/repositories/index.js';
 import { OnboardingLeadEntity } from '@/domain/index.js';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 
 export interface GetOnboardingLeadOutput {
   id: number;
@@ -25,19 +26,20 @@ export interface GetOnboardingLeadOutput {
   updatedAt: Date;
 }
 
-export class GetOnboardingLeadUseCase extends GetUseCaseTemplate<
-  number,
+export class GetOnboardingLeadUseCase extends GetByIdUseCaseTemplate<
+  { id: string },
   OnboardingLeadEntity,
-  Promise<GetOnboardingLeadOutput>
+  AppResult<GetOnboardingLeadOutput & Record<string, unknown>>
 > {
   constructor(
     private onboardingLeadRepository: OnboardingLeadRepository,
     tracer?: unknown | null
   ) {
     super({
-      fetchEntity: async (id) => {
-        return await onboardingLeadRepository.findById(id);
+      findEntity: async (id) => {
+        return await onboardingLeadRepository.findById(Number(id));
       },
+      checkAccess: (_entity, _input) => true, // TODO: implement access control
       toOutput: (entity) => ({
         id: entity.id,
         userType: entity.userType,
@@ -58,5 +60,9 @@ export class GetOnboardingLeadUseCase extends GetUseCaseTemplate<
       }),
       tracer,
     });
+  }
+
+  protected getUseCaseName(): string {
+    return 'GetOnboardingLead';
   }
 }

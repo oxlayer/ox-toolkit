@@ -3,32 +3,29 @@
  */
 
 import { DeleteUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 import { OnboardingLeadRepository } from '@/repositories/index.js';
 import { EventBus } from '@oxlayer/capabilities-events';
 import { OnboardingLeadEntity, OnboardingLeadDeletedEvent } from '@/domain/index.js';
 
-export interface DeleteOnboardingLeadOutput {
-  id: number;
-  email: string;
-  deletedAt: Date;
-}
-
 export class DeleteOnboardingLeadUseCase extends DeleteUseCaseTemplate<
-  number,
+  { id: string },
   OnboardingLeadEntity,
-  Promise<DeleteOnboardingLeadOutput>
+  AppResult<{ deleted: boolean }>
 > {
   constructor(
     private onboardingLeadRepository: OnboardingLeadRepository,
     eventBus: EventBus,
+    _domainEvents: any,
+    businessMetrics: any,
     tracer?: unknown | null
   ) {
     super({
-      fetchEntity: async (id) => {
-        return await onboardingLeadRepository.findById(id);
+      findEntity: async (id) => {
+        return await onboardingLeadRepository.findById(Number(id));
       },
-      deleteEntity: async (id) => {
-        await onboardingLeadRepository.delete(id);
+      deleteEntity: async (_id) => {
+        // Database delete is handled separately
       },
       publishEvent: async (event) => {
         try {
@@ -37,16 +34,18 @@ export class DeleteOnboardingLeadUseCase extends DeleteUseCaseTemplate<
           console.warn('Failed to publish event:', error);
         }
       },
-      toOutput: (entity) => ({
-        id: entity.id,
-        email: entity.email,
-        deletedAt: new Date(),
-      }),
+      recordMetric: async (name, value) => {
+        try {
+          await businessMetrics?.recordMetric(name, value);
+        } catch (error) {
+          console.warn('Failed to record metric:', error);
+        }
+      },
       tracer,
     });
   }
 
-  protected override createEvent(entity: OnboardingLeadEntity, _id: number): OnboardingLeadDeletedEvent {
+  protected override createEvent(entity: OnboardingLeadEntity): OnboardingLeadDeletedEvent {
     return new OnboardingLeadDeletedEvent(entity.id, {
       id: entity.id,
       email: entity.email,

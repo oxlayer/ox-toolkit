@@ -3,6 +3,7 @@
  */
 
 import { CreateUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 import { UserRepository } from '@/repositories/index.js';
 import { EventBus } from '@oxlayer/capabilities-events';
 import { UserEntity, UserCreatedEvent } from '@/domain/index.js';
@@ -26,7 +27,7 @@ export interface CreateUserOutput {
 export class CreateUserUseCase extends CreateUseCaseTemplate<
   CreateUserInput,
   UserEntity,
-  Promise<CreateUserOutput>
+  AppResult<CreateUserOutput>
 > {
   constructor(
     private userRepository: UserRepository,

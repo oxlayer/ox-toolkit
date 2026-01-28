@@ -2,9 +2,10 @@
  * Get Service Provider Use Case
  */
 
-import { GetUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import { GetByIdUseCaseTemplate } from '@oxlayer/snippets/use-cases';
 import { ServiceProviderRepository } from '@/repositories/index.js';
 import { ServiceProviderEntity } from '@/domain/index.js';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 
 export interface GetServiceProviderOutput {
   id: number;
@@ -24,19 +25,20 @@ export interface GetServiceProviderOutput {
   updatedAt: Date;
 }
 
-export class GetServiceProviderUseCase extends GetUseCaseTemplate<
-  number,
+export class GetServiceProviderUseCase extends GetByIdUseCaseTemplate<
+  { id: string },
   ServiceProviderEntity,
-  Promise<GetServiceProviderOutput>
+  AppResult<GetServiceProviderOutput & Record<string, unknown>>
 > {
   constructor(
     private serviceProviderRepository: ServiceProviderRepository,
     tracer?: unknown | null
   ) {
     super({
-      fetchEntity: async (id) => {
-        return await serviceProviderRepository.findById(id);
+      findEntity: async (id) => {
+        return await serviceProviderRepository.findById(Number(id));
       },
+      checkAccess: (_entity, _input) => true, // TODO: implement access control
       toOutput: (entity) => ({
         id: entity.id,
         name: entity.name,
@@ -56,5 +58,9 @@ export class GetServiceProviderUseCase extends GetUseCaseTemplate<
       }),
       tracer,
     });
+  }
+
+  protected getUseCaseName(): string {
+    return 'GetServiceProvider';
   }
 }

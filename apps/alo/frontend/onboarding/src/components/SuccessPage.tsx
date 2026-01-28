@@ -12,12 +12,12 @@ const SuccessPage = () => {
       </h2>
 
       <p className="text-gray-400 mb-8">
-        Entraremos em contato em breve para finalizar o seu cadastro na Aurora.
+        Entraremos em contato em breve para finalizar o seu cadastro na Alô.
       </p>
 
       <div className="bg-gray-900/50 rounded-xl p-6 border border-gray-800">
         <p className="text-gray-300 text-sm">
-          Com a Aurora você se conecta com a sua cidade com uma mensagem ou áudio.
+          Apenas um Alô e você se conecta com a sua cidade com uma mensagem ou áudio.
           Sem sair do WhatsApp.
         </p>
       </div>

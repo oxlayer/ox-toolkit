@@ -14,8 +14,8 @@ export const onboardingLeadsApi = {
    * Get all onboarding leads
    */
   getAll: async (): Promise<OnboardingLead[]> => {
-    const { data } = await apiClient.get<OnboardingLead[]>('/onboarding-leads')
-    return data
+    const { data } = await apiClient.get<{ data: OnboardingLead[] }>('/onboarding-leads')
+    return data.data
   },
 
   /**
@@ -30,20 +30,20 @@ export const onboardingLeadsApi = {
    * Get leads by status
    */
   getByStatus: async (status: OnboardingLeadStatus): Promise<OnboardingLead[]> => {
-    const { data } = await apiClient.get<OnboardingLead[]>('/onboarding-leads', {
+    const { data } = await apiClient.get<{ data: OnboardingLead[] }>('/onboarding-leads', {
       params: { status },
     })
-    return data
+    return data.data
   },
 
   /**
    * Get leads by user type
    */
   getByUserType: async (userType: OnboardingLeadUserType): Promise<OnboardingLead[]> => {
-    const { data } = await apiClient.get<OnboardingLead[]>('/onboarding-leads', {
+    const { data } = await apiClient.get<{ data: OnboardingLead[] }>('/onboarding-leads', {
       params: { user_type: userType },
     })
-    return data
+    return data.data
   },
 
   /**

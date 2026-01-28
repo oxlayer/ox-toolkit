@@ -3,6 +3,7 @@
  */
 
 import { CreateUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 import { DeliveryManRepository } from '@/repositories/index.js';
 import { EventBus } from '@oxlayer/capabilities-events';
 import { DeliveryManEntity, DeliveryManCreatedEvent } from '@/domain/index.js';
@@ -27,7 +28,7 @@ export interface CreateDeliveryManOutput {
 export class CreateDeliveryManUseCase extends CreateUseCaseTemplate<
   CreateDeliveryManInput,
   DeliveryManEntity,
-  Promise<CreateDeliveryManOutput>
+  AppResult<CreateDeliveryManOutput>
 > {
   constructor(
     private deliveryManRepository: DeliveryManRepository,

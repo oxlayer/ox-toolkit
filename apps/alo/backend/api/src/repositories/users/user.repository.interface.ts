@@ -17,7 +17,8 @@ export interface UserRepository {
   create(entity: UserEntity): Promise<UserEntity>;
   findById(id: number): Promise<UserEntity | null>;
   findByEmail(email: string): Promise<UserEntity | null>;
-  findAll(filters?: UserFilters): Promise<{ data: UserEntity[]; total: number }>;
+  findAll(filters?: UserFilters): Promise<UserEntity[]>;
+  count(filters?: UserFilters): Promise<number>;
   update(id: number, entity: Partial<UserEntity>): Promise<UserEntity>;
   delete(id: number): Promise<void>;
 }

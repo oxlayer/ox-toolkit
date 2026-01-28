@@ -4,7 +4,7 @@
  * This controller follows the OxLayer DDD patterns.
  */
 
-import { BaseController } from '@oxlayer/foundation-http-kit';
+import { BaseController, buildPageInfo, buildPaginatedPayload } from '@oxlayer/foundation-http-kit';
 import type { Context } from 'hono';
 import { z } from 'zod';
 import { Logger } from '@oxlayer/capabilities-internal';
@@ -15,6 +15,7 @@ import type {
   UpdateDeliveryManUseCase,
   DeleteDeliveryManUseCase,
 } from '../use-cases/index.js';
+import type { DeliveryManRepository } from '../repositories/index.js';
 
 const logger = new Logger('DeliveryMenController');
 
@@ -49,6 +50,7 @@ const querySchema = z.object({
   search: z.string().optional(),
   limit: z.string().transform(Number).optional(),
   offset: z.string().transform(Number).optional(),
+  include: z.string().transform((val) => val ? val.split(',') : []).optional(),
 });
 
 /**
@@ -72,13 +74,14 @@ export class DeliveryMenController extends BaseController {
     private listDeliveryMenUseCase: ListDeliveryMenUseCase,
     private getDeliveryManUseCase: GetDeliveryManUseCase,
     private updateDeliveryManUseCase: UpdateDeliveryManUseCase,
-    private deleteDeliveryManUseCase: DeleteDeliveryManUseCase
+    private deleteDeliveryManUseCase: DeleteDeliveryManUseCase,
+    private deliveryManRepository: DeliveryManRepository
   ) {
     super();
   }
 
   /**
-   * GET /api/delivery-men - List delivery men
+   * GET /api/deliverymen - List delivery men
    */
   async listDeliveryMen(c: Context): Promise<Response> {
     const query = querySchema.safeParse(c.req.query());
@@ -86,17 +89,41 @@ export class DeliveryMenController extends BaseController {
       return this.validationError(formatZodErrors(query.error.errors));
     }
 
-    const result = await this.listDeliveryMenUseCase.execute(query.data);
+    const { include, ...filters } = query.data;
+
+    // Only fetch total if explicitly requested via include=count
+    let total: number | undefined;
+    if (include?.includes('count')) {
+      total = await this.deliveryManRepository.count(filters);
+    }
+
+    const result = await this.listDeliveryMenUseCase.execute(filters);
 
     if (!result.success) {
       return this.badRequest(result.error?.message || 'Failed to fetch delivery men');
     }
 
-    return this.ok({ deliveryMen: result.data?.items || [], total: result.data?.total || 0 });
+    const items = result.data?.items || [];
+    const limit = filters.limit || 50;
+    const offset = filters.offset || 0;
+
+    const pageInfo = buildPageInfo({
+      itemsLength: items.length,
+      limit,
+      nextCursorPayload: { offset: offset + limit, limit },
+    });
+
+    return this.ok(
+      buildPaginatedPayload({
+        data: items,
+        pageInfo,
+        total,
+      })
+    );
   }
 
   /**
-   * GET /api/delivery-men/:id - Get a single delivery man
+   * GET /api/deliverymen/:id - Get a single delivery man
    */
   async getDeliveryMan(c: Context): Promise<Response> {
     const id = Number(c.req.param('id'));
@@ -105,7 +132,7 @@ export class DeliveryMenController extends BaseController {
       return this.badRequest('Invalid delivery man ID');
     }
 
-    const result = await this.getDeliveryManUseCase.execute(id);
+    const result = await this.getDeliveryManUseCase.execute({ id: String(id) });
 
     if (!result.success) {
       return this.notFound(result.error?.message || 'Delivery man not found');
@@ -142,7 +169,7 @@ export class DeliveryMenController extends BaseController {
   }
 
   /**
-   * PATCH /api/delivery-men/:id - Update a delivery man
+   * PATCH /api/deliverymen/:id - Update a delivery man
    */
   async updateDeliveryMan(c: Context): Promise<Response> {
     const id = Number(c.req.param('id'));
@@ -159,7 +186,7 @@ export class DeliveryMenController extends BaseController {
     }
 
     const result = await this.updateDeliveryManUseCase.execute({
-      id,
+      id: String(id),
       input: input.data,
     });
 
@@ -174,7 +201,7 @@ export class DeliveryMenController extends BaseController {
   }
 
   /**
-   * DELETE /api/delivery-men/:id - Delete a delivery man
+   * DELETE /api/deliverymen/:id - Delete a delivery man
    */
   async deleteDeliveryMan(c: Context): Promise<Response> {
     const id = Number(c.req.param('id'));
@@ -183,7 +210,7 @@ export class DeliveryMenController extends BaseController {
       return this.badRequest('Invalid delivery man ID');
     }
 
-    const result = await this.deleteDeliveryManUseCase.execute(id);
+    const result = await this.deleteDeliveryManUseCase.execute({ id: String(id) });
 
     if (!result.success) {
       if (result.error?.code === 'NOT_FOUND') {

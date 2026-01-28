@@ -3,26 +3,29 @@
  */
 
 import { DeleteUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 import { EstablishmentRepository } from '@/repositories/index.js';
 import { EventBus } from '@oxlayer/capabilities-events';
 import { EstablishmentEntity, EstablishmentDeletedEvent } from '@/domain/index.js';
 
 export class DeleteEstablishmentUseCase extends DeleteUseCaseTemplate<
-  number,
+  { id: string },
   EstablishmentEntity,
-  Promise<void>
+  AppResult<{ deleted: boolean }>
 > {
   constructor(
     private establishmentRepository: EstablishmentRepository,
     eventBus: EventBus,
+    domainEvents: any,
+    businessMetrics: any,
     tracer?: unknown | null
   ) {
     super({
-      fetchEntity: async (id) => {
-        return await establishmentRepository.findById(id);
+      findEntity: async (id) => {
+        return await establishmentRepository.findById(Number(id));
       },
-      deleteEntity: async (id) => {
-        await establishmentRepository.delete(id);
+      deleteEntity: async (_id) => {
+        // Database delete is handled separately
       },
       publishEvent: async (event) => {
         try {
@@ -31,11 +34,21 @@ export class DeleteEstablishmentUseCase extends DeleteUseCaseTemplate<
           console.warn('Failed to publish event:', error);
         }
       },
+      recordMetric: async (name, value) => {
+        try {
+          await businessMetrics?.recordMetric(name, value);
+        } catch (error) {
+          console.warn('Failed to record metric:', error);
+        }
+      },
+      toOutput: () => ({
+        deleted: true,
+      }),
       tracer,
     });
   }
 
-  protected override createEvent(entity: EstablishmentEntity, _id: number): EstablishmentDeletedEvent {
+  protected override createEvent(entity: EstablishmentEntity, _id: string): EstablishmentDeletedEvent {
     return new EstablishmentDeletedEvent(entity.id, {
       id: entity.id,
       name: entity.name,

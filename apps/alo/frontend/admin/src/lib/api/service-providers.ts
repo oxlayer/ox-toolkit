@@ -17,8 +17,8 @@ export const serviceProvidersApi = {
    * Get all service providers
    */
   getAll: async (): Promise<ServiceProvider[]> => {
-    const { data } = await apiClient.get<ServiceProvider[]>('/service-providers')
-    return data
+    const { data } = await apiClient.get<{ data: ServiceProvider[] }>('/service-providers')
+    return data.data
   },
 
   /**

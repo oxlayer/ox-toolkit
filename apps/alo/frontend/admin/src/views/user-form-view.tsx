@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { useUser, useUsers, useCreateUser, useUpdateUser } from '@/hooks'
+import { useUser, useEstablishments, useCreateUser, useUpdateUser } from '@/hooks'
 import { PageHeader } from '@/components/shared'
-import { Button, Input, Select, Field, Label, Card } from '@acme/ui'
+import { Button, Input, Select, SelectTrigger, SelectValue, SelectPopup, SelectItem, Field, Label, Card } from '@acme/ui'
 import { useState, useEffect } from 'react'
 import type { CreateUserInput } from '@/types'
 
@@ -21,7 +21,7 @@ export function UserFormView() {
   const isEditing = !!id
 
   const { data: user, isLoading: isLoadingUser } = useUser(Number(id))
-  const { data: establishments = [] } = useUsers()
+  const { data: establishments = [] } = useEstablishments()
   const createMutation = useCreateUser()
   const updateMutation = useUpdateUser()
 
@@ -121,27 +121,25 @@ export function UserFormView() {
           {/* Establishment */}
           <Field>
             <Label htmlFor="establishment_id">Establishment</Label>
-            <Select.Root
+            <Select
               name="establishment_id"
               value={formData.establishment_id?.toString() ?? ''}
               onValueChange={(value) =>
                 setFormData((prev) => ({ ...prev, establishment_id: value ? Number(value) : undefined }))
               }
             >
-              <Select.Trigger>
-                <Select.Value placeholder="No establishment" />
-              </Select.Trigger>
-              <Select.Portal>
-                <Select.Popup>
-                  <Select.Item value="">No establishment</Select.Item>
-                  {establishments.map((est) => (
-                    <Select.Item key={est.id} value={est.id.toString()}>
-                      {est.name}
-                    </Select.Item>
-                  ))}
-                </Select.Popup>
-              </Select.Portal>
-            </Select.Root>
+              <SelectTrigger>
+                <SelectValue placeholder="No establishment" />
+              </SelectTrigger>
+              <SelectPopup>
+                <SelectItem value="">No establishment</SelectItem>
+                {establishments.map((est) => (
+                  <SelectItem key={est.id} value={est.id.toString()}>
+                    {est.name}
+                  </SelectItem>
+                ))}
+              </SelectPopup>
+            </Select>
             <p className="mt-1 text-sm text-muted-foreground">Assign user to a specific establishment (optional)</p>
           </Field>
 

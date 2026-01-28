@@ -78,13 +78,13 @@ export interface RLSResult {
  * Row-Level Security Manager
  *
  * Dynamically applies RLS to all tables in a database.
- * Works with any client schema - no auroraid dependency.
+ * Works with any client schema.
  */
 export class RLSManager {
   constructor(
     private db: RLSDatabase,
     private config: RLSPolicyConfig = {}
-  ) {}
+  ) { }
 
   /**
    * Enable RLS for all tables in the database

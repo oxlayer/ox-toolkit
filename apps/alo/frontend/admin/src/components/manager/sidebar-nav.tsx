@@ -34,7 +34,7 @@ export function SidebarNav() {
           </div>
           <div>
             <h1 className="bg-linear-to-r from-white to-gray-300 bg-clip-text text-xl font-bold text-transparent">
-              Aurora
+              Alô
             </h1>
             <p className="text-xs text-gray-400">Manager Portal</p>
           </div>

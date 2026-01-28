@@ -3,7 +3,7 @@ import UserTypeSelection from './UserTypeSelection'
 import ServiceProviderForm from './ServiceProviderForm'
 import CompanyForm from './CompanyForm'
 import SuccessPage from './SuccessPage'
-import AuroraLogo from './AuroraLogo'
+import Logo from './Logo'
 
 const OnboardingFlow = () => {
   const [step, setStep] = useState(1)
@@ -30,7 +30,7 @@ const OnboardingFlow = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <AuroraLogo step={step} />
+        <Logo step={step} />
         <div className="bg-black/50 backdrop-blur-lg border border-gray-800 rounded-2xl p-8 shadow-2xl">
           {step === 1 && <UserTypeSelection onSelect={handleUserTypeSelect} />}
           {step === 2 && userType === 'provider' && (

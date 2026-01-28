@@ -14,8 +14,8 @@ export const establishmentsApi = {
    * Get all establishments
    */
   getAll: async (): Promise<Establishment[]> => {
-    const { data } = await apiClient.get<Establishment[]>('/establishments')
-    return data
+    const { data } = await apiClient.get<{ data: Establishment[] }>('/establishments')
+    return data.data
   },
 
   /**

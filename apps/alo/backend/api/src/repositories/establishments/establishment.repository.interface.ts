@@ -15,7 +15,8 @@ export interface EstablishmentFilters {
 export interface EstablishmentRepository {
   create(entity: EstablishmentEntity): Promise<EstablishmentEntity>;
   findById(id: number): Promise<EstablishmentEntity | null>;
-  findAll(filters?: EstablishmentFilters): Promise<{ data: EstablishmentEntity[]; total: number }>;
+  findAll(filters?: EstablishmentFilters): Promise<EstablishmentEntity[]>;
+  count(filters?: EstablishmentFilters): Promise<number>;
   update(id: number, entity: Partial<EstablishmentEntity>): Promise<EstablishmentEntity>;
   delete(id: number): Promise<void>;
 }

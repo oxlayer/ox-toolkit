@@ -67,7 +67,7 @@ The `TenancyAwarePostgres` class resolves tenant-specific database connections b
 // 1. Setup (application initialization)
 import { TenancyAwarePostgres } from '@oxlayer/capabilities-adapters-postgres-tenancy';
 import { createBitwardenSecretsClient } from '@oxlayer/capabilities-adapters-bitwarden-secrets';
-import { getDatabase, tenantPool } from '@auroraid/auth-api-database';
+import { getDatabase, tenantPool } from '@oxlayer/auth-api-database';
 
 const tenancyPostgres = new TenancyAwarePostgres({
   tenantResolver,
@@ -662,7 +662,7 @@ import { Hono } from 'hono';
 import { DatabaseTenantResolver } from '@oxlayer/capabilities-tenancy';
 import { TenancyAwarePostgres } from '@oxlayer/capabilities-adapters-postgres-tenancy';
 import { createTenancyAwareCache } from '@oxlayer/capabilities-adapters-redis-tenancy';
-import { getDatabase } from '@auroraid/auth-api-database';
+import { getDatabase } from '@oxlayer/auth-api-database';
 import { createBitwardenSecretsClient } from '@oxlayer/capabilities-adapters-bitwarden-secrets';
 
 // Initialize tenant resolver

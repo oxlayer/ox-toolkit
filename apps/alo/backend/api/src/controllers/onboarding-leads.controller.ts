@@ -4,7 +4,7 @@
  * This controller follows the OxLayer DDD patterns.
  */
 
-import { BaseController } from '@oxlayer/foundation-http-kit';
+import { BaseController, buildPageInfo, buildPaginatedPayload } from '@oxlayer/foundation-http-kit';
 import type { Context } from 'hono';
 import { z } from 'zod';
 import { Logger } from '@oxlayer/capabilities-internal';
@@ -15,6 +15,7 @@ import type {
   UpdateOnboardingLeadUseCase,
   DeleteOnboardingLeadUseCase,
 } from '../use-cases/index.js';
+import type { OnboardingLeadRepository } from '../repositories/index.js';
 
 const logger = new Logger('OnboardingLeadsController');
 
@@ -59,6 +60,7 @@ const querySchema = z.object({
   search: z.string().optional(),
   limit: z.string().transform(Number).optional(),
   offset: z.string().transform(Number).optional(),
+  include: z.string().transform((val) => val ? val.split(',') : []).optional(),
 });
 
 /**
@@ -82,7 +84,8 @@ export class OnboardingLeadsController extends BaseController {
     private listOnboardingLeadsUseCase: ListOnboardingLeadsUseCase,
     private getOnboardingLeadUseCase: GetOnboardingLeadUseCase,
     private updateOnboardingLeadUseCase: UpdateOnboardingLeadUseCase,
-    private deleteOnboardingLeadUseCase: DeleteOnboardingLeadUseCase
+    private deleteOnboardingLeadUseCase: DeleteOnboardingLeadUseCase,
+    private onboardingLeadRepository: OnboardingLeadRepository
   ) {
     super();
   }
@@ -96,13 +99,37 @@ export class OnboardingLeadsController extends BaseController {
       return this.validationError(formatZodErrors(query.error.errors));
     }
 
-    const result = await this.listOnboardingLeadsUseCase.execute(query.data);
+    const { include, ...filters } = query.data;
+
+    // Only fetch total if explicitly requested via include=count
+    let total: number | undefined;
+    if (include?.includes('count')) {
+      total = await this.onboardingLeadRepository.count(filters);
+    }
+
+    const result = await this.listOnboardingLeadsUseCase.execute(filters);
 
     if (!result.success) {
       return this.badRequest(result.error?.message || 'Failed to fetch onboarding leads');
     }
 
-    return this.ok({ onboardingLeads: result.data?.items || [], total: result.data?.total || 0 });
+    const items = result.data?.items || [];
+    const limit = filters.limit || 50;
+    const offset = filters.offset || 0;
+
+    const pageInfo = buildPageInfo({
+      itemsLength: items.length,
+      limit,
+      nextCursorPayload: { offset: offset + limit, limit },
+    });
+
+    return this.ok(
+      buildPaginatedPayload({
+        data: items,
+        pageInfo,
+        total,
+      })
+    );
   }
 
   /**
@@ -115,7 +142,7 @@ export class OnboardingLeadsController extends BaseController {
       return this.badRequest('Invalid onboarding lead ID');
     }
 
-    const result = await this.getOnboardingLeadUseCase.execute(id);
+    const result = await this.getOnboardingLeadUseCase.execute({ id: String(id) });
 
     if (!result.success) {
       return this.notFound(result.error?.message || 'Onboarding lead not found');
@@ -170,7 +197,7 @@ export class OnboardingLeadsController extends BaseController {
     }
 
     const result = await this.updateOnboardingLeadUseCase.execute({
-      id,
+      id: String(id),
       input: {
         ...input.data,
         contactedAt: input.data.contactedAt ? new Date(input.data.contactedAt) : undefined,
@@ -197,7 +224,7 @@ export class OnboardingLeadsController extends BaseController {
       return this.badRequest('Invalid onboarding lead ID');
     }
 
-    const result = await this.deleteOnboardingLeadUseCase.execute(id);
+    const result = await this.deleteOnboardingLeadUseCase.execute({ id: String(id) });
 
     if (!result.success) {
       if (result.error?.code === 'NOT_FOUND') {

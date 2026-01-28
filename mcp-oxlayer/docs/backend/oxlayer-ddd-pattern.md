@@ -443,7 +443,7 @@ export class TodoCreatedEvent extends TodoEvent<TodoCreatedPayload> {
 
 ```typescript
 // src/controllers/todos.controller.ts
-import { BaseController } from '@oxlayer/foundation-http-kit';
+import { BaseController, buildPageInfo, buildPaginatedPayload } from '@oxlayer/foundation-http-kit';
 import { Context } from 'hono';
 import { z } from 'zod';
 
@@ -452,7 +452,8 @@ export class TodosController extends BaseController {
     private createTodoUseCase: CreateTodoUseCase,
     private listTodosUseCase: ListTodosUseCase,
     private updateTodoUseCase: UpdateTodoUseCase,
-    private deleteTodoUseCase: DeleteTodoUseCase
+    private deleteTodoUseCase: DeleteTodoUseCase,
+    private todoRepository: TodoRepository
   ) {
     super();
   }
@@ -482,12 +483,14 @@ export class TodosController extends BaseController {
   }
 
   async listTodos(c: Context): Promise<Response> {
-    const filters = {
-      status: c.req.query('status'),
-      userId: c.get('userId') as string,
-      page: parseInt(c.req.query('page') || '1'),
-      limit: parseInt(c.req.query('limit') || '10'),
-    };
+    const { include, ...filters } = parseQuery(c.req.query());
+
+    // Only fetch total if explicitly requested via include=count
+    // Backend rule of thumb: avoid expensive count queries unless needed
+    let total: number | undefined;
+    if (include?.includes('count')) {
+      total = await this.todoRepository.count(filters);
+    }
 
     const result = await this.listTodosUseCase.execute(filters);
 
@@ -495,7 +498,23 @@ export class TodosController extends BaseController {
       return this.badRequest(result.error?.message || 'Failed to list todos');
     }
 
-    return this.ok(result.data);
+    const items = result.data?.items || [];
+    const limit = filters.limit || 50;
+    const offset = filters.offset || 0;
+
+    const pageInfo = buildPageInfo({
+      itemsLength: items.length,
+      limit,
+      nextCursorPayload: { offset: offset + limit, limit },
+    });
+
+    return this.ok(
+      buildPaginatedPayload({
+        data: items,
+        pageInfo,
+        total,
+      })
+    );
   }
 }
 ```

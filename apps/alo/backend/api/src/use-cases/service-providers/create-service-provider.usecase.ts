@@ -3,6 +3,7 @@
  */
 
 import { CreateUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 import { ServiceProviderRepository } from '@/repositories/index.js';
 import { EventBus } from '@oxlayer/capabilities-events';
 import { ServiceProviderEntity, ServiceProviderCreatedEvent } from '@/domain/index.js';
@@ -35,7 +36,7 @@ export interface CreateServiceProviderOutput {
 export class CreateServiceProviderUseCase extends CreateUseCaseTemplate<
   CreateServiceProviderInput,
   ServiceProviderEntity,
-  Promise<CreateServiceProviderOutput>
+  AppResult<CreateServiceProviderOutput>
 > {
   constructor(
     private serviceProviderRepository: ServiceProviderRepository,

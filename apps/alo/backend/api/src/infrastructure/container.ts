@@ -563,7 +563,8 @@ export class DIContainer extends CompleteContainerTemplate {
       this.listEstablishmentsUseCase,
       this.getEstablishmentUseCase,
       this.updateEstablishmentUseCase,
-      this.deleteEstablishmentUseCase
+      this.deleteEstablishmentUseCase,
+      this.establishmentRepository
     );
   }
 
@@ -576,7 +577,8 @@ export class DIContainer extends CompleteContainerTemplate {
       this.createUserUseCase,
       this.listUsersUseCase,
       this.updateUserUseCase,
-      this.deleteUserUseCase
+      this.deleteUserUseCase,
+      this.userRepository
     );
   }
 
@@ -590,7 +592,8 @@ export class DIContainer extends CompleteContainerTemplate {
       this.listDeliveryMenUseCase,
       this.getDeliveryManUseCase,
       this.updateDeliveryManUseCase,
-      this.deleteDeliveryManUseCase
+      this.deleteDeliveryManUseCase,
+      this.deliveryManRepository
     );
   }
 
@@ -604,7 +607,8 @@ export class DIContainer extends CompleteContainerTemplate {
       this.listServiceProvidersUseCase,
       this.getServiceProviderUseCase,
       this.updateServiceProviderUseCase,
-      this.deleteServiceProviderUseCase
+      this.deleteServiceProviderUseCase,
+      this.serviceProviderRepository
     );
   }
 
@@ -618,7 +622,8 @@ export class DIContainer extends CompleteContainerTemplate {
       this.listOnboardingLeadsUseCase,
       this.getOnboardingLeadUseCase,
       this.updateOnboardingLeadUseCase,
-      this.deleteOnboardingLeadUseCase
+      this.deleteOnboardingLeadUseCase,
+      this.onboardingLeadRepository
     );
   }
 }

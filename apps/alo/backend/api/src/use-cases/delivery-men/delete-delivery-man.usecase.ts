@@ -3,32 +3,29 @@
  */
 
 import { DeleteUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 import { DeliveryManRepository } from '@/repositories/index.js';
 import { EventBus } from '@oxlayer/capabilities-events';
 import { DeliveryManEntity, DeliveryManDeletedEvent } from '@/domain/index.js';
 
-export interface DeleteDeliveryManOutput {
-  id: number;
-  email: string;
-  deletedAt: Date;
-}
-
 export class DeleteDeliveryManUseCase extends DeleteUseCaseTemplate<
-  number,
+  { id: string },
   DeliveryManEntity,
-  Promise<DeleteDeliveryManOutput>
+  AppResult<{ deleted: boolean }>
 > {
   constructor(
     private deliveryManRepository: DeliveryManRepository,
     eventBus: EventBus,
+    _domainEvents: any,
+    businessMetrics: any,
     tracer?: unknown | null
   ) {
     super({
-      fetchEntity: async (id) => {
-        return await deliveryManRepository.findById(id);
+      findEntity: async (id) => {
+        return await deliveryManRepository.findById(Number(id));
       },
-      deleteEntity: async (id) => {
-        await deliveryManRepository.delete(id);
+      deleteEntity: async (_id) => {
+        // Database delete is handled separately
       },
       publishEvent: async (event) => {
         try {
@@ -37,16 +34,18 @@ export class DeleteDeliveryManUseCase extends DeleteUseCaseTemplate<
           console.warn('Failed to publish event:', error);
         }
       },
-      toOutput: (entity) => ({
-        id: entity.id,
-        email: entity.email,
-        deletedAt: new Date(),
-      }),
+      recordMetric: async (name, value) => {
+        try {
+          await businessMetrics?.recordMetric(name, value);
+        } catch (error) {
+          console.warn('Failed to record metric:', error);
+        }
+      },
       tracer,
     });
   }
 
-  protected override createEvent(entity: DeliveryManEntity, _id: number): DeliveryManDeletedEvent {
+  protected override createEvent(entity: DeliveryManEntity): DeliveryManDeletedEvent {
     return new DeliveryManDeletedEvent(entity.id, {
       id: entity.id,
       email: entity.email,

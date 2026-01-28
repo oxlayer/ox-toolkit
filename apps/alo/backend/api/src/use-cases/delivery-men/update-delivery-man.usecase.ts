@@ -3,6 +3,7 @@
  */
 
 import { UpdateUseCaseTemplate } from '@oxlayer/snippets/use-cases';
+import type { AppResult } from '@oxlayer/snippets/use-cases';
 import { DeliveryManRepository } from '@/repositories/index.js';
 import { EventBus } from '@oxlayer/capabilities-events';
 import { DeliveryManEntity, DeliveryManUpdatedEvent } from '@/domain/index.js';
@@ -23,25 +24,22 @@ export interface UpdateDeliveryManOutput {
 }
 
 export class UpdateDeliveryManUseCase extends UpdateUseCaseTemplate<
-  { id: number; input: UpdateDeliveryManInput },
+  { id: string; input: UpdateDeliveryManInput },
   DeliveryManEntity,
-  Promise<UpdateDeliveryManOutput>
+  AppResult<UpdateDeliveryManOutput & Record<string, unknown>>
 > {
   constructor(
     private deliveryManRepository: DeliveryManRepository,
     eventBus: EventBus,
+    _domainEvents: any,
+    businessMetrics: any,
     tracer?: unknown | null
   ) {
     super({
-      fetchEntity: async (id) => {
-        return await deliveryManRepository.findById(id);
+      findEntity: async (id) => {
+        return await deliveryManRepository.findById(Number(id));
       },
-      updateEntity: async (id, input) => {
-        const entity = await deliveryManRepository.findById(id);
-        if (!entity) {
-          throw new Error('Delivery man not found');
-        }
-
+      updateEntity: async (entity, { input }) => {
         // Apply updates using entity methods
         if (input.name !== undefined) entity.name = input.name;
         if (input.password !== undefined) entity.passwordHash = input.password;
@@ -56,14 +54,22 @@ export class UpdateDeliveryManUseCase extends UpdateUseCaseTemplate<
             entity.deactivate();
           }
         }
-
-        return await deliveryManRepository.update(id, entity);
+      },
+      persistEntity: async (_entity) => {
+        // Database update is handled separately
       },
       publishEvent: async (event) => {
         try {
           await eventBus.emit(event);
         } catch (error) {
           console.warn('Failed to publish event:', error);
+        }
+      },
+      recordMetric: async (name, value) => {
+        try {
+          await businessMetrics?.recordMetric(name, value);
+        } catch (error) {
+          console.warn('Failed to record metric:', error);
         }
       },
       toOutput: (entity) => ({
@@ -76,7 +82,7 @@ export class UpdateDeliveryManUseCase extends UpdateUseCaseTemplate<
     });
   }
 
-  protected override createEvent(entity: DeliveryManEntity, _params: { id: number; input: UpdateDeliveryManInput }): DeliveryManUpdatedEvent {
+  protected override createEvent(entity: DeliveryManEntity, changes: Record<string, unknown>): DeliveryManUpdatedEvent {
     return new DeliveryManUpdatedEvent(entity.id, {
       id: entity.id,
       name: entity.name,

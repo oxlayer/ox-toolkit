@@ -9,8 +9,8 @@ export const usersApi = {
    * Get all users
    */
   getAll: async (): Promise<User[]> => {
-    const { data } = await apiClient.get<User[]>('/users')
-    return data
+    const { data } = await apiClient.get<{ data: User[] }>('/users')
+    return data.data
   },
 
   /**

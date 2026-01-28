@@ -25,52 +25,52 @@ importers:
     dependencies:
       '@oxlayer/capabilities-adapters-postgres':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/adapters/database/postgres
+        version: link:../../../../backend/capabilities/adapters/database/postgres
       '@oxlayer/capabilities-adapters-rabbitmq':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/adapters/messaging/rabbitmq
+        version: link:../../../../backend/capabilities/adapters/messaging/rabbitmq
       '@oxlayer/capabilities-adapters-redis':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/adapters/database/redis
+        version: link:../../../../backend/capabilities/adapters/database/redis
       '@oxlayer/capabilities-auth':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/auth
+        version: link:../../../../backend/capabilities/auth
       '@oxlayer/capabilities-cache':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/cache
+        version: link:../../../../backend/capabilities/cache
       '@oxlayer/capabilities-events':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/events
+        version: link:../../../../backend/capabilities/events
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/internal
+        version: link:../../../../backend/capabilities/internal
       '@oxlayer/capabilities-metrics':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/metrics
+        version: link:../../../../backend/capabilities/metrics
       '@oxlayer/capabilities-openapi':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/openapi
+        version: link:../../../../backend/capabilities/openapi
       '@oxlayer/capabilities-telemetry':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/telemetry
+        version: link:../../../../backend/capabilities/telemetry
       '@oxlayer/capabilities-testing':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/testing
+        version: link:../../../../backend/capabilities/testing
       '@oxlayer/foundation-app-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/app-kit
+        version: link:../../../../backend/foundation/app-kit
       '@oxlayer/foundation-domain-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/domain-kit
+        version: link:../../../../backend/foundation/domain-kit
       '@oxlayer/foundation-http-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/http-kit
+        version: link:../../../../backend/foundation/http-kit
       '@oxlayer/foundation-persistence-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/persistence-kit
+        version: link:../../../../backend/foundation/persistence-kit
       '@oxlayer/foundation-testing-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/testing-kit
+        version: link:../../../../backend/foundation/testing-kit
       '@oxlayer/snippets':
         specifier: workspace:*
         version: link:../../../../backend/snippets
@@ -200,6 +200,9 @@ importers:
         specifier: ^19.0.0
         version: 19.2.3(react@19.2.3)
     devDependencies:
+      '@tailwindcss/vite':
+        specifier: ^4.1.18
+        version: 4.1.18(vite@6.4.1(@types/node@25.0.10)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
       '@types/react':
         specifier: ^19.0.0
         version: 19.2.8
@@ -305,55 +308,55 @@ importers:
         version: 0.4.3(hono@4.11.4)(zod@4.2.1)
       '@oxlayer/capabilities-adapters-postgres':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/adapters/database/postgres
+        version: link:../../../../backend/capabilities/adapters/database/postgres
       '@oxlayer/capabilities-adapters-rabbitmq':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/adapters/messaging/rabbitmq
+        version: link:../../../../backend/capabilities/adapters/messaging/rabbitmq
       '@oxlayer/capabilities-adapters-redis':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/adapters/database/redis
+        version: link:../../../../backend/capabilities/adapters/database/redis
       '@oxlayer/capabilities-auth':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/auth
+        version: link:../../../../backend/capabilities/auth
       '@oxlayer/capabilities-cache':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/cache
+        version: link:../../../../backend/capabilities/cache
       '@oxlayer/capabilities-events':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/events
+        version: link:../../../../backend/capabilities/events
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/internal
+        version: link:../../../../backend/capabilities/internal
       '@oxlayer/capabilities-openapi':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/openapi
+        version: link:../../../../backend/capabilities/openapi
       '@oxlayer/capabilities-telemetry':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/telemetry
+        version: link:../../../../backend/capabilities/telemetry
       '@oxlayer/cli-keycloak-bootstrap':
         specifier: workspace:*
         version: link:../../../../backend/cli/keycloak-bootstrap
       '@oxlayer/foundation-app-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/app-kit
+        version: link:../../../../backend/foundation/app-kit
       '@oxlayer/foundation-domain-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/domain-kit
+        version: link:../../../../backend/foundation/domain-kit
       '@oxlayer/foundation-http-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/http-kit
+        version: link:../../../../backend/foundation/http-kit
       '@oxlayer/foundation-persistence-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/persistence-kit
+        version: link:../../../../backend/foundation/persistence-kit
       '@oxlayer/foundation-testing-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/testing-kit
+        version: link:../../../../backend/foundation/testing-kit
       '@oxlayer/pro-adapters-postgres-tenancy':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/proprietary/adapters/database/postgres-tenancy
+        version: link:../../../../backend/pro/adapters/database/postgres-tenancy
       '@oxlayer/pro-tenancy':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/proprietary/tenancy
+        version: link:../../../../backend/pro/tenancy
       cpf-cnpj-validator:
         specifier: 1.0.3
         version: 1.0.3
@@ -841,52 +844,52 @@ importers:
     dependencies:
       '@oxlayer/capabilities-adapters-bitwarden-secrets':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/adapters/bitwarden-secrets
+        version: link:../../../../backend/capabilities/adapters/bitwarden-secrets
       '@oxlayer/capabilities-adapters-postgres':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/adapters/database/postgres
+        version: link:../../../../backend/capabilities/adapters/database/postgres
       '@oxlayer/capabilities-adapters-rabbitmq':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/adapters/messaging/rabbitmq
+        version: link:../../../../backend/capabilities/adapters/messaging/rabbitmq
       '@oxlayer/capabilities-adapters-redis':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/adapters/database/redis
+        version: link:../../../../backend/capabilities/adapters/database/redis
       '@oxlayer/capabilities-auth':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/auth
+        version: link:../../../../backend/capabilities/auth
       '@oxlayer/capabilities-cache':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/cache
+        version: link:../../../../backend/capabilities/cache
       '@oxlayer/capabilities-events':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/events
+        version: link:../../../../backend/capabilities/events
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/internal
+        version: link:../../../../backend/capabilities/internal
       '@oxlayer/capabilities-openapi':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/openapi
+        version: link:../../../../backend/capabilities/openapi
       '@oxlayer/capabilities-telemetry':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/telemetry
+        version: link:../../../../backend/capabilities/telemetry
       '@oxlayer/capabilities-testing':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/capabilities/testing
+        version: link:../../../../backend/capabilities/testing
       '@oxlayer/foundation-app-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/app-kit
+        version: link:../../../../backend/foundation/app-kit
       '@oxlayer/foundation-domain-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/domain-kit
+        version: link:../../../../backend/foundation/domain-kit
       '@oxlayer/foundation-http-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/http-kit
+        version: link:../../../../backend/foundation/http-kit
       '@oxlayer/foundation-persistence-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/persistence-kit
+        version: link:../../../../backend/foundation/persistence-kit
       '@oxlayer/foundation-testing-kit':
         specifier: workspace:*
-        version: link:../../../../backend/release/0.0.1/foundation/testing-kit
+        version: link:../../../../backend/foundation/testing-kit
       '@oxlayer/snippets':
         specifier: workspace:*
         version: link:../../../../backend/snippets
@@ -1026,7 +1029,7 @@ importers:
     dependencies:
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../release/0.0.1/capabilities/internal
+        version: link:../../internal
     devDependencies:
       tsup:
         specifier: latest
@@ -1042,7 +1045,7 @@ importers:
         version: 1.16.0
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/internal
+        version: link:../../../internal
     devDependencies:
       tsup:
         specifier: latest
@@ -1058,7 +1061,7 @@ importers:
         version: 1.35.0
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/internal
+        version: link:../../../internal
       hono:
         specifier: 4.11.4
         version: 4.11.4
@@ -1074,7 +1077,7 @@ importers:
     dependencies:
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/internal
+        version: link:../../../internal
       mongodb:
         specifier: ^6.3.0
         version: 6.21.0(socks@2.8.7)
@@ -1090,7 +1093,7 @@ importers:
     dependencies:
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/internal
+        version: link:../../../internal
       drizzle-orm:
         specifier: ^0.45.1
         version: 0.45.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(bun-types@1.3.6)(postgres@3.4.8)
@@ -1109,10 +1112,10 @@ importers:
     dependencies:
       '@oxlayer/capabilities-cache':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/cache
+        version: link:../../../cache
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/internal
+        version: link:../../../internal
       ioredis:
         specifier: ^5.0.0
         version: 5.9.2
@@ -1131,16 +1134,16 @@ importers:
     dependencies:
       '@oxlayer/capabilities-adapters-redis':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/adapters/database/redis
+        version: link:../../database/redis
       '@oxlayer/capabilities-events':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/events
+        version: link:../../../events
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/internal
+        version: link:../../../internal
       '@oxlayer/capabilities-queues':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/queues
+        version: link:../../../queues
       bullmq:
         specifier: ^5.0.0
         version: 5.67.1
@@ -1160,13 +1163,13 @@ importers:
     dependencies:
       '@oxlayer/capabilities-adapters-redis':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/adapters/database/redis
+        version: link:../../database/redis
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/internal
+        version: link:../../../internal
       '@oxlayer/capabilities-scheduler':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/scheduler
+        version: link:../../../scheduler
       bullmq:
         specifier: ^5.0.0
         version: 5.67.1
@@ -1182,7 +1185,7 @@ importers:
     dependencies:
       '@oxlayer/capabilities-events':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/events
+        version: link:../../../events
     devDependencies:
       tsup:
         specifier: latest
@@ -1195,7 +1198,7 @@ importers:
     dependencies:
       '@oxlayer/capabilities-events':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/events
+        version: link:../../../events
       mqtt:
         specifier: ^5.0.0
         version: 5.14.1
@@ -1214,16 +1217,16 @@ importers:
     dependencies:
       '@oxlayer/capabilities-events':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/events
+        version: link:../../../events
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/internal
+        version: link:../../../internal
       '@oxlayer/capabilities-queues':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/queues
+        version: link:../../../queues
       '@oxlayer/capabilities-telemetry':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/telemetry
+        version: link:../../../telemetry
       amqplib:
         specifier: ^0.10.3
         version: 0.10.9
@@ -1252,13 +1255,13 @@ importers:
         version: 3.975.0
       '@oxlayer/capabilities-events':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/events
+        version: link:../../../events
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/internal
+        version: link:../../../internal
       '@oxlayer/capabilities-queues':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/queues
+        version: link:../../../queues
     devDependencies:
       tsup:
         specifier: latest
@@ -1271,10 +1274,10 @@ importers:
     dependencies:
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/internal
+        version: link:../../../internal
       '@oxlayer/capabilities-search':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/search
+        version: link:../../../search
     devDependencies:
       tsup:
         specifier: latest
@@ -1290,7 +1293,7 @@ importers:
         version: 3.975.0
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/internal
+        version: link:../../../internal
     devDependencies:
       tsup:
         specifier: latest
@@ -1307,10 +1310,10 @@ importers:
     dependencies:
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/internal
+        version: link:../../../internal
       '@oxlayer/capabilities-vector':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/vector
+        version: link:../../../vector
       '@qdrant/js-client-rest':
         specifier: ^1.12.0
         version: 1.16.2(typescript@5.9.3)
@@ -1357,10 +1360,10 @@ importers:
     dependencies:
       '@oxlayer/capabilities-metrics':
         specifier: workspace:*
-        version: link:../../release/0.0.1/capabilities/metrics
+        version: link:../metrics
       '@oxlayer/capabilities-telemetry':
         specifier: workspace:*
-        version: link:../../release/0.0.1/capabilities/telemetry
+        version: link:../telemetry
       hono:
         specifier: ^4.0.0
         version: 4.11.4
@@ -1398,7 +1401,7 @@ importers:
     dependencies:
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../release/0.0.1/capabilities/internal
+        version: link:../internal
       hono:
         specifier: ^4.0.0
         version: 4.11.4
@@ -1426,7 +1429,7 @@ importers:
     dependencies:
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
-        version: link:../../release/0.0.1/capabilities/internal
+        version: link:../internal
     devDependencies:
       tsup:
         specifier: latest
@@ -1519,13 +1522,13 @@ importers:
     dependencies:
       '@oxlayer/capabilities-events':
         specifier: workspace:*
-        version: link:../../release/0.0.1/capabilities/events
+        version: link:../events
       '@oxlayer/capabilities-metrics':
         specifier: workspace:*
-        version: link:../../release/0.0.1/capabilities/metrics
+        version: link:../metrics
       '@oxlayer/capabilities-telemetry':
         specifier: workspace:*
-        version: link:../../release/0.0.1/capabilities/telemetry
+        version: link:../telemetry
     devDependencies:
       tsup:
         specifier: latest
@@ -1612,7 +1615,7 @@ importers:
     dependencies:
       '@oxlayer/foundation-domain-kit':
         specifier: workspace:*
-        version: link:../../release/0.0.1/foundation/domain-kit
+        version: link:../domain-kit
     devDependencies:
       bun-types:
         specifier: 1.3.6
@@ -1640,7 +1643,7 @@ importers:
     dependencies:
       '@oxlayer/foundation-domain-kit':
         specifier: workspace:*
-        version: link:../../release/0.0.1/foundation/domain-kit
+        version: link:../domain-kit
     devDependencies:
       bun-types:
         specifier: 1.3.6
@@ -1659,7 +1662,7 @@ importers:
     dependencies:
       '@oxlayer/foundation-domain-kit':
         specifier: workspace:*
-        version: link:../../release/0.0.1/foundation/domain-kit
+        version: link:../domain-kit
     devDependencies:
       bun-types:
         specifier: 1.3.6
@@ -1675,10 +1678,10 @@ importers:
     dependencies:
       '@oxlayer/foundation-app-kit':
         specifier: workspace:*
-        version: link:../../release/0.0.1/foundation/app-kit
+        version: link:../app-kit
       '@oxlayer/foundation-domain-kit':
         specifier: workspace:*
-        version: link:../../release/0.0.1/foundation/domain-kit
+        version: link:../domain-kit
     devDependencies:
       bun-types:
         specifier: 1.3.6
@@ -1706,10 +1709,10 @@ importers:
     dependencies:
       '@oxlayer/capabilities-adapters-bitwarden-secrets':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/adapters/bitwarden-secrets
+        version: link:../../../../capabilities/adapters/bitwarden-secrets
       '@oxlayer/pro-tenancy':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/proprietary/tenancy
+        version: link:../../../tenancy
     devDependencies:
       tsup:
         specifier: latest
@@ -1725,7 +1728,7 @@ importers:
         version: 1.35.0
       '@oxlayer/pro-tenancy':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/proprietary/tenancy
+        version: link:../../../tenancy
     devDependencies:
       tsup:
         specifier: latest
@@ -1738,7 +1741,7 @@ importers:
     dependencies:
       '@oxlayer/pro-tenancy':
         specifier: workspace:*
-        version: link:../../../../release/0.0.1/proprietary/tenancy
+        version: link:../../../tenancy
       mongodb:
         specifier: ^6.0.0
         version: 6.21.0(socks@2.8.7)
@@ -1751,826 +1754,6 @@ importers:
         version: 5.9.3
 
   backend/pro/adapters/database/postgres-tenancy:
-    dependencies:
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/internal
-      '@oxlayer/pro-tenancy':
-        specifier: workspace:*
-        version: link:../../../../release/0.0.1/proprietary/tenancy
-      drizzle-orm:
-        specifier: ^0.29.0
-        version: 0.29.5(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(@types/react@19.2.8)(bun-types@1.3.6)(postgres@3.4.8)(react@19.2.4)
-      postgres:
-        specifier: ^3.4.0
-        version: 3.4.8
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/pro/adapters/database/redis-tenancy:
-    dependencies:
-      '@oxlayer/capabilities-cache':
-        specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/cache
-      '@oxlayer/pro-tenancy':
-        specifier: workspace:*
-        version: link:../../../../release/0.0.1/proprietary/tenancy
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/pro/adapters/messaging/mqtt-tenancy:
-    dependencies:
-      '@oxlayer/pro-tenancy':
-        specifier: workspace:*
-        version: link:../../../../release/0.0.1/proprietary/tenancy
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/pro/adapters/messaging/rabbitmq-tenancy:
-    dependencies:
-      '@oxlayer/pro-tenancy':
-        specifier: workspace:*
-        version: link:../../../../release/0.0.1/proprietary/tenancy
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/pro/adapters/messaging/sqs-tenancy:
-    dependencies:
-      '@oxlayer/pro-tenancy':
-        specifier: workspace:*
-        version: link:../../../../release/0.0.1/proprietary/tenancy
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/pro/adapters/search/quickwit-tenancy:
-    dependencies:
-      '@oxlayer/capabilities-search':
-        specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/search
-      '@oxlayer/pro-tenancy':
-        specifier: workspace:*
-        version: link:../../../../release/0.0.1/proprietary/tenancy
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/pro/adapters/storage/s3/s3-tenancy:
-    dependencies:
-      '@oxlayer/capabilities-adapters-bitwarden-secrets':
-        specifier: workspace:*
-        version: link:../../../../../release/0.0.1/capabilities/adapters/bitwarden-secrets
-      '@oxlayer/pro-tenancy':
-        specifier: workspace:*
-        version: link:../../../../../release/0.0.1/proprietary/tenancy
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/pro/adapters/vector/qdrant-tenancy:
-    dependencies:
-      '@oxlayer/capabilities-vector':
-        specifier: workspace:*
-        version: link:../../../../release/0.0.1/capabilities/vector
-      '@oxlayer/pro-tenancy':
-        specifier: workspace:*
-        version: link:../../../../release/0.0.1/proprietary/tenancy
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/pro/tenancy:
-    dependencies:
-      '@oxlayer/capabilities-cache':
-        specifier: workspace:*
-        version: link:../../release/0.0.1/capabilities/cache
-      '@oxlayer/capabilities-metrics':
-        specifier: workspace:*
-        version: link:../../release/0.0.1/capabilities/metrics
-      '@oxlayer/capabilities-telemetry':
-        specifier: workspace:*
-        version: link:../../release/0.0.1/capabilities/telemetry
-      hono:
-        specifier: ^4.0.0
-        version: 4.11.4
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities-web/state:
-    dependencies:
-      '@legendapp/state':
-        specifier: 3.0.0-beta.43
-        version: 3.0.0-beta.43(react@18.3.1)
-      '@sqlite.org/sqlite-wasm':
-        specifier: 3.51.2-build4
-        version: 3.51.2-build4
-      react:
-        specifier: ^18.0.0
-        version: 18.3.1
-    devDependencies:
-      '@types/node':
-        specifier: latest
-        version: 25.0.10
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/adapters/bitwarden-secrets:
-    dependencies:
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../../internal
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/adapters/database/clickhouse:
-    dependencies:
-      '@clickhouse/client':
-        specifier: ^1.2.0
-        version: 1.16.0
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../../../internal
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/adapters/database/influxdb:
-    dependencies:
-      '@influxdata/influxdb-client':
-        specifier: ^1.33.0
-        version: 1.35.0
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../../../internal
-      hono:
-        specifier: 4.11.4
-        version: 4.11.4
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/adapters/database/mongo:
-    dependencies:
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../../../internal
-      mongodb:
-        specifier: ^6.3.0
-        version: 6.21.0(socks@2.8.7)
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/adapters/database/postgres:
-    dependencies:
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../../../internal
-      drizzle-orm:
-        specifier: ^0.45.1
-        version: 0.45.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(bun-types@1.3.6)(postgres@3.4.8)
-      postgres:
-        specifier: ^3.4.8
-        version: 3.4.8
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/adapters/database/redis:
-    dependencies:
-      '@oxlayer/capabilities-cache':
-        specifier: workspace:*
-        version: link:../../../cache
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../../../internal
-      ioredis:
-        specifier: ^5.0.0
-        version: 5.9.2
-    devDependencies:
-      hono:
-        specifier: 4.11.4
-        version: 4.11.4
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/adapters/messaging/bullmq:
-    dependencies:
-      '@oxlayer/capabilities-adapters-redis':
-        specifier: workspace:*
-        version: link:../../database/redis
-      '@oxlayer/capabilities-events':
-        specifier: workspace:*
-        version: link:../../../events
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../../../internal
-      '@oxlayer/capabilities-queues':
-        specifier: workspace:*
-        version: link:../../../queues
-      bullmq:
-        specifier: ^5.0.0
-        version: 5.67.1
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-    optionalDependencies:
-      hono:
-        specifier: ^4.0.0
-        version: 4.11.4
-
-  backend/release/0.0.1/capabilities/adapters/messaging/bullmq-scheduler:
-    dependencies:
-      '@oxlayer/capabilities-adapters-redis':
-        specifier: workspace:*
-        version: link:../../database/redis
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../../../internal
-      '@oxlayer/capabilities-scheduler':
-        specifier: workspace:*
-        version: link:../../../scheduler
-      bullmq:
-        specifier: ^5.0.0
-        version: 5.67.1
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/adapters/messaging/eventemitter:
-    dependencies:
-      '@oxlayer/capabilities-events':
-        specifier: workspace:*
-        version: link:../../../events
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/adapters/messaging/mqtt:
-    dependencies:
-      '@oxlayer/capabilities-events':
-        specifier: workspace:*
-        version: link:../../../events
-      mqtt:
-        specifier: ^5.0.0
-        version: 5.14.1
-    devDependencies:
-      '@types/mqtt':
-        specifier: latest
-        version: 2.5.0
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/adapters/messaging/rabbitmq:
-    dependencies:
-      '@oxlayer/capabilities-events':
-        specifier: workspace:*
-        version: link:../../../events
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../../../internal
-      '@oxlayer/capabilities-queues':
-        specifier: workspace:*
-        version: link:../../../queues
-      '@oxlayer/capabilities-telemetry':
-        specifier: workspace:*
-        version: link:../../../telemetry
-      amqplib:
-        specifier: ^0.10.3
-        version: 0.10.9
-    devDependencies:
-      '@opentelemetry/api':
-        specifier: ^1.9.0
-        version: 1.9.0
-      '@types/amqplib':
-        specifier: latest
-        version: 0.10.8
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-    optionalDependencies:
-      hono:
-        specifier: ^4.0.0
-        version: 4.11.4
-
-  backend/release/0.0.1/capabilities/adapters/messaging/sqs:
-    dependencies:
-      '@aws-sdk/client-sqs':
-        specifier: ^3.0.0
-        version: 3.975.0
-      '@oxlayer/capabilities-events':
-        specifier: workspace:*
-        version: link:../../../events
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../../../internal
-      '@oxlayer/capabilities-queues':
-        specifier: workspace:*
-        version: link:../../../queues
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/adapters/search/quickwit:
-    dependencies:
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../../../internal
-      '@oxlayer/capabilities-search':
-        specifier: workspace:*
-        version: link:../../../search
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/adapters/storage/object-storage:
-    dependencies:
-      '@aws-sdk/client-s3':
-        specifier: ^3.969.0
-        version: 3.975.0
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../../../internal
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-    optionalDependencies:
-      hono:
-        specifier: ^4.0.0
-        version: 4.11.4
-
-  backend/release/0.0.1/capabilities/adapters/vector/qdrant:
-    dependencies:
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../../../internal
-      '@oxlayer/capabilities-vector':
-        specifier: workspace:*
-        version: link:../../../vector
-      '@qdrant/js-client-rest':
-        specifier: ^1.12.0
-        version: 1.16.2(typescript@5.9.3)
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/auth:
-    dependencies:
-      hono:
-        specifier: ^4.0.0
-        version: 4.11.4
-      jsonwebtoken:
-        specifier: ^9.0.2
-        version: 9.0.3
-      jwks-rsa:
-        specifier: ^3.1.0
-        version: 3.2.2
-    devDependencies:
-      '@types/jsonwebtoken':
-        specifier: ^9.0.5
-        version: 9.0.10
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/cache:
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/events:
-    dependencies:
-      '@oxlayer/capabilities-metrics':
-        specifier: workspace:*
-        version: link:../metrics
-      '@oxlayer/capabilities-telemetry':
-        specifier: workspace:*
-        version: link:../telemetry
-      hono:
-        specifier: ^4.0.0
-        version: 4.11.4
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/internal:
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/metrics:
-    dependencies:
-      hono:
-        specifier: ^4.0.0
-        version: 4.11.4
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/openapi:
-    dependencies:
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../internal
-      hono:
-        specifier: ^4.0.0
-        version: 4.11.4
-      zod:
-        specifier: ^3.22.0
-        version: 3.25.76
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/queues:
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/scheduler:
-    dependencies:
-      '@oxlayer/capabilities-internal':
-        specifier: workspace:*
-        version: link:../internal
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/search:
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/telemetry:
-    dependencies:
-      '@opentelemetry/api':
-        specifier: 1.9.0
-        version: 1.9.0
-      '@opentelemetry/api-logs':
-        specifier: 0.57.1
-        version: 0.57.1
-      '@opentelemetry/auto-instrumentations-node':
-        specifier: 0.67.3
-        version: 0.67.3(@opentelemetry/api@1.9.0)(@opentelemetry/core@2.5.0(@opentelemetry/api@1.9.0))(encoding@0.1.13)
-      '@opentelemetry/exporter-logs-otlp-grpc':
-        specifier: 0.57.1
-        version: 0.57.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/exporter-logs-otlp-http':
-        specifier: 0.57.1
-        version: 0.57.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/exporter-metrics-otlp-http':
-        specifier: ^0.210.0
-        version: 0.210.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/exporter-trace-otlp-http':
-        specifier: 0.210.0
-        version: 0.210.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/resources':
-        specifier: 2.4.0
-        version: 2.4.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-logs':
-        specifier: 0.57.1
-        version: 0.57.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-metrics':
-        specifier: ^2.4.0
-        version: 2.5.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-node':
-        specifier: 0.210.0
-        version: 0.210.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-trace-node':
-        specifier: 2.4.0
-        version: 2.4.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/semantic-conventions':
-        specifier: 1.38.0
-        version: 1.38.0
-      hono:
-        specifier: 4.11.4
-        version: 4.11.4
-      prom-client:
-        specifier: ^15.1.3
-        version: 15.1.3
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/telemetry/quickwit:
-    dependencies:
-      '@opentelemetry/api':
-        specifier: 1.9.0
-        version: 1.9.0
-      '@opentelemetry/sdk-trace-base':
-        specifier: 2.4.0
-        version: 2.4.0(@opentelemetry/api@1.9.0)
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/testing:
-    dependencies:
-      '@oxlayer/capabilities-events':
-        specifier: workspace:*
-        version: link:../events
-      '@oxlayer/capabilities-metrics':
-        specifier: workspace:*
-        version: link:../metrics
-      '@oxlayer/capabilities-telemetry':
-        specifier: workspace:*
-        version: link:../telemetry
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/capabilities/vector:
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/foundation/app-kit:
-    dependencies:
-      '@oxlayer/foundation-domain-kit':
-        specifier: workspace:*
-        version: link:../domain-kit
-    devDependencies:
-      bun-types:
-        specifier: 1.3.6
-        version: 1.3.6
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
-  backend/release/0.0.1/foundation/domain-kit:
-    devDependencies:
-      bun-types:
-        specifier: 1.3.6
-        version: 1.3.6
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
-  backend/release/0.0.1/foundation/http-kit:
-    dependencies:
-      '@oxlayer/foundation-domain-kit':
-        specifier: workspace:*
-        version: link:../domain-kit
-    devDependencies:
-      bun-types:
-        specifier: 1.3.6
-        version: 1.3.6
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-      zod:
-        specifier: ^4.1.9
-        version: 4.3.6
-
-  backend/release/0.0.1/foundation/persistence-kit:
-    dependencies:
-      '@oxlayer/foundation-domain-kit':
-        specifier: workspace:*
-        version: link:../domain-kit
-    devDependencies:
-      bun-types:
-        specifier: 1.3.6
-        version: 1.3.6
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
-  backend/release/0.0.1/foundation/testing-kit:
-    dependencies:
-      '@oxlayer/foundation-app-kit':
-        specifier: workspace:*
-        version: link:../app-kit
-      '@oxlayer/foundation-domain-kit':
-        specifier: workspace:*
-        version: link:../domain-kit
-    devDependencies:
-      bun-types:
-        specifier: 1.3.6
-        version: 1.3.6
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
-  backend/release/0.0.1/proprietary/adapters/database/clickhouse-tenancy:
-    dependencies:
-      '@oxlayer/capabilities-adapters-bitwarden-secrets':
-        specifier: workspace:*
-        version: link:../../../../capabilities/adapters/bitwarden-secrets
-      '@oxlayer/pro-tenancy':
-        specifier: workspace:*
-        version: link:../../../tenancy
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/proprietary/adapters/database/influxdb-tenancy:
-    dependencies:
-      '@influxdata/influxdb-client':
-        specifier: 1.35.0
-        version: 1.35.0
-      '@oxlayer/pro-tenancy':
-        specifier: workspace:*
-        version: link:../../../tenancy
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/proprietary/adapters/database/mongo-tenancy:
-    dependencies:
-      '@oxlayer/pro-tenancy':
-        specifier: workspace:*
-        version: link:../../../tenancy
-      mongodb:
-        specifier: ^6.0.0
-        version: 6.21.0(socks@2.8.7)
-    devDependencies:
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
-  backend/release/0.0.1/proprietary/adapters/database/postgres-tenancy:
     dependencies:
       '@oxlayer/capabilities-internal':
         specifier: workspace:*
@@ -2592,7 +1775,7 @@ importers:
         specifier: latest
         version: 5.9.3
 
-  backend/release/0.0.1/proprietary/adapters/database/redis-tenancy:
+  backend/pro/adapters/database/redis-tenancy:
     dependencies:
       '@oxlayer/capabilities-cache':
         specifier: workspace:*
@@ -2608,7 +1791,7 @@ importers:
         specifier: latest
         version: 5.9.3
 
-  backend/release/0.0.1/proprietary/adapters/messaging/mqtt-tenancy:
+  backend/pro/adapters/messaging/mqtt-tenancy:
     dependencies:
       '@oxlayer/pro-tenancy':
         specifier: workspace:*
@@ -2621,7 +1804,7 @@ importers:
         specifier: latest
         version: 5.9.3
 
-  backend/release/0.0.1/proprietary/adapters/messaging/rabbitmq-tenancy:
+  backend/pro/adapters/messaging/rabbitmq-tenancy:
     dependencies:
       '@oxlayer/pro-tenancy':
         specifier: workspace:*
@@ -2634,7 +1817,7 @@ importers:
         specifier: latest
         version: 5.9.3
 
-  backend/release/0.0.1/proprietary/adapters/messaging/sqs-tenancy:
+  backend/pro/adapters/messaging/sqs-tenancy:
     dependencies:
       '@oxlayer/pro-tenancy':
         specifier: workspace:*
@@ -2647,7 +1830,7 @@ importers:
         specifier: latest
         version: 5.9.3
 
-  backend/release/0.0.1/proprietary/adapters/search/quickwit-tenancy:
+  backend/pro/adapters/search/quickwit-tenancy:
     dependencies:
       '@oxlayer/capabilities-search':
         specifier: workspace:*
@@ -2663,7 +1846,7 @@ importers:
         specifier: latest
         version: 5.9.3
 
-  backend/release/0.0.1/proprietary/adapters/storage/s3/s3-tenancy:
+  backend/pro/adapters/storage/s3/s3-tenancy:
     dependencies:
       '@oxlayer/capabilities-adapters-bitwarden-secrets':
         specifier: workspace:*
@@ -2679,7 +1862,7 @@ importers:
         specifier: latest
         version: 5.9.3
 
-  backend/release/0.0.1/proprietary/adapters/vector/qdrant-tenancy:
+  backend/pro/adapters/vector/qdrant-tenancy:
     dependencies:
       '@oxlayer/capabilities-vector':
         specifier: workspace:*
@@ -2695,7 +1878,7 @@ importers:
         specifier: latest
         version: 5.9.3
 
-  backend/release/0.0.1/proprietary/tenancy:
+  backend/pro/tenancy:
     dependencies:
       '@oxlayer/capabilities-cache':
         specifier: workspace:*
@@ -2717,57 +1900,23 @@ importers:
         specifier: latest
         version: 5.9.3
 
-  backend/release/0.0.1/snippets/snippets:
-    dependencies:
-      '@oxlayer/capabilities-events':
-        specifier: workspace:*
-        version: link:../../capabilities/events
-      '@oxlayer/capabilities-telemetry':
-        specifier: workspace:*
-        version: link:../../capabilities/telemetry
-      '@oxlayer/foundation-app-kit':
-        specifier: workspace:*
-        version: link:../../foundation/app-kit
-      '@oxlayer/foundation-domain-kit':
-        specifier: workspace:*
-        version: link:../../foundation/domain-kit
-      '@oxlayer/foundation-http-kit':
-        specifier: workspace:*
-        version: link:../../foundation/http-kit
-      hono:
-        specifier: ^4.0.0
-        version: 4.11.4
-      zod:
-        specifier: ^3.22.0
-        version: 3.25.76
-    devDependencies:
-      '@types/node':
-        specifier: ^20.0.0
-        version: 20.19.30
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
   backend/snippets:
     dependencies:
       '@oxlayer/capabilities-events':
         specifier: workspace:*
-        version: link:../release/0.0.1/capabilities/events
+        version: link:../capabilities/events
       '@oxlayer/capabilities-telemetry':
         specifier: workspace:*
-        version: link:../release/0.0.1/capabilities/telemetry
+        version: link:../capabilities/telemetry
       '@oxlayer/foundation-app-kit':
         specifier: workspace:*
-        version: link:../release/0.0.1/foundation/app-kit
+        version: link:../foundation/app-kit
       '@oxlayer/foundation-domain-kit':
         specifier: workspace:*
-        version: link:../release/0.0.1/foundation/domain-kit
+        version: link:../foundation/domain-kit
       '@oxlayer/foundation-http-kit':
         specifier: workspace:*
-        version: link:../release/0.0.1/foundation/http-kit
+        version: link:../foundation/http-kit
       hono:
         specifier: ^4.0.0
         version: 4.11.4
@@ -16321,6 +15470,13 @@ snapshots:
       '@tailwindcss/oxide': 4.1.18
       tailwindcss: 4.1.18
       vite: rolldown-vite@7.2.5(@types/node@24.10.9)(esbuild@0.25.12)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
+  '@tailwindcss/vite@4.1.18(vite@6.4.1(@types/node@25.0.10)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))':
+    dependencies:
+      '@tailwindcss/node': 4.1.18
+      '@tailwindcss/oxide': 4.1.18
+      tailwindcss: 4.1.18
+      vite: 6.4.1(@types/node@25.0.10)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
   '@tailwindcss/vite@4.1.18(vite@7.3.1(@types/node@24.10.9)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))':
     dependencies:

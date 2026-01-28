@@ -16,7 +16,8 @@ export interface DeliveryManRepository {
   create(entity: DeliveryManEntity): Promise<DeliveryManEntity>;
   findById(id: number): Promise<DeliveryManEntity | null>;
   findByEmail(email: string): Promise<DeliveryManEntity | null>;
-  findAll(filters?: DeliveryManFilters): Promise<{ data: DeliveryManEntity[]; total: number }>;
+  findAll(filters?: DeliveryManFilters): Promise<DeliveryManEntity[]>;
+  count(filters?: DeliveryManFilters): Promise<number>;
   update(id: number, entity: Partial<DeliveryManEntity>): Promise<DeliveryManEntity>;
   delete(id: number): Promise<void>;
 }

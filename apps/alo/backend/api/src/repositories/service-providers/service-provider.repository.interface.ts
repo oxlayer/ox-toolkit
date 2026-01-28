@@ -17,7 +17,8 @@ export interface ServiceProviderRepository {
   create(entity: ServiceProviderEntity): Promise<ServiceProviderEntity>;
   findById(id: number): Promise<ServiceProviderEntity | null>;
   findByEmail(email: string): Promise<ServiceProviderEntity | null>;
-  findAll(filters?: ServiceProviderFilters): Promise<{ data: ServiceProviderEntity[]; total: number }>;
+  findAll(filters?: ServiceProviderFilters): Promise<ServiceProviderEntity[]>;
+  count(filters?: ServiceProviderFilters): Promise<number>;
   update(id: number, entity: Partial<ServiceProviderEntity>): Promise<ServiceProviderEntity>;
   delete(id: number): Promise<void>;
 }
