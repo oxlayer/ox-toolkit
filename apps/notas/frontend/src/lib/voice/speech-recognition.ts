@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import type { ParsedVoiceInput, CreateTodoInput, VoiceCommand } from '@/types';
 import { LocalStorageTokenStorage } from '@/lib/auth/types';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL + '/api';
+const API_BASE = import.meta.env.VITE_PUBLIC_API_BASE_URL + '/api';
 const tokenStorage = new LocalStorageTokenStorage();
 
 // ============================================================================

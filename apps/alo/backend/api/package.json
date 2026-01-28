@@ -1,5 +1,5 @@
 {
-  "name": "@acme/manager-api",
+  "name": "@acme/api",
   "version": "1.0.0",
   "description": "Alo Manager API - Establishments, Users, Service Providers, Delivery Men management with Keycloak auth, PostgreSQL, Redis, and RabbitMQ",
   "private": true,

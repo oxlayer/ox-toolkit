@@ -55,13 +55,13 @@ await serviceProvidersService.toggleAvailability(id, true);  // → PATCH /api/a
 Configure a URL base no `.env`:
 
 ```env
-VITE_API_BASE_URL=http://localhost:80
+VITE_PUBLIC_API_BASE_URL=http://localhost:80
 ```
 
 ou para produção com Cloudflare Tunnel:
 
 ```env
-VITE_API_BASE_URL=https://your-tunnel-url.trycloudflare.com
+VITE_PUBLIC_API_BASE_URL=https://your-tunnel-url.trycloudflare.com
 ```
 
 ## Autenticação

@@ -1,7 +1,7 @@
 import type { AnonymousAuthProvider } from './types';
 import type { AnonymousActor } from '@/types';
 
-const AUTH_BASE = import.meta.env.VITE_API_BASE_URL;
+const AUTH_BASE = import.meta.env.VITE_PUBLIC_API_BASE_URL;
 
 /**
  * Anonymous auth provider

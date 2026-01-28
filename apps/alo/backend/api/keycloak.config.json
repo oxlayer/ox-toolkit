@@ -22,17 +22,39 @@
   },
   "clients": [
     {
-      "name": "alo-manager",
+      "name": "alo-api",
       "template": "api-client",
       "overrides": {
         "description": "Backend API client for Alo Manager",
         "redirectUris": [
-          "http://localhost:3001/*"
+          "http://localhost:4001/*"
+        ],
+        "validPostLogoutRedirectUris": [
+          "http://localhost:4001"
         ],
         "webOrigins": [
-          "http://localhost:3001"
+          "http://localhost:4001"
         ],
         "clientSecret": "alo-manager-secret"
+      }
+    },
+    {
+      "name": "alo-admin-web",
+      "template": "web-client",
+      "overrides": {
+        "description": "Web application client for Alo Admin",
+        "publicClient": true,
+        "standardFlowEnabled": true,
+        "directAccessGrantsEnabled": false,
+        "redirectUris": [
+          "http://localhost:6173/*"
+        ],
+        "webOrigins": [
+          "http://localhost:6173"
+        ],
+        "validPostLogoutRedirectUris": [
+          "http://localhost:6173"
+        ]
       }
     },
     {
@@ -44,13 +66,13 @@
         "standardFlowEnabled": true,
         "directAccessGrantsEnabled": false,
         "redirectUris": [
-          "http://localhost:5174/*"
+          "http://localhost:6174/*"
         ],
         "webOrigins": [
-          "http://localhost:5174"
+          "http://localhost:6174"
         ],
         "validPostLogoutRedirectUris": [
-          "http://localhost:5174"
+          "http://localhost:6174"
         ]
       }
     }

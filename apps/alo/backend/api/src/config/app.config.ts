@@ -48,7 +48,7 @@ const envSchema = z.object({
   OTEL_SERVICE_NAME: z.string().default('alo-manager-api'),
 
   // Logging
-  LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
+  LOG_LEVEL: z.string(),
 });
 
 /**

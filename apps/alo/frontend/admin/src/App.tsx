@@ -23,6 +23,8 @@ import ServiceProviderOrders from './pages/ServiceProviderOrders'
 import OrdersDashboard from './pages/OrdersDashboard'
 import Providers from './pages/Providers'
 
+import { AuthProvider } from './contexts/AuthContext'
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -36,38 +38,40 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<ManagerLayout />}>
-            <Route index element={<DashboardView />} />
-            <Route path="orders" element={<OrdersDashboard />} />
-            <Route path="providers" element={<Providers />} />
-            <Route path="establishments">
-              <Route index element={<EstablishmentsView />} />
-              <Route path="new" element={<EstablishmentFormView />} />
-              <Route path=":id" element={<EstablishmentFormView />} />
-              <Route path="types" element={<EstablishmentTypes />} />
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<ManagerLayout />}>
+              <Route index element={<DashboardView />} />
+              <Route path="orders" element={<OrdersDashboard />} />
+              <Route path="providers" element={<Providers />} />
+              <Route path="establishments">
+                <Route index element={<EstablishmentsView />} />
+                <Route path="new" element={<EstablishmentFormView />} />
+                <Route path=":id" element={<EstablishmentFormView />} />
+                <Route path="types" element={<EstablishmentTypes />} />
+              </Route>
+              <Route path="users">
+                <Route index element={<UsersView />} />
+                <Route path="new" element={<UserFormView />} />
+                <Route path=":id" element={<UserFormView />} />
+              </Route>
+              <Route path="delivery-men">
+                <Route index element={<DeliveryMenView />} />
+                <Route path="new" element={<DeliveryManFormView />} />
+                <Route path=":id" element={<DeliveryManFormView />} />
+              </Route>
+              <Route path="service-providers">
+                <Route index element={<ServiceProviders />} />
+                <Route path="new" element={<ServiceProviderForm />} />
+                <Route path=":id" element={<ServiceProviderForm />} />
+                <Route path="categories" element={<ServiceCategories />} />
+                <Route path=":id/catalog" element={<ServiceCatalog />} />
+                <Route path=":id/orders" element={<ServiceProviderOrders />} />
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
-            <Route path="users">
-              <Route index element={<UsersView />} />
-              <Route path="new" element={<UserFormView />} />
-              <Route path=":id" element={<UserFormView />} />
-            </Route>
-            <Route path="delivery-men">
-              <Route index element={<DeliveryMenView />} />
-              <Route path="new" element={<DeliveryManFormView />} />
-              <Route path=":id" element={<DeliveryManFormView />} />
-            </Route>
-            <Route path="service-providers">
-              <Route index element={<ServiceProviders />} />
-              <Route path="new" element={<ServiceProviderForm />} />
-              <Route path=":id" element={<ServiceProviderForm />} />
-              <Route path="categories" element={<ServiceCategories />} />
-              <Route path=":id/catalog" element={<ServiceCatalog />} />
-              <Route path=":id/orders" element={<ServiceProviderOrders />} />
-            </Route>
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Route>
-        </Routes>
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
   )

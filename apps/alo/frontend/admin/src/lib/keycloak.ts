@@ -1,14 +1,31 @@
 import Keycloak from 'keycloak-js';
+import { env } from './env';
 
 // Keycloak configuration from environment variables
 const keycloakConfig = {
-  url: import.meta.env.VITE_KEYCLOAK_URL || 'http://localhost:8080',
-  realm: import.meta.env.VITE_KEYCLOAK_REALM || 'alo',
-  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'alo-manager-web',
+  url: env.VITE_PUBLIC_KEYCLOAK_URL,
+  realm: env.VITE_PUBLIC_KEYCLOAK_REALM,
+  clientId: env.VITE_PUBLIC_KEYCLOAK_CLIENT_ID,
 };
 
 // Initialize Keycloak instance
 export const keycloak = new Keycloak(keycloakConfig);
+
+// Override updateToken to prevent refresh when refreshToken is undefined
+// This must be done immediately after creating the instance, before any initialization
+// Validate that the method exists before overriding (defensive programming)
+if (typeof keycloak.updateToken === 'function') {
+  const originalUpdateToken = keycloak.updateToken.bind(keycloak);
+  keycloak.updateToken = function (minValidity?: number) {
+    // Check if refresh token exists before attempting to refresh
+    if (!this.refreshToken) {
+      console.warn('Cannot refresh token: refresh token is not available');
+      // Return a rejected promise to prevent the Keycloak library from making the request
+      return Promise.resolve(false);
+    }
+    return originalUpdateToken(minValidity);
+  };
+}
 
 // Track initialization state to prevent multiple initializations
 let isInitializing = false;
@@ -43,8 +60,19 @@ export async function initKeycloak(): Promise<boolean> {
         onLoad: 'check-sso',
         pkceMethod: 'S256',
         enableLogging: true,
-        checkLoginIframe: false,
+        // Disable automatic token refresh if no refresh token is available
+        checkLoginIframe: false, // Already disabled, but keeping for clarity
       });
+
+      // After init, if authenticated but no refresh token, clear the token
+      // This prevents the library from trying to refresh with undefined refresh token
+      if (authenticated && !keycloak.refreshToken) {
+        console.warn('Authenticated but no refresh token available - clearing session');
+        keycloak.clearToken();
+        isInitialized = true;
+        isInitializing = false;
+        return false;
+      }
 
       isInitialized = true;
       isInitializing = false;
@@ -65,7 +93,7 @@ export async function initKeycloak(): Promise<boolean> {
 }
 
 /**
- * Login function - redirects to Keycloak login page
+ * Login function
  */
 export async function login(): Promise<void> {
   try {
@@ -79,10 +107,61 @@ export async function login(): Promise<void> {
 }
 
 /**
+ * Revoke token with Keycloak
+ * This invalidates the token on the server side
+ */
+export async function revokeToken(): Promise<void> {
+  try {
+    // Try to revoke refresh token first if available
+    if (keycloak.refreshToken) {
+      const revokeUrl = `${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/revoke`;
+
+      const refreshParams = new URLSearchParams();
+      refreshParams.append('token', keycloak.refreshToken);
+      refreshParams.append('client_id', keycloakConfig.clientId);
+      refreshParams.append('token_type_hint', 'refresh_token');
+
+      await fetch(revokeUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: refreshParams.toString(),
+      });
+    }
+
+    // Also revoke access token if available
+    if (keycloak.token) {
+      const revokeUrl = `${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/revoke`;
+
+      const accessTokenParams = new URLSearchParams();
+      accessTokenParams.append('token', keycloak.token);
+      accessTokenParams.append('client_id', keycloakConfig.clientId);
+      accessTokenParams.append('token_type_hint', 'access_token');
+
+      await fetch(revokeUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: accessTokenParams.toString(),
+      });
+    }
+  } catch (error) {
+    console.error('Failed to revoke token:', error);
+    // Don't throw - continue with logout even if revocation fails
+  }
+}
+
+/**
  * Logout function
  */
 export async function logout(): Promise<void> {
   try {
+    // First revoke the token on the server
+    await revokeToken();
+
+    // Then perform logout (this will redirect)
     await keycloak.logout({
       redirectUri: window.location.origin,
     });
@@ -97,6 +176,44 @@ export async function logout(): Promise<void> {
  */
 export function getToken(): string | undefined {
   return keycloak.token;
+}
+
+/**
+ * Get the organization ID from the token
+ * This assumes the token has a custom claim 'organization_id' added via Keycloak mapper
+ * Uses tokenParsed which is automatically decoded by keycloak-js library
+ */
+export function getOrganizationId(): string | null {
+  if (!keycloak.tokenParsed) {
+    return null;
+  }
+
+  try {
+    // tokenParsed is already decoded by keycloak-js, no need to manually decode
+    return (keycloak.tokenParsed as any).organization_id || null;
+  } catch (error) {
+    console.error('Failed to get organization_id from token:', error);
+    return null;
+  }
+}
+
+/**
+ * Get organizations from the token
+ * This assumes the token has a custom claim 'organizations' added via Keycloak mapper
+ * Returns an array of organizations with id and name
+ */
+export function getOrganizations(): Array<{ id: string; name: string }> | null {
+  if (!keycloak.tokenParsed) {
+    return null;
+  }
+
+  try {
+    const orgs = (keycloak.tokenParsed as any).organizations;
+    return orgs || null;
+  } catch (error) {
+    console.error('Failed to get organizations from token:', error);
+    return null;
+  }
 }
 
 /**
@@ -196,7 +313,7 @@ export function setupTokenRefresh(): void {
       } catch (error) {
         console.error('Token refresh failed:', error);
         // If refresh fails, user needs to login again
-        keycloak.login();
+        keycloak.logout();
         // Clear interval on logout
         if (tokenRefreshInterval) {
           clearInterval(tokenRefreshInterval);
@@ -213,3 +330,4 @@ export function setupTokenRefresh(): void {
 export function getRealm(): string {
   return keycloakConfig.realm;
 }
+

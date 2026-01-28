@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { getToken, waitForInit, login } from '../keycloak'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:80'
+const API_BASE_URL = import.meta.env.VITE_PUBLIC_API_BASE_URL || 'http://localhost:80'
 
 /**
  * Create an axios instance with base configuration

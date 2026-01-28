@@ -4,8 +4,15 @@
     "esbuild": "^0.27.2"
   },
   "scripts": {
-    "alo": "pnpm --filter @acme* dev",
-    "globex": "pnpm --filter @globex* dev",
+    "alo:onboarding": "pnpm --filter @acme/onboarding dev",
+    "alo:manager": "pnpm --filter @acme/manager dev",
+    "alo:admin": "pnpm --filter @acme/admin dev",
+    "alo:api": "pnpm --filter @acme/api dev",
+    "globex:app": "pnpm --filter @globex/app dev",
+    "globex:people": "pnpm --filter @globex/people dev",
+    "globex:manager": "pnpm --filter @globex/manager dev",
+    "globex:admin": "pnpm --filter @globex/admin dev",
+    "globex:api": "pnpm --filter @globex/api dev",
     "backend": "pnpm -r --filter \"./backend/**\" --filter \"!./backend/release/**\" run build",
     "build:keycloak-bootstrap": "pnpm --filter @oxlayer/cli-keycloak-bootstrap build",
     "create-frontend": "node scripts/create-frontend.cjs"

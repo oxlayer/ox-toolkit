@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { useAuth } from '../auth';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL + '/api';
+const API_BASE = import.meta.env.VITE_PUBLIC_API_BASE_URL + '/api';
 
 // ============================================================================
 // API CLIENT
