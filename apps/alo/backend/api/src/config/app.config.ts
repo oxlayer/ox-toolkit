@@ -39,6 +39,11 @@ const envSchema = z.object({
   KEYCLOAK_SERVER_URL: z.string().default('http://localhost:8080'),
   KEYCLOAK_REALM: z.string().default('alo'),
   KEYCLOAK_CLIENT_ID: z.string().default('alo-manager'),
+  // Keycloak Admin (for user management)
+  KEYCLOAK_ADMIN_CLIENT_ID: z.string().optional(),
+  KEYCLOAK_ADMIN_CLIENT_SECRET: z.string().optional(),
+  KEYCLOAK_ADMIN_USERNAME: z.string().optional(),
+  KEYCLOAK_ADMIN_PASSWORD: z.string().optional(),
 
   // JWT Fallback
   JWT_SECRET: z.string().default('change-this-secret-in-production'),
@@ -49,6 +54,9 @@ const envSchema = z.object({
 
   // Logging
   LOG_LEVEL: z.string(),
+
+  // Manager App (for redirect after onboarding)
+  MANAGER_APP_URL: z.string().default('http://localhost:6174'),
 });
 
 /**

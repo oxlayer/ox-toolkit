@@ -1,4 +1,4 @@
-import authApi from './api/authApi';
+import { createApiClient } from '../lib/api/client';
 import type {
   ServiceProvider,
   CreateServiceProviderInput,
@@ -8,6 +8,8 @@ import type {
   CreateCatalogItemInput,
   ServiceProviderOrder,
 } from '../types';
+
+const authApi = createApiClient('/api');
 
 // Categories
 export const serviceCategoriesService = {

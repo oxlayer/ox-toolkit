@@ -14,6 +14,7 @@ export * from './delivery-men/delivery-man.entity.js';
 
 // Service Providers
 export * from './service-providers/service-provider.entity.js';
+export * from './service-providers/service-provider-category.entity.js';
 
 // Onboarding Leads
 export * from './onboarding-leads/onboarding-lead.entity.js';

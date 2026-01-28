@@ -1,5 +1,7 @@
-import authApi from './api/authApi';
+import { createApiClient } from '../lib/api/client';
 import type { EstablishmentType, CreateEstablishmentTypeInput } from '../types';
+
+const authApi = createApiClient('/api');
 
 export const establishmentTypesService = {
   getAll: async (): Promise<EstablishmentType[]> => {

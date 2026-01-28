@@ -1,4 +1,5 @@
 export { KeycloakService } from './service.js';
+export { KeycloakAdminService } from './admin.service.js';
 export {
   keycloakMiddleware,
   getOrganizationId,
@@ -13,5 +14,7 @@ export type {
   MultiRealmConfig,
   KeycloakAuthenticatedUser,
   TenantContext,
+  CreateKeycloakUserOptions,
+  KeycloakUser,
 } from './types.js';
 export type { KeycloakMiddlewareOptions } from './middleware.js';

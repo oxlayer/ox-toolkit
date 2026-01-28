@@ -1,5 +1,7 @@
-import orderApi from './api/orderApi';
+import { createApiClient } from '../lib/api/client';
 import type { EstablishmentOrder, UpdateOrderStatusRequest } from '../types';
+
+const orderApi = createApiClient('/api/order');
 
 export const ordersService = {
   // Get all orders (or filter by establishment)

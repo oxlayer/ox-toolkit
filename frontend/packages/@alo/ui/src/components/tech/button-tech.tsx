@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import type * as React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 import { cn } from "@oxlayer/shared-ui/lib";
-import { Button } from "@oxlayer/shared-ui/components/base/button";
+import { Button } from "@oxlayer/shared-ui";
 
 const MotionButton = motion.create(Button);
 
@@ -207,19 +207,19 @@ type MotionButtonStyle = React.ComponentProps<typeof MotionButton>["style"];
 
 export interface ButtonTechProps
   extends
-    Omit<
-      React.ComponentProps<typeof Button>,
-      | "variant"
-      | "size"
-      | "style"
-      | "onAnimationStart"
-      | "onAnimationEnd"
-      | "onAnimationIteration"
-      | "onDragStart"
-      | "onDrag"
-      | "onDragEnd"
-    >,
-    ButtonTechVariants {
+  Omit<
+    React.ComponentProps<typeof Button>,
+    | "variant"
+    | "size"
+    | "style"
+    | "onAnimationStart"
+    | "onAnimationEnd"
+    | "onAnimationIteration"
+    | "onDragStart"
+    | "onDrag"
+    | "onDragEnd"
+  >,
+  ButtonTechVariants {
   style?: MotionButtonStyle;
 }
 

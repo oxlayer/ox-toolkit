@@ -3,7 +3,12 @@
  */
 
 import { createDatabase } from './index.js';
-import bcrypt from 'bcryptjs';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const connectionString = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/alo_manager';
 
@@ -15,37 +20,17 @@ async function seed() {
   try {
     // Check if data already exists
     const existingTypes = await db.execute('SELECT COUNT(*) as count FROM establishment_types');
-    if (existingTypes.rows[0].count > 0) {
+    if (Number(existingTypes[0].count) > 0) {
       console.log('Database already seeded, skipping...');
-      await db.client.end();
+      await db.$client.end();
       return;
     }
 
     // Seed establishment types
-    await db.execute(`
-      INSERT INTO establishment_types (name, description, requires_delivery, requires_location, requires_menu, requires_hours) VALUES
-      ('Restaurant', 'Food service establishment', true, true, true, true),
-      ('Bar', 'Bar and lounge', true, false, true, true),
-      ('Cafe', 'Coffee shop', true, false, true, true),
-      ('Delivery', 'Delivery-only service', true, true, false, false)
-    `);
+    await db.execute(fs.readFileSync(path.join(__dirname, 'seed_establishment_types.sql'), 'utf-8'));
 
     // Seed service provider categories
-    await db.execute(`
-      INSERT INTO service_provider_categories (name, description) VALUES
-      ('Cleaning', 'Professional cleaning services'),
-      ('Maintenance', 'General maintenance and repairs'),
-      ('Delivery', 'Delivery services'),
-      ('Security', 'Security services'),
-      ('IT Services', 'Information technology services')
-    `);
-
-    // Create admin user
-    const passwordHash = await bcrypt.hash('admin123', 10);
-    await db.execute(`
-      INSERT INTO users (name, email, password_hash, role) VALUES
-      ('Admin User', 'admin@acme.com', $1, 'admin')
-    `, [passwordHash]);
+    await db.execute(fs.readFileSync(path.join(__dirname, 'seed_service_categories.sql'), 'utf-8'));
 
     console.log('✅ Database seeded successfully');
   } catch (error) {
@@ -53,7 +38,7 @@ async function seed() {
     process.exit(1);
   }
 
-  await db.client.end();
+  await db.$client.end();
 }
 
 seed().catch((error) => {

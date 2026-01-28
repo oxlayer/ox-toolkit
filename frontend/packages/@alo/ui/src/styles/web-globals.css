@@ -5,9 +5,6 @@
  * and adds Alo-specific web overrides.
  */
 
-/* Import shared web styles */
-@import '@oxlayer/shared-ui/web-styles';
-
 /* Import base brand styles */
 @import './globals.css';
 

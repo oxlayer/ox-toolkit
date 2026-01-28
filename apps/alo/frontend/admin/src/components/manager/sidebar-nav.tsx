@@ -10,12 +10,12 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/orders', label: 'Orders', icon: ShoppingBag },
-  { path: '/providers', label: 'Providers', icon: Wrench },
-  { path: '/establishments', label: 'Establishments', icon: Building2 },
-  { path: '/users', label: 'Users', icon: Users },
-  { path: '/delivery-men', label: 'Delivery Men', icon: UserMinus },
-  { path: '/service-providers', label: 'Service Providers', icon: Wrench },
+  { path: '/orders', label: 'Pedidos', icon: ShoppingBag },
+  { path: '/providers', label: 'Fornecedores', icon: Wrench },
+  { path: '/establishments', label: 'Estabelecimentos', icon: Building2 },
+  { path: '/users', label: 'Usuários', icon: Users },
+  { path: '/delivery-men', label: 'Entregadores', icon: UserMinus },
+  { path: '/service-providers', label: 'Provedores de Serviços', icon: Wrench },
 ]
 
 /**
@@ -33,10 +33,7 @@ export function SidebarNav() {
             <span className="text-lg font-bold text-white">A</span>
           </div>
           <div>
-            <h1 className="bg-linear-to-r from-white to-gray-300 bg-clip-text text-xl font-bold text-transparent">
-              Alô
-            </h1>
-            <p className="text-xs text-gray-400">Manager Portal</p>
+            <img src="/logo.svg" alt="Logo" className="w-20 h-20" />
           </div>
         </div>
       </div>

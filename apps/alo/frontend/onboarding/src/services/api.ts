@@ -1,12 +1,12 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL
 
 export interface ServiceCategory {
-  id: string
-  createdAt: string
-  updatedAt: string
+  id: number
+  createdAt: string | null
+  updatedAt: string | null
   deletedAt: string | null
   name: string
-  description: string
+  description: string | null
 }
 
 export interface EstablishmentType {
@@ -59,15 +59,16 @@ class ApiService {
   }
 
   async getServiceCategories(): Promise<ServiceCategory[]> {
-    return this.request<ServiceCategory[]>('/api/auth/service-categories')
+    const response = await this.request<{ success: boolean; data: ServiceCategory[]; pageInfo: { limit: number; hasNext: boolean; nextCursor?: string } }>('/public/service-categories')
+    return response.data
   }
 
   async getEstablishmentTypes(): Promise<EstablishmentType[]> {
-    return this.request<EstablishmentType[]>('/api/auth/establishment-types')
+    return this.request<EstablishmentType[]>('/public/establishment-types')
   }
 
   async submitOnboardingLead(lead: OnboardingLead): Promise<{ message: string; id?: string }> {
-    return this.request<{ message: string; id?: string }>('/api/auth/onboarding-leads', {
+    return this.request<{ message: string; id?: string }>('/public/onboarding-leads', {
       method: 'POST',
       body: JSON.stringify(lead),
     })

@@ -7,7 +7,6 @@ import {
   registerAuthRoutes,
   getAuthRoutesOpenAPI,
   type AuthMiddlewareOptions,
-  type AuthOptions,
 } from '@oxlayer/capabilities-auth';
 import { generateToken, verifyToken } from '@oxlayer/capabilities-auth';
 import { ENV } from './app.config.js';
@@ -71,4 +70,4 @@ export const extractUserIdMiddleware = async (c: any, next: any) => {
  * Re-export auth functions for convenience
  */
 export { registerAuthRoutes, getAuthRoutesOpenAPI };
-export type { AuthOptions };
+export type { AuthMiddlewareOptions };

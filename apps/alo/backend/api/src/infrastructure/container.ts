@@ -15,6 +15,7 @@ import type {
   PostgresUserRepository,
   PostgresDeliveryManRepository,
   PostgresServiceProviderRepository,
+  PostgresServiceProviderCategoryRepository,
   PostgresOnboardingLeadRepository,
 } from '../repositories/index.js';
 import { createPostgresConnection } from '../config/postgres.config.js';
@@ -38,6 +39,7 @@ export class DIContainer extends CompleteContainerTemplate {
   private _userRepository?: PostgresUserRepository;
   private _deliveryManRepository?: PostgresDeliveryManRepository;
   private _serviceProviderRepository?: PostgresServiceProviderRepository;
+  private _serviceProviderCategoryRepository?: PostgresServiceProviderCategoryRepository;
   private _onboardingLeadRepository?: PostgresOnboardingLeadRepository;
 
   // Use cases (lazy loaded) - Establishments
@@ -66,6 +68,8 @@ export class DIContainer extends CompleteContainerTemplate {
   private _getServiceProviderUseCase?: any;
   private _updateServiceProviderUseCase?: any;
   private _deleteServiceProviderUseCase?: any;
+  private _listServiceProviderCategoriesUseCase?: any;
+  private _getServiceProviderCategoryUseCase?: any;
 
   // Use cases (lazy loaded) - Onboarding Leads
   private _createOnboardingLeadUseCase?: any;
@@ -73,6 +77,7 @@ export class DIContainer extends CompleteContainerTemplate {
   private _getOnboardingLeadUseCase?: any;
   private _updateOnboardingLeadUseCase?: any;
   private _deleteOnboardingLeadUseCase?: any;
+  private _convertOnboardingLeadUseCase?: any;
 
   public constructor() {
     super();
@@ -471,6 +476,39 @@ export class DIContainer extends CompleteContainerTemplate {
     return this._deleteServiceProviderUseCase;
   }
 
+  get serviceProviderCategoryRepository() {
+    if (!this._serviceProviderCategoryRepository) {
+      const { PostgresServiceProviderCategoryRepository } = require('../repositories/index.js');
+      this._serviceProviderCategoryRepository = new PostgresServiceProviderCategoryRepository(
+        this._postgres.db,
+        this.tracer
+      );
+    }
+    return this._serviceProviderCategoryRepository;
+  }
+
+  get listServiceProviderCategoriesUseCase() {
+    if (!this._listServiceProviderCategoriesUseCase) {
+      const { ListServiceProviderCategoriesUseCase } = require('../use-cases/index.js');
+      this._listServiceProviderCategoriesUseCase = new ListServiceProviderCategoriesUseCase(
+        this.serviceProviderCategoryRepository,
+        this.tracer
+      );
+    }
+    return this._listServiceProviderCategoriesUseCase;
+  }
+
+  get getServiceProviderCategoryUseCase() {
+    if (!this._getServiceProviderCategoryUseCase) {
+      const { GetServiceProviderCategoryUseCase } = require('../use-cases/index.js');
+      this._getServiceProviderCategoryUseCase = new GetServiceProviderCategoryUseCase(
+        this.serviceProviderCategoryRepository,
+        this.tracer
+      );
+    }
+    return this._getServiceProviderCategoryUseCase;
+  }
+
   // ============ ONBOARDING LEADS ============
 
   /**
@@ -551,6 +589,20 @@ export class DIContainer extends CompleteContainerTemplate {
     return this._deleteOnboardingLeadUseCase;
   }
 
+  get convertOnboardingLeadUseCase() {
+    if (!this._convertOnboardingLeadUseCase) {
+      const { ConvertOnboardingLeadUseCase } = require('../use-cases/index.js');
+      this._convertOnboardingLeadUseCase = new ConvertOnboardingLeadUseCase(
+        this.onboardingLeadRepository,
+        this.userRepository,
+        this.establishmentRepository,
+        this._eventBus,
+        this.tracer
+      );
+    }
+    return this._convertOnboardingLeadUseCase;
+  }
+
   // ============ CONTROLLERS ============
 
   /**
@@ -624,6 +676,28 @@ export class DIContainer extends CompleteContainerTemplate {
       this.updateOnboardingLeadUseCase,
       this.deleteOnboardingLeadUseCase,
       this.onboardingLeadRepository
+    );
+  }
+
+  /**
+   * Create onboarding controller
+   */
+  createOnboardingController() {
+    const { OnboardingController } = require('../controllers/onboarding.controller.js');
+    return new OnboardingController(
+      this.userRepository,
+      this.establishmentRepository
+    );
+  }
+
+  /**
+   * Create public controller (no auth required)
+   */
+  createPublicController() {
+    const { PublicServiceCategoriesController } = require('../controllers/index.js');
+    return new PublicServiceCategoriesController(
+      this.listServiceProviderCategoriesUseCase,
+      this.getServiceProviderCategoryUseCase
     );
   }
 }

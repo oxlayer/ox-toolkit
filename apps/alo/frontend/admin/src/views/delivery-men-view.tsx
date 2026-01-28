@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { PageHeader, DataTable } from '@/components/shared'
 import { useDeliveryMen, useDeleteDeliveryMan } from '@/hooks'
-import { Button } from '@acme/ui'
+import { ButtonTech as TechButton } from '@acme/ui'
 import { Pencil, Trash2, Phone } from 'lucide-react'
 import type { DeliveryMan } from '@/types'
 
@@ -27,9 +27,9 @@ export function DeliveryMenView() {
 
   const actions = (
     <Link to="/delivery-men/new">
-      <Button variant="primary" size="md">
+      <TechButton variant="solid" size="default">
         Add Delivery Man
-      </Button>
+      </TechButton>
     </Link>
   )
 

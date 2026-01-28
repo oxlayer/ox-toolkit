@@ -48,6 +48,18 @@ export const Establishment = pgTable('establishments', {
   instagram: text('instagram'),
   googleBusinessUrl: text('google_business_url'),
   openData: jsonb('open_data').notNull().default('{}'),
+  // Onboarding fields
+  logo: text('logo'), // URL to logo image
+  legalName: text('legal_name'), // Razão social (for businesses)
+  businessType: text('business_type', { enum: ['me', 'mei', null] }), // ME or MEI
+  // Address fields
+  zipCode: text('zip_code'), // CEP
+  address: text('address'), // Street address
+  addressNumber: text('address_number'), // Number
+  addressComplement: text('address_complement'), // Complement (apartment, etc.)
+  neighborhood: text('neighborhood'),
+  city: text('city'),
+  state: text('state'), // UF (2 letters)
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -65,6 +77,11 @@ export const User = pgTable('users', {
   establishmentId: integer('establishment_id').references(() => Establishment.id, { onDelete: 'set null' }),
   role: text('role', { enum: ['admin', 'manager', 'staff'] }).notNull().default('staff'),
   isActive: boolean('is_active').notNull().default(true),
+  // Onboarding fields
+  status: text('status', { enum: ['pending_review', 'active', 'suspended'] }).notNull().default('pending_review'),
+  documentType: text('document_type', { enum: ['cpf', 'cnpj'] }),
+  document: text('document'), // CPF or CNPJ (unique but nullable for existing users)
+  keycloakId: text('keycloak_id'), // Reference to Keycloak user
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -254,6 +271,16 @@ CREATE TABLE IF NOT EXISTS establishments (
   instagram TEXT,
   google_business_url TEXT,
   open_data JSONB NOT NULL DEFAULT '{}',
+  logo TEXT,
+  legal_name TEXT,
+  business_type TEXT CHECK (business_type IN ('me', 'mei')),
+  zip_code TEXT,
+  address TEXT,
+  address_number TEXT,
+  address_complement TEXT,
+  neighborhood TEXT,
+  city TEXT,
+  state TEXT,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -267,6 +294,10 @@ CREATE TABLE IF NOT EXISTS users (
   establishment_id INTEGER REFERENCES establishments(id) ON DELETE SET NULL,
   role TEXT NOT NULL DEFAULT 'staff' CHECK (role IN ('admin', 'manager', 'staff')),
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  status TEXT NOT NULL DEFAULT 'pending_review' CHECK (status IN ('pending_review', 'active', 'suspended')),
+  document_type TEXT CHECK (document_type IN ('cpf', 'cnpj')),
+  document TEXT,
+  keycloak_id TEXT,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );

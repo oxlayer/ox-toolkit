@@ -11,7 +11,6 @@ export const establishmentKeys = {
   list: (filters: Record<string, unknown>) => [...establishmentKeys.lists(), filters] as const,
   details: () => [...establishmentKeys.all, 'detail'] as const,
   detail: (id: number) => [...establishmentKeys.details(), id] as const,
-  types: () => [...establishmentKeys.all, 'types'] as const,
 }
 
 /**
@@ -32,16 +31,6 @@ export function useEstablishment(id: number): UseQueryResult<Establishment> {
     queryKey: establishmentKeys.detail(id),
     queryFn: () => establishmentsApi.getById(id),
     enabled: !!id,
-  })
-}
-
-/**
- * Hook to fetch establishment types
- */
-export function useEstablishmentTypes(): UseQueryResult<Array<{ id: number; name: string }>> {
-  return useQuery({
-    queryKey: establishmentKeys.types(),
-    queryFn: establishmentsApi.getTypes,
   })
 }
 

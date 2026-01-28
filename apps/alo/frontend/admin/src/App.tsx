@@ -7,20 +7,21 @@ import {
   DashboardView,
   EstablishmentsView,
   EstablishmentFormView,
+  EstablishmentTypesView,
   UsersView,
   UserFormView,
   DeliveryMenView,
   DeliveryManFormView,
+  ServiceProvidersView,
+  ServiceProviderFormView,
+  ServiceCategoriesView,
+  ServiceCatalogView,
+  ServiceProviderOrdersView,
+  OrdersDashboardView,
+  OnboardingCompleteView,
 } from '@/views'
 
 // Import existing pages that haven't been refactored yet
-import EstablishmentTypes from './pages/EstablishmentTypes'
-import ServiceProviders from './pages/ServiceProviders'
-import ServiceProviderForm from './pages/ServiceProviderForm'
-import ServiceCategories from './pages/ServiceCategories'
-import ServiceCatalog from './pages/ServiceCatalog'
-import ServiceProviderOrders from './pages/ServiceProviderOrders'
-import OrdersDashboard from './pages/OrdersDashboard'
 import Providers from './pages/Providers'
 
 import { AuthProvider } from './contexts/AuthContext'
@@ -40,15 +41,18 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <Routes>
+            {/* Public route for onboarding completion (outside ManagerLayout) */}
+            <Route path="/onboarding/complete" element={<OnboardingCompleteView />} />
+
             <Route path="/" element={<ManagerLayout />}>
               <Route index element={<DashboardView />} />
-              <Route path="orders" element={<OrdersDashboard />} />
+              <Route path="orders" element={<OrdersDashboardView />} />
               <Route path="providers" element={<Providers />} />
               <Route path="establishments">
                 <Route index element={<EstablishmentsView />} />
                 <Route path="new" element={<EstablishmentFormView />} />
                 <Route path=":id" element={<EstablishmentFormView />} />
-                <Route path="types" element={<EstablishmentTypes />} />
+                <Route path="types" element={<EstablishmentTypesView />} />
               </Route>
               <Route path="users">
                 <Route index element={<UsersView />} />
@@ -61,12 +65,12 @@ function App() {
                 <Route path=":id" element={<DeliveryManFormView />} />
               </Route>
               <Route path="service-providers">
-                <Route index element={<ServiceProviders />} />
-                <Route path="new" element={<ServiceProviderForm />} />
-                <Route path=":id" element={<ServiceProviderForm />} />
-                <Route path="categories" element={<ServiceCategories />} />
-                <Route path=":id/catalog" element={<ServiceCatalog />} />
-                <Route path=":id/orders" element={<ServiceProviderOrders />} />
+                <Route index element={<ServiceProvidersView />} />
+                <Route path="new" element={<ServiceProviderFormView />} />
+                <Route path=":id" element={<ServiceProviderFormView />} />
+                <Route path="categories" element={<ServiceCategoriesView />} />
+                <Route path=":id/catalog" element={<ServiceCatalogView />} />
+                <Route path=":id/orders" element={<ServiceProviderOrdersView />} />
               </Route>
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

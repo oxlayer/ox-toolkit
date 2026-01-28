@@ -36,7 +36,15 @@ const ServiceProviderForm = ({ onSubmit, onBack }: ServiceProviderFormProps) => 
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [customCategory, setCustomCategory] = useState('')
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    categoryId: string | number
+    name: string
+    cpf: string
+    phone: string
+    email: string
+    termsAccepted: boolean
+    privacyAccepted: boolean
+  }>({
     categoryId: '',
     name: '',
     cpf: '',
@@ -117,7 +125,9 @@ const ServiceProviderForm = ({ onSubmit, onBack }: ServiceProviderFormProps) => 
     try {
       await apiService.submitOnboardingLead({
         user_type: 'provider',
-        category: formData.categoryId.startsWith('custom-') ? customCategory : formData.categoryId,
+        category: typeof formData.categoryId === 'string' && formData.categoryId.startsWith('custom-')
+          ? customCategory
+          : String(formData.categoryId),
         document: formData.cpf,
         email: formData.email || undefined,
         name: formData.name,
@@ -183,8 +193,8 @@ const ServiceProviderForm = ({ onSubmit, onBack }: ServiceProviderFormProps) => 
       <h2 className="text-2xl font-semibold text-white">Cadastro de Prestador</h2>
 
       <AutocompleteSelect
-        options={categories.map(cat => ({ id: cat.id, name: cat.name, icon: categoryIcons[cat.name] }))}
-        value={formData.categoryId}
+        options={categories.map(cat => ({ id: String(cat.id), name: cat.name, icon: categoryIcons[cat.name] }))}
+        value={String(formData.categoryId)}
         onChange={(categoryId) => {
           setFormData({ ...formData, categoryId })
           setErrors({ ...errors, category: undefined })

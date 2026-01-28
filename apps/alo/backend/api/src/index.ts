@@ -143,6 +143,11 @@ app.get('/health', async (c) => {
   });
 });
 
+// Public routes (no auth required)
+app.post('/public/onboarding-leads', (c) => container.createOnboardingLeadsController().createPublicOnboardingLead(c));
+app.get('/public/service-categories', (c) => container.createPublicController().listServiceCategories(c));
+app.get('/public/service-categories/:id', (c) => container.createPublicController().getServiceCategory(c));
+
 // API routes with authentication
 const api = new Hono();
 
@@ -179,15 +184,30 @@ api.post('/service-providers', (c) => container.createServiceProvidersController
 api.patch('/service-providers/:id', (c) => container.createServiceProvidersController().updateServiceProvider(c));
 api.delete('/service-providers/:id', (c) => container.createServiceProvidersController().deleteServiceProvider(c));
 
-// Public onboarding routes (no auth required)
-app.post('/public/onboarding-leads', (c) => container.createOnboardingLeadsController().createPublicOnboardingLead(c));
-
 // Protected Onboarding Lead routes
 api.get('/onboarding-leads', (c) => container.createOnboardingLeadsController().listOnboardingLeads(c));
 api.get('/onboarding-leads/:id', (c) => container.createOnboardingLeadsController().getOnboardingLead(c));
 api.post('/onboarding-leads', (c) => container.createOnboardingLeadsController().createOnboardingLead(c));
 api.patch('/onboarding-leads/:id', (c) => container.createOnboardingLeadsController().updateOnboardingLead(c));
 api.delete('/onboarding-leads/:id', (c) => container.createOnboardingLeadsController().deleteOnboardingLead(c));
+
+// Protected Onboarding routes (user onboarding completion)
+api.get('/onboarding/me', (c) => container.createOnboardingController().getOnboardingStatus(c));
+api.post('/onboarding/complete', (c) => container.createOnboardingController().completeOnboarding(c));
+api.post('/onboarding/address/cep', (c) => container.createOnboardingController().lookupCep(c));
+
+// Lead conversion route (admin only)
+api.post('/onboarding-leads/:id/convert', (c) => {
+  const leadId = c.req.param('id');
+  // Create convert controller inline or use a separate route
+  return container.convertOnboardingLeadUseCase.execute({ leadId: Number(leadId) })
+    .then(result => {
+      if (!result.success) {
+        return c.json({ error: result.error }, 400);
+      }
+      return c.json(result.data);
+    });
+});
 
 // Mount API routes
 app.route('/api', api);
@@ -262,6 +282,8 @@ async function main() {
   console.log(`  DELETE /api/service-providers/:id - Delete service provider`);
   console.log('');
   console.log(`  POST   /public/onboarding-leads - Create onboarding lead (PUBLIC)`);
+  console.log(`  GET    /public/service-categories - List service categories (PUBLIC)`);
+  console.log(`  GET    /public/service-categories/:id - Get service category (PUBLIC)`);
   console.log(`  GET    /api/onboarding-leads - List onboarding leads`);
   console.log(`  GET    /api/onboarding-leads/:id - Get onboarding lead`);
   console.log(`  POST   /api/onboarding-leads - Create onboarding lead`);

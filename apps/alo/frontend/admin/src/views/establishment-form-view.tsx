@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useEstablishment, useEstablishmentTypes, useCreateEstablishment, useUpdateEstablishment } from '@/hooks'
 import { PageHeader } from '@/components/shared'
-import { Button, Input, Textarea, Select, SelectTrigger, SelectValue, SelectPopup, SelectItem, Field, Label, Card } from '@acme/ui'
+import { ButtonTech, CardTech, InputTech, TextareaTech, Select, SelectTrigger, SelectValue, SelectPopup, SelectItem, FieldTech, FieldTechLabel, FieldTechControl } from '@acme/ui'
 import { useState, useEffect } from 'react'
 import type { CreateEstablishmentInput } from '@/types'
 
@@ -86,11 +86,11 @@ export function EstablishmentFormView() {
         description={isEditing ? 'Update establishment information' : 'Add a new establishment to the platform'}
       />
 
-      <Card className="border-border bg-surface p-6">
+      <CardTech className="p-6" >
         <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
           {/* Establishment Type */}
-          <Field>
-            <Label htmlFor="establishment_type_id">Establishment Type</Label>
+          <FieldTech>
+            <FieldTechLabel htmlFor="establishment_type_id">Establishment Type</FieldTechLabel>
             <Select
               name="establishment_type_id"
               value={formData.establishment_type_id?.toString() ?? ''}
@@ -110,167 +110,142 @@ export function EstablishmentFormView() {
                 ))}
               </SelectPopup>
             </Select>
-          </Field>
+          </FieldTech>
 
           {/* Name */}
-          <Field>
-            <Label htmlFor="name">Name</Label>
-            <Input
+          <FieldTech>
+            <FieldTechLabel htmlFor="name" required>Name</FieldTechLabel>
+            <FieldTechControl
               id="name"
               name="name"
-              value={formData.name}
-              onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
               required
               placeholder="Establishment name"
             />
-          </Field>
+          </FieldTech>
 
           {/* Description */}
-          <Field>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
+          <FieldTech>
+            <FieldTechLabel htmlFor="description">Description</FieldTechLabel>
+            <TextareaTech
               id="description"
               name="description"
-              value={formData.description}
-              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-              rows={3}
               placeholder="Brief description of the establishment"
             />
-          </Field>
+          </FieldTech>
 
           {/* Operating Hours */}
-          <Field>
-            <Label htmlFor="horario_funcionamento">Operating Hours</Label>
-            <Input
+          <FieldTech>
+            <FieldTechLabel htmlFor="horario_funcionamento">Operating Hours</FieldTechLabel>
+            <FieldTechControl
               id="horario_funcionamento"
               name="horario_funcionamento"
-              value={formData.horario_funcionamento}
-              onChange={(e) => setFormData((prev) => ({ ...prev, horario_funcionamento: e.target.value }))}
               placeholder="e.g., Mon-Fri 9AM-10PM"
             />
-          </Field>
+          </FieldTech>
 
           {/* Owner ID */}
-          <Field>
-            <Label htmlFor="owner_id">Owner ID</Label>
-            <Input
+          <FieldTech>
+            <FieldTechLabel htmlFor="owner_id" required>Owner ID</FieldTechLabel>
+            <FieldTechControl
               id="owner_id"
               name="owner_id"
               type="number"
-              value={ownerId}
-              onChange={(e) => setOwnerId(Number(e.target.value))}
               required
               placeholder="Owner user ID"
             />
-          </Field>
+          </FieldTech>
 
           {/* Colors */}
           <div className="grid grid-cols-2 gap-4">
-            <Field>
-              <Label htmlFor="primary_color">Primary Color</Label>
-              <Input
+            <FieldTech>
+              <FieldTechLabel htmlFor="primary_color">Primary Color</FieldTechLabel>
+              <FieldTechControl
                 id="primary_color"
                 name="primary_color"
                 type="color"
-                value={formData.primary_color}
-                onChange={(e) => setFormData((prev) => ({ ...prev, primary_color: e.target.value }))}
-                className="h-10 w-full cursor-pointer"
               />
-            </Field>
-            <Field>
-              <Label htmlFor="secondary_color">Secondary Color</Label>
-              <Input
+            </FieldTech>
+            <FieldTech>
+              <FieldTechLabel htmlFor="secondary_color">Secondary Color</FieldTechLabel>
+              <FieldTechControl
                 id="secondary_color"
                 name="secondary_color"
                 type="color"
-                value={formData.secondary_color}
-                onChange={(e) => setFormData((prev) => ({ ...prev, secondary_color: e.target.value }))}
-                className="h-10 w-full cursor-pointer"
               />
-            </Field>
+            </FieldTech>
           </div>
 
           {/* Image URL */}
-          <Field>
-            <Label htmlFor="image">Image URL</Label>
-            <Input
+          <FieldTech>
+            <FieldTechLabel htmlFor="image">Image URL</FieldTechLabel>
+            <FieldTechControl
               id="image"
               name="image"
               type="url"
-              value={formData.image}
-              onChange={(e) => setFormData((prev) => ({ ...prev, image: e.target.value }))}
               placeholder="https://example.com/image.jpg"
             />
-          </Field>
+          </FieldTech>
 
           {/* Location */}
-          <Field>
-            <Label htmlFor="location_string">Location</Label>
-            <Input
+          <FieldTech>
+            <FieldTechLabel htmlFor="location_string">Location</FieldTechLabel>
+            <FieldTechControl
               id="location_string"
               name="location_string"
-              value={formData.location_string}
-              onChange={(e) => setFormData((prev) => ({ ...prev, location_string: e.target.value }))}
               placeholder="Address or location description"
             />
-          </Field>
+          </FieldTech>
 
           {/* Coordinates */}
           <div className="grid grid-cols-2 gap-4">
-            <Field>
-              <Label htmlFor="lat">Latitude</Label>
-              <Input
+            <FieldTech>
+              <FieldTechLabel htmlFor="lat">Latitude</FieldTechLabel>
+              <FieldTechControl
                 id="lat"
                 name="lat"
                 type="number"
                 step="any"
-                value={formData.lat}
-                onChange={(e) => setFormData((prev) => ({ ...prev, lat: Number(e.target.value) }))}
               />
-            </Field>
-            <Field>
-              <Label htmlFor="long">Longitude</Label>
-              <Input
+            </FieldTech>
+            <FieldTech>
+              <FieldTechLabel htmlFor="long">Longitude</FieldTechLabel>
+              <FieldTechControl
                 id="long"
                 name="long"
                 type="number"
                 step="any"
-                value={formData.long}
-                onChange={(e) => setFormData((prev) => ({ ...prev, long: Number(e.target.value) }))}
               />
-            </Field>
+            </FieldTech>
           </div>
 
           {/* Max Delivery Distance */}
-          <Field>
-            <Label htmlFor="max_distance_delivery">Max Delivery Distance (km)</Label>
-            <Input
+          <FieldTech>
+            <FieldTechLabel htmlFor="max_distance_delivery">Max Delivery Distance (km)</FieldTechLabel>
+            <FieldTechControl
               id="max_distance_delivery"
               name="max_distance_delivery"
               type="number"
               step="any"
-              value={formData.max_distance_delivery}
-              onChange={(e) => setFormData((prev) => ({ ...prev, max_distance_delivery: Number(e.target.value) }))}
             />
-          </Field>
+          </FieldTech>
 
           {/* Actions */}
           <div className="flex gap-4">
-            <Button type="submit" variant="primary" size="md" disabled={isLoading}>
+            <ButtonTech type="submit" variant="solid" size="default" disabled={isLoading}>
               {isLoading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
-            </Button>
-            <Button
+            </ButtonTech>
+            <ButtonTech
               type="button"
-              variant="ghost"
-              size="md"
+              variant="outline"
+              size="default"
               onClick={() => navigate('/establishments')}
               disabled={isLoading}
             >
               Cancel
-            </Button>
+            </ButtonTech>
           </div>
         </form>
-      </Card>
+      </CardTech>
     </div>
   )
 }

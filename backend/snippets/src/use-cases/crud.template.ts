@@ -119,6 +119,8 @@ export abstract class CreateUseCaseTemplate<
 
 /**
  * Template for Get By ID use case with tracing
+ *
+ * Uses { id: string } as input type for consistent API.
  */
 export abstract class GetByIdUseCaseTemplate<
   TInput extends { id: string },
@@ -195,16 +197,19 @@ export abstract class GetByIdUseCaseTemplate<
 
 /**
  * Template for Update use case with tracing
+ *
+ * Expects TInput to be { id: string; input: UserInput } for explicit separation
+ * of the id from the input data.
  */
 export abstract class UpdateUseCaseTemplate<
-  TInput extends { id: string },
+  TInput extends { id: string; input: unknown },
   TEntity,
   TOutput extends AppResult<Record<string, unknown>>
 > {
   constructor(
     protected readonly dependencies: {
       findEntity: (id: string) => Promise<TEntity | null>;
-      updateEntity: (entity: TEntity, input: TInput) => void;
+      updateEntity: (entity: TEntity, { input }: { input: unknown }) => void;
       persistEntity: (entity: TEntity) => Promise<void>;
       publishEvent: (event: unknown) => Promise<void>;
       recordMetric: (name: string, value: number) => Promise<void>;
@@ -232,7 +237,7 @@ export abstract class UpdateUseCaseTemplate<
         // Track changes
         const changes = this.trackChanges(input);
 
-        // Update entity
+        // Update entity (note: input is destructured as { input })
         this.dependencies.updateEntity(entity, input);
         span?.setAttribute('entity.updated', true);
 

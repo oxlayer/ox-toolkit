@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { PageHeader, DataTable } from '@/components/shared'
 import { useUsers, useDeleteUser } from '@/hooks'
-import { Button } from '@acme/ui'
+import { TechButton } from '@acme/ui'
 import { Pencil, Trash2 } from 'lucide-react'
 import type { User } from '@/types'
 
@@ -26,9 +26,9 @@ export function UsersView() {
 
   const actions = (
     <Link to="/users/new">
-      <Button variant="primary" size="md">
+      <TechButton variant="solid" size="lg">
         Add User
-      </Button>
+      </TechButton>
     </Link>
   )
 

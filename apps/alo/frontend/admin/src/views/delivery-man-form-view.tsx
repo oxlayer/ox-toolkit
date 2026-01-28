@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useDeliveryMan, useCreateDeliveryMan, useUpdateDeliveryMan } from '@/hooks'
 import { PageHeader } from '@/components/shared'
-import { Button, Input, Field, Label, Card } from '@acme/ui'
+import { ButtonTech as TechButton, CardTech, InputTech, FieldTech, LabelTech } from '@acme/ui'
 import { useState, useEffect } from 'react'
 import type { CreateDeliveryManInput } from '@/types'
 
@@ -73,12 +73,12 @@ export function DeliveryManFormView() {
         description={isEditing ? 'Update delivery man information' : 'Add a new delivery man to the platform'}
       />
 
-      <Card className="border-border bg-surface p-6">
+      <CardTech className="p-6">
         <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
           {/* Name */}
-          <Field>
-            <Label htmlFor="name">Name</Label>
-            <Input
+          <FieldTech>
+            <LabelTech htmlFor="name" required>Name</LabelTech>
+            <InputTech
               id="name"
               name="name"
               value={formData.name}
@@ -86,12 +86,12 @@ export function DeliveryManFormView() {
               required
               placeholder="Delivery man's full name"
             />
-          </Field>
+          </FieldTech>
 
           {/* Email */}
-          <Field>
-            <Label htmlFor="email">Email</Label>
-            <Input
+          <FieldTech>
+            <LabelTech htmlFor="email" required>Email</LabelTech>
+            <InputTech
               id="email"
               name="email"
               type="email"
@@ -100,12 +100,12 @@ export function DeliveryManFormView() {
               required
               placeholder="delivery@example.com"
             />
-          </Field>
+          </FieldTech>
 
           {/* Password */}
-          <Field>
-            <Label htmlFor="password">Password {!isEditing && '(required)'}</Label>
-            <Input
+          <FieldTech>
+            <LabelTech htmlFor="password">Password {!isEditing && '(required)'}</LabelTech>
+            <InputTech
               id="password"
               name="password"
               type="password"
@@ -115,12 +115,12 @@ export function DeliveryManFormView() {
               minLength={6}
               placeholder={isEditing ? 'Leave empty to keep current password' : 'Enter password'}
             />
-          </Field>
+          </FieldTech>
 
           {/* Phone */}
-          <Field>
-            <Label htmlFor="phone">Phone</Label>
-            <Input
+          <FieldTech>
+            <LabelTech htmlFor="phone" required>Phone</LabelTech>
+            <InputTech
               id="phone"
               name="phone"
               type="tel"
@@ -129,25 +129,25 @@ export function DeliveryManFormView() {
               required
               placeholder="+55 11 99999-9999"
             />
-          </Field>
+          </FieldTech>
 
           {/* Actions */}
           <div className="flex gap-4">
-            <Button type="submit" variant="primary" size="md" disabled={isLoading}>
+            <TechButton type="submit" variant="solid" size="default" disabled={isLoading}>
               {isLoading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
-            </Button>
-            <Button
+            </TechButton>
+            <TechButton
               type="button"
-              variant="ghost"
-              size="md"
+              variant="outline"
+              size="default"
               onClick={() => navigate('/delivery-men')}
               disabled={isLoading}
             >
               Cancel
-            </Button>
+            </TechButton>
           </div>
         </form>
-      </Card>
+      </CardTech>
     </div>
   )
 }

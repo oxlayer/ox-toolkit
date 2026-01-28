@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useUser, useEstablishments, useCreateUser, useUpdateUser } from '@/hooks'
 import { PageHeader } from '@/components/shared'
-import { Button, Input, Select, SelectTrigger, SelectValue, SelectPopup, SelectItem, Field, Label, Card } from '@acme/ui'
+import { ButtonTech as TechButton, CardTech, InputTech, Select, SelectTrigger, SelectValue, SelectPopup, SelectItem, FieldTech, LabelTech } from '@acme/ui'
 import { useState, useEffect } from 'react'
 import type { CreateUserInput } from '@/types'
 
@@ -74,12 +74,12 @@ export function UserFormView() {
         description={isEditing ? 'Update user information' : 'Add a new user to the platform'}
       />
 
-      <Card className="border-border bg-surface p-6">
+      <CardTech className="p-6">
         <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
           {/* Name */}
-          <Field>
-            <Label htmlFor="name">Name</Label>
-            <Input
+          <FieldTech>
+            <LabelTech htmlFor="name" required>Name</LabelTech>
+            <InputTech
               id="name"
               name="name"
               value={formData.name}
@@ -87,12 +87,12 @@ export function UserFormView() {
               required
               placeholder="User's full name"
             />
-          </Field>
+          </FieldTech>
 
           {/* Email */}
-          <Field>
-            <Label htmlFor="email">Email</Label>
-            <Input
+          <FieldTech>
+            <LabelTech htmlFor="email" required>Email</LabelTech>
+            <InputTech
               id="email"
               name="email"
               type="email"
@@ -101,12 +101,12 @@ export function UserFormView() {
               required
               placeholder="user@example.com"
             />
-          </Field>
+          </FieldTech>
 
           {/* Password */}
-          <Field>
-            <Label htmlFor="password">Password {!isEditing && '(required)'}</Label>
-            <Input
+          <FieldTech>
+            <LabelTech htmlFor="password">Password {!isEditing && '(required)'}</LabelTech>
+            <InputTech
               id="password"
               name="password"
               type="password"
@@ -116,11 +116,11 @@ export function UserFormView() {
               minLength={6}
               placeholder={isEditing ? 'Leave empty to keep current password' : 'Enter password'}
             />
-          </Field>
+          </FieldTech>
 
           {/* Establishment */}
-          <Field>
-            <Label htmlFor="establishment_id">Establishment</Label>
+          <FieldTech>
+            <LabelTech htmlFor="establishment_id">Establishment</LabelTech>
             <Select
               name="establishment_id"
               value={formData.establishment_id?.toString() ?? ''}
@@ -140,26 +140,26 @@ export function UserFormView() {
                 ))}
               </SelectPopup>
             </Select>
-            <p className="mt-1 text-sm text-muted-foreground">Assign user to a specific establishment (optional)</p>
-          </Field>
+            <p className="mt-1 text-xs text-stone-500">Assign user to a specific establishment (optional)</p>
+          </FieldTech>
 
           {/* Actions */}
           <div className="flex gap-4">
-            <Button type="submit" variant="primary" size="md" disabled={isLoading}>
+            <TechButton type="submit" variant="solid" size="default" disabled={isLoading}>
               {isLoading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
-            </Button>
-            <Button
+            </TechButton>
+            <TechButton
               type="button"
-              variant="ghost"
-              size="md"
+              variant="outline"
+              size="default"
               onClick={() => navigate('/users')}
               disabled={isLoading}
             >
               Cancel
-            </Button>
+            </TechButton>
           </div>
         </form>
-      </Card>
+      </CardTech>
     </div>
   )
 }

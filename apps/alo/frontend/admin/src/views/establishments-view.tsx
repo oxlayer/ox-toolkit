@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { PageHeader, DataTable } from '@/components/shared'
 import { useEstablishments, useDeleteEstablishment } from '@/hooks'
-import { Button } from '@acme/ui'
+import { TechButton } from '@acme/ui'
 import { Pencil, Trash2 } from 'lucide-react'
 import type { Establishment } from '@/types'
 
@@ -28,14 +28,14 @@ export function EstablishmentsView() {
   const actions = (
     <>
       <Link to="/establishments/types">
-        <Button variant="outline" size="md">
+        <TechButton variant="outline" size="lg">
           Manage Types
-        </Button>
+        </TechButton>
       </Link>
       <Link to="/establishments/new">
-        <Button variant="primary" size="md">
+        <TechButton variant="solid" size="lg">
           Add Establishment
-        </Button>
+        </TechButton>
       </Link>
     </>
   )

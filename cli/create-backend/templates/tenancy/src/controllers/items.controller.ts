@@ -4,7 +4,7 @@
  * HTTP handlers for Item CRUD operations.
  */
 
-import { BaseController } from '@oxlayer/foundation-http-kit';
+import { BaseController, buildPageInfo, buildPaginatedPayload } from '@oxlayer/foundation-http-kit';
 import type { Context } from 'hono';
 import { z } from 'zod';
 import { Logger } from '@oxlayer/capabilities-internal';
@@ -15,6 +15,7 @@ import type {
   UpdateItemUseCase,
   DeleteItemUseCase,
 } from '../use-cases/index.js';
+import type { ItemRepository } from '../repositories/item.repository.js';
 
 const logger = new Logger('ItemsController');
 
@@ -29,8 +30,10 @@ const updateItemSchema = z.object({
 });
 
 const querySchema = z.object({
+  search: z.string().optional(),
   limit: z.string().transform(Number).optional(),
   offset: z.string().transform(Number).optional(),
+  include: z.string().transform((val) => val ? val.split(',') : []).optional(),
 });
 
 function formatZodErrors(errors: z.ZodIssue[]): Record<string, string[]> {
@@ -51,7 +54,8 @@ export class ItemsController extends BaseController {
     private listItemsUseCase: ListItemsUseCase,
     private getItemUseCase: GetItemUseCase,
     private updateItemUseCase: UpdateItemUseCase,
-    private deleteItemUseCase: DeleteItemUseCase
+    private deleteItemUseCase: DeleteItemUseCase,
+    private itemRepository: ItemRepository
   ) {
     super();
   }
@@ -62,13 +66,38 @@ export class ItemsController extends BaseController {
       return this.validationError(formatZodErrors(query.error.errors));
     }
 
-    const result = await this.listItemsUseCase.execute(query.data);
+    const { include, ...filters } = query.data;
+
+    // Only fetch total if explicitly requested via include=count
+    // Backend rule of thumb: avoid expensive count queries unless needed
+    let total: number | undefined;
+    if (include?.includes('count')) {
+      total = await this.itemRepository.count(filters);
+    }
+
+    const result = await this.listItemsUseCase.execute(filters);
 
     if (!result.success) {
       return this.badRequest(result.error?.message || 'Failed to fetch items');
     }
 
-    return this.ok({ items: result.data?.items || [], total: result.data?.total || 0 });
+    const items = result.data?.items || [];
+    const limit = filters.limit || 50;
+    const offset = filters.offset || 0;
+
+    const pageInfo = buildPageInfo({
+      itemsLength: items.length,
+      limit,
+      nextCursorPayload: { offset: offset + limit, limit },
+    });
+
+    return this.ok(
+      buildPaginatedPayload({
+        data: items,
+        pageInfo,
+        total,
+      })
+    );
   }
 
   async getItem(c: Context): Promise<Response> {
@@ -78,7 +107,7 @@ export class ItemsController extends BaseController {
       return this.badRequest('Invalid item ID');
     }
 
-    const result = await this.getItemUseCase.execute(id);
+    const result = await this.getItemUseCase.execute({ id: String(id) });
 
     if (!result.success) {
       return this.notFound(result.error?.message || 'Item not found');
@@ -126,7 +155,7 @@ export class ItemsController extends BaseController {
     }
 
     const result = await this.updateItemUseCase.execute({
-      id,
+      id: String(id),
       input: input.data,
     });
 
@@ -147,7 +176,7 @@ export class ItemsController extends BaseController {
       return this.badRequest('Invalid item ID');
     }
 
-    const result = await this.deleteItemUseCase.execute(id);
+    const result = await this.deleteItemUseCase.execute({ id: String(id) });
 
     if (!result.success) {
       if (result.error?.code === 'NOT_FOUND') {

@@ -105,3 +105,10 @@ export {
   type Invitation,
   type InviteFormData,
 } from "./pages/onboarding";
+
+// ============================================================================
+// ALO ADMIN (Brand-Specific)
+// ============================================================================
+
+export { StatCard, type StatCardProps } from "./components/admin/stat-card";
+export { PageHeader, type PageHeaderProps } from "./components/admin/page-header";
