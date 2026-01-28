@@ -1,0 +1,42 @@
+{
+  "name": "@oxlayer/create-frontend",
+  "version": "1.0.0",
+  "description": "Scaffold a new OxLayer frontend app with React, Vite, Tailwind CSS v4, and modern UI components",
+  "type": "module",
+  "bin": "./dist/index.js",
+  "files": [
+    "dist",
+    "template"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^12.1.0",
+    "fs-extra": "^11.3.3",
+    "ora": "^5.4.1",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.11.0",
+    "@types/prompts": "^2.4.9",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "oxlayer",
+    "frontend",
+    "react",
+    "vite",
+    "scaffold",
+    "template",
+    "generator"
+  ]
+}
