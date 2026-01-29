@@ -100,6 +100,19 @@ export interface Message {
 
 export type ChatStatus = 'open' | 'closed' | 'archived'
 
+export interface ClientTrustInfo {
+  isVerified: boolean
+  yearsActive: number
+  completedJobs: number
+  rating: number
+}
+
+export interface ChatServiceContext {
+  serviceId: string | null
+  serviceName: string | null
+  serviceStatus: 'inquiry' | 'quoted' | 'scheduled' | 'completed' | 'cancelled'
+}
+
 export interface Chat {
   id: string
   providerId: string
@@ -112,6 +125,10 @@ export interface Chat {
   unreadCount: number
   createdAt: string
   updatedAt: string
+  // Trust indicators for client accountability
+  trustInfo?: ClientTrustInfo
+  // Service linkage - what this chat is about
+  serviceContext?: ChatServiceContext
 }
 
 export interface SendMessageInput {

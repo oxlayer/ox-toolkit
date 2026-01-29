@@ -7,6 +7,29 @@ import type { Chat, Message } from '@/types'
 const CHATS_STORAGE_KEY = 'alo_chats'
 const MESSAGES_STORAGE_KEY = 'alo_messages'
 
+// Service context options for chat linkage
+const SERVICE_CONTEXTS = [
+  { serviceId: null, serviceName: null, serviceStatus: 'inquiry' as const },
+  { serviceId: 'service-1', serviceName: 'Reparo Elétrico', serviceStatus: 'inquiry' as const },
+  { serviceId: 'service-2', serviceName: 'Instalação de Chuveiro', serviceStatus: 'quoted' as const },
+  { serviceId: 'service-3', serviceName: 'Manutenção Ar Condicionado', serviceStatus: 'scheduled' as const },
+]
+
+// Generate trust info for client
+function generateTrustInfo() {
+  const completedJobs = Math.floor(Math.random() * 25) + 1
+  const rating = 4.0 + (Math.random() * 1.5) // 4.0 to 5.5, will cap at 5.0
+  const yearsActive = Math.floor(Math.random() * 8) + 1
+  const isVerified = Math.random() > 0.3 // 70% verified
+
+  return {
+    isVerified,
+    yearsActive,
+    completedJobs,
+    rating: Math.min(rating, 5.0),
+  }
+}
+
 export type ChatStatus = 'open' | 'closed'
 export type MessageStatus = 'sent' | 'delivered' | 'read'
 
@@ -109,6 +132,8 @@ function generateRandomChats(): { chats: Chat[], messages: { [chatId: string]: M
 
     const isOpen = Math.random() > 0.2 // 80% open
     const unreadCount = isOpen ? Math.floor(Math.random() * 6) : 0
+    const serviceContext = SERVICE_CONTEXTS[Math.floor(Math.random() * SERVICE_CONTEXTS.length)]
+    const trustInfo = generateTrustInfo()
 
     const chat: Chat = {
       id: `chat-${i + 1}`,
@@ -122,6 +147,8 @@ function generateRandomChats(): { chats: Chat[], messages: { [chatId: string]: M
       unreadCount,
       createdAt: createdAt.toISOString(),
       updatedAt: lastMessageAt.toISOString(),
+      trustInfo,
+      serviceContext,
     }
 
     chats.push(chat)
@@ -221,6 +248,7 @@ export const searchChats = (query: string): Chat[] => {
 
 // CRUD functions
 export function createChat(customerName: string, customerEmail: string | null, customerPhone: string | null): Chat {
+  const trustInfo = generateTrustInfo()
   const newChat: Chat = {
     id: `chat-${Date.now()}`,
     providerId: 'provider-1',
@@ -233,6 +261,8 @@ export function createChat(customerName: string, customerEmail: string | null, c
     unreadCount: 0,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    trustInfo,
+    serviceContext: { serviceId: null, serviceName: null, serviceStatus: 'inquiry' },
   }
   mockChats.unshift(newChat)
   mockMessages[newChat.id] = []

@@ -14,9 +14,15 @@ export interface Client {
   city: string | null
   state: string | null
   zipCode: string | null
+  birthdate: string | null
+  notes: string | null
+  chatId: string | null
   createdAt: string
   totalAppointments: number
   totalSpent: number
+  // Links to related entities
+  lastAppointmentDate: string | null
+  nextAppointmentDate: string | null
 }
 
 const CLIENT_NAMES = [
@@ -65,11 +71,25 @@ function generateRandomClients(): Client[] {
     const createdAt = new Date(now)
     createdAt.setDate(now.getDate() - daysAgo)
 
+    // Generate random birthdate (between 18 and 70 years ago)
+    const birthdate = new Date(now)
+    birthdate.setFullYear(now.getFullYear() - (Math.floor(Math.random() * 52) + 18))
+
     const totalAppointments = Math.floor(Math.random() * 8) + 1
     const totalSpent = (Math.floor(Math.random() * 700) + 100) * totalAppointments
 
     const hasEmail = Math.random() > 0.15 // 85% have email
     const hasAddress = Math.random() > 0.3 // 70% have address
+    const hasNotes = Math.random() > 0.7 // 30% have notes
+
+    // Generate sample notes
+    const sampleNotes = [
+      'Prefere atendimento pela manhã',
+      'Alérgico a alguns produtos',
+      'Cliente VIP, sempre pontual',
+      'Prefere pagamentos em dinheiro',
+      'Gosta de conversar durante o atendimento',
+    ]
 
     clients.push({
       id: `client-${i + 1}`,
@@ -81,9 +101,14 @@ function generateRandomClients(): Client[] {
       city: hasAddress ? CITIES[Math.floor(Math.random() * CITIES.length)] : null,
       state: hasAddress ? STATES[Math.floor(Math.random() * STATES.length)] : null,
       zipCode: hasAddress ? generateCEP() : null,
+      birthdate: birthdate.toISOString(),
+      notes: hasNotes ? sampleNotes[Math.floor(Math.random() * sampleNotes.length)] : null,
+      chatId: `chat-${i + 1}`,
       createdAt: createdAt.toISOString(),
       totalAppointments,
       totalSpent,
+      lastAppointmentDate: totalAppointments > 0 ? new Date(Date.now() - Math.floor(Math.random() * 60) * 24 * 60 * 60 * 1000).toISOString() : null,
+      nextAppointmentDate: Math.random() > 0.5 ? new Date(Date.now() + Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000).toISOString() : null,
     })
   }
 
@@ -149,9 +174,12 @@ export const getRecentClients = (limit: number = 10): Client[] => {
 }
 
 // CRUD functions
-export function createClient(input: Omit<Client, 'id' | 'createdAt' | 'totalAppointments' | 'totalSpent'>): Client {
+export function createClient(input: Omit<Client, 'id' | 'createdAt' | 'totalAppointments' | 'totalSpent' | 'birthdate' | 'notes' | 'chatId'> & { birthdate?: string | null; notes?: string | null; chatId?: string | null }): Client {
   const newClient: Client = {
     ...input,
+    birthdate: input.birthdate || null,
+    notes: input.notes || null,
+    chatId: input.chatId || null,
     id: `client-${Date.now()}`,
     createdAt: new Date().toISOString(),
     totalAppointments: 0,

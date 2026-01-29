@@ -998,7 +998,7 @@ export function InboxView() {
     "@tanstack/react-query": "^5.0.0",
     "@oxlayer/capabilities-web-state": "latest",
     "@legendapp/state": "latest",
-    "tailwindcss": "^3.4.0",
+    "tailwindcss": "4.1.18",
     "clsx": "^2.0.0",
     "tailwind-merge": "^2.0.0",
     "class-variance-authority": "^0.7.0",
@@ -1011,7 +1011,7 @@ export function InboxView() {
     "@types/react-dom": "^19.0.0",
     "typescript": "^5.7.0",
     "vite": "^5.0.0",
-    "tailwindcss": "^3.4.0"
+    "tailwindcss": "4.1.18"
   }
 }
 ```

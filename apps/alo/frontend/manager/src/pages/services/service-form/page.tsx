@@ -5,6 +5,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CardTech, FieldTech, InputTech, LabelTech, TextareaTech, ButtonTech as TechButton } from '@acme/ui'
+import { PageHeader } from '@/components/page-header'
 import { Select, SelectTrigger, SelectValue, SelectPopup, SelectItem } from '@acme/ui'
 import type { CreateServiceInput, PriceType } from '@/types'
 
@@ -32,12 +33,10 @@ export default function ServiceFormPage() {
       width: "100%",
     }}>
       {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Novo Serviço</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Cadastre um serviço que você oferece aos clientes.
-        </p>
-      </div>
+      <PageHeader
+        title="Novo Serviço"
+        subtitle="Cadastre um serviço que você oferece aos clientes."
+      />
 
       <CardTech className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">

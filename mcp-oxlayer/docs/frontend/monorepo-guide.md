@@ -186,7 +186,7 @@ The shared-ui package contains all common UI components and utilities.
   "peerDependencies": {
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "tailwindcss": ">=3.0.0"
+    "tailwindcss": ">=4.1.18"
   }
 }
 ```

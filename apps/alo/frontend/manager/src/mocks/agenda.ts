@@ -8,12 +8,15 @@ export type AppointmentStatus = 'scheduled' | 'confirmed' | 'completed' | 'cance
 
 export interface Appointment {
   id: string
+  clientId: string
   clientName: string
+  serviceId: string
   service: string
   startAt: Date
   endAt: Date
   status: AppointmentStatus
   color: string
+  price?: number
 }
 
 const STATUS_COLORS: Record<AppointmentStatus, string> = {
@@ -35,6 +38,19 @@ const SERVICES = [
   'Manutenção Preventiva - Quadro', 'Instalação Ar Condicionado', 'Reparo Elétrico Residencial'
 ]
 
+// Service prices for mock data
+const SERVICE_PRICES: Record<string, number> = {
+  'Instalação de Chuveiro': 150,
+  'Reparo Elétrico': 120,
+  'Instalação de Tomadas': 100,
+  'Manutenção de Ar Condicionado': 180,
+  'Troca de Disjuntor': 80,
+  'Instalação de Luminária': 120,
+  'Manutenção Preventiva - Quadro': 200,
+  'Instalação Ar Condicionado': 350,
+  'Reparo Elétrico Residencial': 150,
+}
+
 // Generate random appointments for the next 60 days
 function generateRandomAppointments(): Appointment[] {
   const appointments: Appointment[] = []
@@ -44,7 +60,14 @@ function generateRandomAppointments(): Appointment[] {
   const count = Math.floor(Math.random() * 11) + 15
 
   for (let i = 0; i < count; i++) {
-    const daysOffset = Math.floor(Math.random() * 60)
+    const clientIndex = Math.floor(Math.random() * CLIENT_NAMES.length)
+    const clientName = CLIENT_NAMES[clientIndex]
+    const clientId = `client-${clientIndex + 1}`
+    const serviceIndex = Math.floor(Math.random() * SERVICES.length)
+    const serviceName = SERVICES[serviceIndex]
+    const serviceId = `service-${serviceIndex + 1}`
+
+    const daysOffset = Math.floor(Math.random() * 60) - 7 // Some in the past (up to 7 days ago)
     const appointmentDate = new Date(now)
     appointmentDate.setDate(now.getDate() + daysOffset)
 
@@ -62,22 +85,29 @@ function generateRandomAppointments(): Appointment[] {
 
     const statusRoll = Math.random()
     let status: AppointmentStatus
-    if (daysOffset < 0) {
+    if (daysOffset < -1) {
       status = 'completed'
+    } else if (daysOffset < 0) {
+      status = statusRoll < 0.7 ? 'completed' : 'confirmed'
     } else if (statusRoll < 0.3) {
       status = 'confirmed'
     } else {
       status = 'scheduled'
     }
 
+    const price = status === 'completed' ? SERVICE_PRICES[serviceName] || 150 : undefined
+
     appointments.push({
       id: `apt-${Date.now()}-${i}`,
-      clientName: CLIENT_NAMES[Math.floor(Math.random() * CLIENT_NAMES.length)],
-      service: SERVICES[Math.floor(Math.random() * SERVICES.length)],
+      clientId,
+      clientName,
+      serviceId,
+      service: serviceName,
       startAt,
       endAt,
       status,
       color: STATUS_COLORS[status],
+      price,
     })
   }
 

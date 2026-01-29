@@ -5,6 +5,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Plus, Edit, Trash2, Clock } from 'lucide-react'
 import { CardTech, ButtonTech } from '@acme/ui'
+import { PageHeader } from '@/components/page-header'
 import { mockServices } from '@/mocks'
 import type { Service } from '@/types'
 
@@ -62,22 +63,20 @@ export default function ServicesListPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Meus Serviços</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Gerencie os serviços que você oferece aos clientes.
-          </p>
-        </div>
-        <ButtonTech
-          onClick={handleNewService}
-          variant="solid"
-          size="lg"
-        >
-          <Plus className="size-5" />
-          Novo Serviço
-        </ButtonTech>
-      </div>
+      <PageHeader
+        title="Meus Serviços"
+        subtitle="Gerencie os serviços que você oferece aos clientes."
+        actions={
+          <ButtonTech
+            onClick={handleNewService}
+            variant="solid"
+            size="lg"
+          >
+            <Plus className="size-5" />
+            Novo Serviço
+          </ButtonTech>
+        }
+      />
 
       {/* Services Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

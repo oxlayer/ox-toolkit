@@ -5,6 +5,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CardTech, FieldTech, InputTech, LabelTech, TextareaTech, ButtonTech as TechButton } from '@acme/ui'
+import { PageHeader } from '@/components/page-header'
 import type { CreateProductInput } from '@/types'
 
 export default function ProductFormPage() {
@@ -25,12 +26,10 @@ export default function ProductFormPage() {
   return (
     <div className="max-w-2xl space-y-6">
       {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Novo Produto</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Cadastre um produto que você oferece aos clientes.
-        </p>
-      </div>
+      <PageHeader
+        title="Novo Produto"
+        subtitle="Cadastre um produto que você oferece aos clientes."
+      />
 
       <CardTech className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">

@@ -4,27 +4,28 @@
 
 import { Link } from 'react-router-dom'
 import { Plus } from 'lucide-react'
-import { CardTech } from '@acme/ui'
+import { CardTech, ButtonTech } from '@acme/ui'
+import { PageHeader } from '@/components/page-header'
 
 export default function ProductsListPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Meus Produtos</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Gerencie os produtos que você oferece aos clientes.
-          </p>
-        </div>
-        <Link
-          to="/products/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 transition-colors"
-        >
-          <Plus className="size-5" />
-          Novo Produto
-        </Link>
-      </div>
+      <PageHeader
+        title="Meus Produtos"
+        subtitle="Gerencie os produtos que você oferece aos clientes."
+        actions={
+          <Link
+            to="/products/new"
+            className="inline-flex items-center gap-2"
+          >
+            <ButtonTech variant="solid" size="lg">
+              <Plus className="size-5" />
+              Novo Produto
+            </ButtonTech>
+          </Link>
+        }
+      />
 
       {/* Products List */}
       <CardTech className="p-12 text-center">
@@ -39,10 +40,12 @@ export default function ProductsListPage() {
         </p>
         <Link
           to="/products/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 transition-colors"
+          className="inline-flex items-center gap-2"
         >
-          <Plus className="size-5" />
-          Criar Produto
+          <ButtonTech variant="solid">
+            <Plus className="size-5" />
+            Criar Produto
+          </ButtonTech>
         </Link>
       </CardTech>
     </div>

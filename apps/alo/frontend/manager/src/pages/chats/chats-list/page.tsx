@@ -2,9 +2,10 @@
  * Chats List Page
  */
 
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Outlet, useMatch } from 'react-router-dom'
 import { Search, CheckCheck, X } from 'lucide-react'
-import { CardTech, InputTech } from '@acme/ui'
+import { InputTech } from '@acme/ui'
+import { PageHeader } from '@/components/page-header'
 import { mockChats, getMessagesByChatId } from '@/mocks'
 
 export default function ChatsListPage() {
@@ -12,7 +13,7 @@ export default function ChatsListPage() {
   const chats = mockChats
 
   const handleChatClick = (chatId: string) => {
-    navigate(`/chats/${chatId}`)
+    navigate(`/c/${chatId}`)
   }
 
   const getLastMessage = (chatId: string) => {
@@ -47,104 +48,118 @@ export default function ChatsListPage() {
     }
   }
 
+  const match = useMatch('/c/:id')
+  const activeChatId = match?.params.id
+
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Conversas</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Gerencie suas conversas com clientes.
-        </p>
-      </div>
+    <div className="flex h-[100vh] -m-6 bg-gray-50/50 dark:bg-gray-800/50 lg:rounded-tl-xl overflow-hidden shadow-sm">
+      {/* Sidebar List */}
+      <div className={`
+        w-full md:w-80 lg:w-96 flex flex-col border-r border-gray-200 dark:border-gray-700
+        ${activeChatId ? 'hidden md:flex' : 'flex'}
+      `}>
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
+          <PageHeader
+            title="Conversas"
+            subtitle="Gerencie suas mensagens."
+          />
+          <div className="relative mt-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+            <InputTech
+              placeholder="Buscar conversas..."
+              className="pl-9 h-10"
+            />
+          </div>
+        </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
-        <InputTech
-          placeholder="Buscar conversas..."
-          className="pl-12"
-        />
-      </div>
+        <div className="flex-1 overflow-y-auto">
+          <div className="divide-y divide-gray-100 dark:divide-gray-800">
+            {chats.map((chat) => {
+              const lastMessage = getLastMessage(chat.id)
 
-      {/* Chats List */}
-      <div className="space-y-2">
-        {chats.map((chat) => {
-          const lastMessage = getLastMessage(chat.id)
-
-          return (
-            <button
-              key={chat.id}
-              onClick={() => handleChatClick(chat.id)}
-              className="w-full text-left"
-            >
-              <CardTech className={`
-                p-4 transition-all hover:shadow-md
-                ${chat.unreadCount > 0 ? 'bg-primary-50/50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800' : ''}
-              `}>
-                <div className="flex gap-4">
-                  {/* Avatar */}
-                  <div className="flex-shrink-0 relative">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-semibold text-lg">
-                      {chat.customerName.charAt(0)}
-                    </div>
-                    {chat.status === 'open' && chat.unreadCount > 0 && (
-                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary-500 rounded-full text-white text-xs flex items-center justify-center">
-                        {chat.unreadCount}
+              return (
+                <button
+                  key={chat.id}
+                  onClick={() => handleChatClick(chat.id)}
+                  className={`w-full text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50
+                ${chat.id === activeChatId ? 'bg-primary-50 dark:bg-primary-900/10' : ''}
+              `}
+                >
+                  <div className={`p-4 ${chat.unreadCount > 0 ? '' : ''}`}>
+                    <div className="flex gap-4">
+                      {/* Avatar */}
+                      <div className="flex-shrink-0 relative">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white font-semibold text-lg">
+                          {chat.customerName.charAt(0)}
+                        </div>
+                        {chat.status === 'open' && chat.unreadCount > 0 && (
+                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">
+                            {chat.unreadCount}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2 mb-1">
+                      {/* Content */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className={`
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h3 className={`
                             font-semibold truncate
                             ${chat.unreadCount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}
                           `}>
-                            {chat.customerName}
-                          </h3>
-                          {getStatusIcon(chat.status)}
-                        </div>
-                        {lastMessage && (
-                          <p className={`
+                                {chat.customerName}
+                              </h3>
+                              {getStatusIcon(chat.status)}
+                            </div>
+                            {lastMessage && (
+                              <p className={`
                             text-sm truncate
                             ${chat.unreadCount > 0 ? 'text-gray-800 dark:text-gray-200' : 'text-gray-500 dark:text-gray-400'}
                           `}>
-                            {lastMessage.senderId === chat.providerId ? 'Você: ' : ''}
-                            {lastMessage.content}
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex flex-col items-end gap-1">
-                        <span className="text-xs text-gray-500 dark:text-gray-500 whitespace-nowrap">
-                          {formatTime(chat.lastMessageAt || chat.createdAt)}
-                        </span>
-                        {chat.unreadCount === 0 && chat.status === 'open' && (
-                          <CheckCheck className="size-4 text-primary-500" />
-                        )}
-                      </div>
-                    </div>
+                                {lastMessage.senderId === chat.providerId ? 'Você: ' : ''}
+                                {lastMessage.content}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex flex-col items-end gap-1">
+                            <span className="text-xs text-gray-500 dark:text-gray-500 whitespace-nowrap">
+                              {formatTime(chat.lastMessageAt || chat.createdAt)}
+                            </span>
+                            {chat.unreadCount === 0 && chat.status === 'open' && (
+                              <CheckCheck className="size-4 text-primary-500" />
+                            )}
+                          </div>
+                        </div>
 
-                    {/* Contact Info */}
-                    <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-500 mt-1">
-                      {chat.customerEmail && (
-                        <span className="truncate">{chat.customerEmail}</span>
-                      )}
-                      {chat.customerPhone && (
-                        <span>•</span>
-                      )}
-                      {chat.customerPhone && (
-                        <span>{chat.customerPhone}</span>
-                      )}
+                        {/* Contact Info */}
+                        <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-500 mt-1">
+                          {chat.customerEmail && (
+                            <span className="truncate">{chat.customerEmail}</span>
+                          )}
+                          {chat.customerPhone && (
+                            <span>•</span>
+                          )}
+                          {chat.customerPhone && (
+                            <span>{chat.customerPhone}</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardTech>
-            </button>
-          )
-        })}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content (Chat Room or Placeholder) */}
+      <div className={`
+        flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-900
+        ${!activeChatId ? 'hidden md:flex' : 'flex'}
+      `}>
+        <Outlet />
       </div>
     </div>
   )
