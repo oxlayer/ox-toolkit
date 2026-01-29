@@ -24,6 +24,8 @@ import {
   ShieldCheck,
   Award,
   Briefcase,
+  MapPin,
+  BadgeCheck,
 } from 'lucide-react'
 import { InputTech, ButtonTech as TechButton } from '@acme/ui'
 import { mockChats, mockClients } from '@/mocks'
@@ -79,39 +81,6 @@ export default function ChatRoomPage() {
   const handleConfirmService = () => {
     console.log('Confirm service')
     // TODO: Confirm service action
-  }
-
-  // Render trust indicators
-  const renderTrustIndicators = () => {
-    if (!chat?.trustInfo) return null
-
-    const { trustInfo } = chat
-
-    return (
-      <div className="flex items-center gap-3 text-xs">
-        {/* Verification Badge */}
-        {trustInfo.isVerified && (
-          <div className="flex items-center gap-1 px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full font-medium">
-            <ShieldCheck className="w-3 h-3" />
-            <span>Verificado</span>
-          </div>
-        )}
-
-        {/* Years Active */}
-        <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
-          <Award className="w-3 h-3" />
-          <span>{trustInfo.yearsActive} {trustInfo.yearsActive === 1 ? 'ano' : 'anos'}</span>
-        </div>
-
-        {/* Rating & Completed Jobs */}
-        <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
-          <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-          <span>{trustInfo.rating.toFixed(1)}</span>
-          <span className="text-gray-400">•</span>
-          <span>{trustInfo.completedJobs} {trustInfo.completedJobs === 1 ? 'serviço' : 'serviços'}</span>
-        </div>
-      </div>
-    )
   }
 
   // Render service context and quick actions
@@ -197,19 +166,40 @@ export default function ChatRoomPage() {
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white font-semibold">
               {client?.name.charAt(0) || chat?.customerName.charAt(0) || 'C'}
             </div>
-            <div>
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                {client?.name || chat?.customerName || `Chat #${id}`}
-                {chat?.trustInfo?.isVerified && (
-                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            <div className="space-y-1">
+              {/* Line 1: Client info with location and verification */}
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+                  {client?.name || chat?.customerName || `Chat #${id}`}
+                </h2>
+                {/* Client Location */}
+                {client?.city && (
+                  <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                    <MapPin className="w-3 h-3" />
+                    <span>{client.city}{client?.state ? `, ${client.state}` : ''}</span>
+                  </div>
                 )}
-              </h2>
-              {renderTrustIndicators()}
-              {/* Service Context in Header */}
+                {/* Verification Badge */}
+                {chat?.trustInfo?.isVerified && (
+                  <div className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-xs font-medium">
+                    <BadgeCheck className="w-3 h-3" />
+                    <span>Verificada</span>
+                  </div>
+                )}
+              </div>
+              {/* Line 2: Service Context with Status */}
               {chat?.serviceContext?.serviceName && (
-                <div className="flex items-center gap-1.5 mt-0.5 text-xs text-gray-600 dark:text-gray-400">
-                  <Briefcase className="w-3 h-3 text-primary-500" />
-                  <span>{chat.serviceContext.serviceName}</span>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-gray-600 dark:text-gray-400">Serviço:</span>
+                  <span className="font-medium text-gray-900 dark:text-white">{chat.serviceContext.serviceName}</span>
+                  <span className="text-gray-300 dark:text-gray-600">•</span>
+                  <span className="text-primary-600 dark:text-primary-400 font-medium">
+                    {chat.serviceContext.serviceStatus === 'inquiry' && 'Consulta'}
+                    {chat.serviceContext.serviceStatus === 'quoted' && 'Orçado'}
+                    {chat.serviceContext.serviceStatus === 'scheduled' && 'Agendado'}
+                    {chat.serviceContext.serviceStatus === 'completed' && 'Concluído'}
+                    {chat.serviceContext.serviceStatus === 'cancelled' && 'Cancelado'}
+                  </span>
                 </div>
               )}
             </div>
