@@ -1,0 +1,68 @@
+# OpenTelemetry Collector - Observability Pipeline
+# Purpose: Receives observability signals (logs, traces) and sends to Quickwit
+# Intended for: Operational monitoring, debugging, distributed tracing
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  # Batching improves throughput and reduces backend load
+  # Lower batch size for development to see data faster
+  batch:
+    timeout: 1s # 5s
+    send_batch_size: 100 # 10000
+    send_batch_max_size: 200 # 11000
+
+  # Enrich all signals with environment info
+  resource:
+    attributes:
+      - key: deployment.environment
+        value: development
+        action: upsert
+      - key: collector.intent
+        value: observability
+        action: upsert
+
+exporters:
+  # Logs -> Quickwit (gRPC endpoint on port 7281)
+  otlp/quickwit-logs:
+    endpoint: quickwit:7281
+    tls:
+      insecure: true
+    headers:
+      "qw-otel-logs-index": "todo-app-logs"
+
+  # Traces -> Quickwit (gRPC endpoint on port 7281)
+  otlp/quickwit-traces:
+    endpoint: quickwit:7281
+    tls:
+      insecure: true
+    headers:
+      "qw-otel-traces-index": "todo-app-traces"
+
+  # Debug exporter (dev only)
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    # Logs pipeline - observability only
+    logs:
+      receivers: [otlp]
+      processors: [resource, batch]
+      exporters:
+        - otlp/quickwit-logs
+        - debug
+
+    # Traces pipeline - distributed tracing
+    traces:
+      receivers: [otlp]
+      processors: [resource, batch]
+      exporters:
+        - otlp/quickwit-traces
+        - debug

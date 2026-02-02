@@ -279,7 +279,7 @@ services:
       - "8888:8888"  # Metrics endpoint
       - "8889:8889"  # Prometheus exporter metrics
     volumes:
-      - /home/user/apps/2026/oxlayer/examples/todo-app/collector-observability.yaml:/etc/collector-observability.yaml:ro
+      - ./collector-observability.yaml:/etc/collector-observability.yaml:ro
     networks:
       - oxlayer-network
     restart: unless-stopped
@@ -299,7 +299,7 @@ services:
       - "18888:8888" # Metrics endpoint
       - "18889:8889" # Prometheus exporter metrics
     volumes:
-      - /home/user/apps/2026/oxlayer/examples/todo-app/collector-domain.yaml:/etc/collector-domain.yaml:ro
+      - ./collector-domain.yaml:/etc/collector-domain.yaml:ro
     networks:
       - oxlayer-network
     restart: unless-stopped
