@@ -1,7 +1,12 @@
 {
+  "name": "oxlayer",
+  "version": "0.0.1",
+  "private": true,
   "devDependencies": {
     "@types/node": "^25.0.10",
-    "esbuild": "^0.27.2"
+    "esbuild": "^0.27.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3"
   },
   "scripts": {
     "alo:onboarding": "pnpm --filter @acme/onboarding dev",
@@ -16,7 +21,11 @@
     "backend": "pnpm -r --filter \"./backend/**\" --filter \"!./backend/release/**\" run build",
     "backend:release": "cd ./backend && ./release.sh",
     "build:keycloak-bootstrap": "pnpm --filter @oxlayer/cli-keycloak-bootstrap build",
-    "create-frontend": "node scripts/create-frontend.cjs"
+    "create-frontend": "node scripts/create-frontend.cjs",
+    "sdk:build-scripts": "tsup --config scripts/sdk-release/tsup.config.ts",
+    "sdk:version": "node scripts/sdk-release/dist/generate-version.js",
+    "sdk:manifest": "node scripts/sdk-release/dist/generate-manifest.js",
+    "sdk:release": "pnpm sdk:build-scripts && node scripts/sdk-release/dist/generate-manifest.js $(pnpm sdk:version)"
   },
   "pnpm": {
     "overrides": {
