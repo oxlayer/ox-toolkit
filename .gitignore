@@ -1,1 +1,11 @@
 node_modules
+
+# SDK Release
+.github/release-state.json
+release-sdk/
+release-upload/
+scripts/sdk-release/dist/
+
+# Build artifacts
+dist/
+*.tsbuildinfo

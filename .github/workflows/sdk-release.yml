@@ -1,0 +1,535 @@
+name: SDK Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      create_release:
+        description: 'Create GitHub release'
+        required: false
+        type: boolean
+        default: false
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'cli/**'
+      - 'channels/**'
+      - '.github/workflows/sdk-release.yml'
+
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '9'
+
+jobs:
+  generate-version:
+    name: Generate Release Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      version_tag: ${{ steps.version.outputs.version_tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Generate version
+        id: version
+        run: |
+          VERSION=$(node scripts/sdk-release/generate-version.ts)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version_tag=v$VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Generated version: $VERSION"
+
+      - name: Upload version state
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-state
+          path: .github/release-state.json
+
+  build-backend-sdk:
+    name: Build Backend SDK
+    runs-on: ubuntu-latest
+    needs: generate-version
+    outputs:
+      artifact_name: ${{ steps.package.outputs.artifact_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Download version state
+        uses: actions/download-artifact@v4
+        with:
+          name: release-state
+          path: .github
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Clean previous builds
+        run: pnpm --filter @oxlayer/backend run clean
+
+      - name: Build in order
+        run: pnpm --filter @oxlayer/backend run rebuild:ordered
+
+      - name: Package Backend SDK
+        id: package
+        run: |
+          VERSION="${{ needs.generate-version.outputs.version }}"
+          ARTIFACT_NAME="backend-sdk-${VERSION}"
+          OUTPUT_DIR="release-sdk/$VERSION/backend"
+
+          mkdir -p "$OUTPUT_DIR"
+
+          # Copy package.json and dist for each package
+          for root in foundation capabilities capabilities-web pro snippets; do
+            [ -d "backend/$root" ] || continue
+
+            find "backend/$root" -type f -name package.json \
+              -not -path "*/node_modules/*" \
+              -not -path "*/.pnpm/*" \
+              | while read pkg; do
+                  dir=$(dirname "$pkg")
+                  if [ -d "$dir/dist" ]; then
+                    rel="${dir#backend/$root/}"
+                    target="$OUTPUT_DIR/$root/$rel"
+
+                    echo "📦 Packaging backend/$root/$rel"
+                    mkdir -p "$target"
+                    cp "$dir/package.json" "$target/"
+                    cp -r "$dir/dist" "$target/"
+                  fi
+                done
+          done
+
+          echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+
+      - name: Upload Backend SDK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-sdk
+          path: release-sdk/${{ needs.generate-version.outputs.version }}/backend
+
+  build-frontend-sdk:
+    name: Build Frontend SDK
+    runs-on: ubuntu-latest
+    needs: generate-version
+    outputs:
+      artifact_name: ${{ steps.package.outputs.artifact_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Frontend packages
+        run: |
+          # Build capabilities-web state
+          pnpm --filter "@oxlayer/capabilities-web" run build
+
+      - name: Package Frontend SDK
+        id: package
+        run: |
+          VERSION="${{ needs.generate-version.outputs.version }}"
+          ARTIFACT_NAME="frontend-sdk-${VERSION}"
+          OUTPUT_DIR="release-sdk/$VERSION/frontend"
+
+          mkdir -p "$OUTPUT_DIR"
+
+          # Copy built packages
+          find frontend -type f -name package.json \
+            -not -path "*/node_modules/*" \
+            -not -path "*/.pnpm/*" \
+            | while read pkg; do
+                dir=$(dirname "$pkg")
+                # Check for dist or build directory
+                for build_dir in dist build; do
+                  if [ -d "$dir/$build_dir" ]; then
+                    rel="${dir#frontend/}"
+                    target="$OUTPUT_DIR/$rel"
+
+                    echo "📦 Packaging frontend/$rel"
+                    mkdir -p "$target"
+                    cp "$dir/package.json" "$target/"
+                    cp -r "$dir/$build_dir" "$target/dist"
+
+                    # Copy TypeScript declarations if they exist
+                    if [ -d "$dir/$build_dir/**/*.d.ts" ] || [ -f "$dir/$build_dir/*.d.ts" ]; then
+                      find "$dir/$build_dir" -name "*.d.ts" -exec cp --parents {} "$target/" \;
+                    fi
+
+                    break
+                  fi
+                done
+              done
+
+          echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+
+      - name: Upload Frontend SDK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-sdk
+          path: release-sdk/${{ needs.generate-version.outputs.version }}/frontend
+
+  build-cli-tools:
+    name: Build CLI Tools
+    runs-on: ubuntu-latest
+    needs: generate-version
+    outputs:
+      artifact_name: ${{ steps.package.outputs.artifact_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI tools
+        run: |
+          pnpm --filter "@oxlayer/create-backend" run build
+          pnpm --filter "@oxlayer/create-frontend" run build
+
+      - name: Package CLI Tools
+        id: package
+        run: |
+          VERSION="${{ needs.generate-version.outputs.version }}"
+          ARTIFACT_NAME="cli-tools-${VERSION}"
+          OUTPUT_DIR="release-sdk/$VERSION/cli"
+
+          mkdir -p "$OUTPUT_DIR"
+
+          for cli_pkg in create-backend create-frontend; do
+            if [ -d "cli/$cli_pkg" ]; then
+              pkg_dir="cli/$cli_pkg"
+              if [ -d "$pkg_dir/dist" ]; then
+                echo "📦 Packaging cli/$cli_pkg"
+                target="$OUTPUT_DIR/$cli_pkg"
+                mkdir -p "$target"
+                cp "$pkg_dir/package.json" "$target/"
+                cp -r "$pkg_dir/dist" "$target/"
+              fi
+            fi
+          done
+
+          echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+
+      - name: Upload CLI Tools artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-tools
+          path: release-sdk/${{ needs.generate-version.outputs.version }}/cli
+
+  build-channels:
+    name: Build Channels
+    runs-on: ubuntu-latest
+    needs: generate-version
+    outputs:
+      artifact_name: ${{ steps.package.outputs.artifact_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Channels
+        run: |
+          pnpm --filter "@oxlayer/adapters-web" run build
+          pnpm --filter "@oxlayer/adapters-whatsapp" run build || true
+
+      - name: Package Channels
+        id: package
+        run: |
+          VERSION="${{ needs.generate-version.outputs.version }}"
+          ARTIFACT_NAME="channels-${VERSION}"
+          OUTPUT_DIR="release-sdk/$VERSION/channels"
+
+          mkdir -p "$OUTPUT_DIR"
+
+          for channel in adapters-web adapters-whatsapp; do
+            if [ -d "channels/$channel" ]; then
+              pkg_dir="channels/$channel"
+              if [ -d "$pkg_dir/dist" ]; then
+                echo "📦 Packaging channels/$channel"
+                target="$OUTPUT_DIR/$channel"
+                mkdir -p "$target"
+                cp "$pkg_dir/package.json" "$target/"
+                cp -r "$pkg_dir/dist" "$target/"
+              fi
+            fi
+          done
+
+          echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+
+      - name: Upload Channels artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: channels
+          path: release-sdk/${{ needs.generate-version.outputs.version }}/channels
+
+  assemble-release:
+    name: Assemble Release
+    runs-on: ubuntu-latest
+    needs:
+      - generate-version
+      - build-backend-sdk
+      - build-frontend-sdk
+      - build-cli-tools
+      - build-channels
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-sdk/${{ needs.generate-version.outputs.version }}
+
+      - name: Generate manifest
+        run: |
+          node scripts/sdk-release/generate-manifest.ts \
+            "${{ needs.generate-version.outputs.version }}" \
+            "release-sdk/${{ needs.generate-version.outputs.version }}"
+
+      - name: Create release archive
+        run: |
+          VERSION="${{ needs.generate-version.outputs.version }}"
+          cd release-sdk
+          zip -r "oxlayer-sdk-${VERSION}.zip" "$VERSION"
+
+      - name: Upload release archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: oxlayer-sdk-archive
+          path: release-sdk/oxlayer-sdk-${{ needs.generate-version.outputs.version }}.zip
+
+      - name: Upload manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-manifest
+          path: release-sdk/${{ needs.generate-version.outputs.version }}/manifest.json
+
+  upload-to-storage:
+    name: Upload to R2/S3
+    runs-on: ubuntu-latest
+    needs:
+      - generate-version
+      - assemble-release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: '*'
+          path: release-upload
+          merge-multiple: true
+
+      - name: Prepare upload directory
+        run: |
+          VERSION="${{ needs.generate-version.outputs.version }}"
+          mkdir -p "release-sdk/$VERSION"
+          cp -r release-upload/backend release-sdk/$VERSION/ 2>/dev/null || true
+          cp -r release-upload/frontend release-sdk/$VERSION/ 2>/dev/null || true
+          cp -r release-upload/cli release-sdk/$VERSION/ 2>/dev/null || true
+          cp -r release-upload/channels release-sdk/$VERSION/ 2>/dev/null || true
+          cp release-upload/manifest.json "release-sdk/$VERSION/" 2>/dev/null || true
+
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+
+      - name: Upload to R2/S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_ENDPOINT_URL: ${{ secrets.R2_ENDPOINT }}
+          AWS_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+        run: |
+          VERSION="${{ needs.generate-version.outputs.version }}"
+          RELEASE_PATH="capabilities-sdk/releases/$VERSION"
+
+          if [ -n "$AWS_ENDPOINT_URL" ]; then
+            # Use R2 endpoint
+            aws s3 sync "release-sdk/$VERSION/" "s3://$AWS_BUCKET_NAME/$RELEASE_PATH/" \
+              --endpoint="$AWS_ENDPOINT_URL" \
+              --acl private \
+              --follow-symlinks
+          else
+            # Use S3
+            aws s3 sync "release-sdk/$VERSION/" "s3://$AWS_BUCKET_NAME/$RELEASE_PATH/" \
+              --acl private \
+              --follow-symlinks
+          fi
+
+          echo "✅ Uploaded to: $RELEASE_PATH"
+
+  create-github-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs:
+      - generate-version
+      - assemble-release
+    if: ${{ inputs.create_release || github.event_name == 'push' }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download release archive
+        uses: actions/download-artifact@v4
+        with:
+          name: oxlayer-sdk-archive
+          path: release
+
+      - name: Download manifest
+        uses: actions/download-artifact@v4
+        with:
+          name: release-manifest
+          path: release
+
+      - name: Display manifest
+        run: |
+          cat release/manifest.json
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ needs.generate-version.outputs.version }}"
+          gh release create "$VERSION" \
+            --title "OxLayer SDK $VERSION" \
+            --notes "Automated release of OxLayer SDK version $VERSION
+
+          **Includes:**
+          - Backend SDK (Foundation, Capabilities, Proprietary)
+          - Frontend SDK (Capabilities Web)
+          - CLI Tools (create-backend, create-frontend)
+          - Channels (Web, WhatsApp)
+
+          **Manifest:**
+          \`\`\`json
+          $(cat release/manifest.json)
+          \`\`\`
+          " \
+            release/*.zip
