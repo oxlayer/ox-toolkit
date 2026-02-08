@@ -14,6 +14,7 @@
     "globex:admin": "pnpm --filter @globex/admin dev",
     "globex:api": "pnpm --filter @globex/api dev",
     "backend": "pnpm -r --filter \"./backend/**\" --filter \"!./backend/release/**\" run build",
+    "backend:release": "cd ./backend && ./release.sh",
     "build:keycloak-bootstrap": "pnpm --filter @oxlayer/cli-keycloak-bootstrap build",
     "create-frontend": "node scripts/create-frontend.cjs"
   },

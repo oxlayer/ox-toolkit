@@ -7,17 +7,13 @@
     "examples"
   ],
   "scripts": {
-    "registry:start": "docker-compose up -d verdaccio",
-    "registry:stop": "docker-compose stop verdaccio",
-    "registry:logs": "docker-compose logs -f verdaccio",
-    "registry:publish": "pnpm -r publish --registry http://localhost:4873",
-    "registry:publish:force": "pnpm -r publish --registry http://localhost:4873 --force",
     "clean": "pnpm -r exec rm -rf dist",
     "build:all": "pnpm -r build",
     "rebuild": "pnpm run clean && pnpm run build:all",
-    "rebuild:ordered": "pnpm run clean && pnpm run build:foundation && pnpm run build:capabilities && pnpm run build:proprietary && pnpm run build:snippets && pnpm run build:examples",
+    "rebuild:ordered": "pnpm run clean && pnpm run build:cli && pnpm run build:foundation && pnpm run build:capabilities && pnpm run build:proprietary && pnpm run build:snippets && pnpm run build:examples",
+    "build:cli": "pnpm --filter '@oxlayer/cli-*' build",
     "build:foundation": "pnpm --filter '@oxlayer/foundation-*' build",
-    "build:capabilities": "pnpm --filter '@oxlayer/capabilities-*' build",
+    "build:capabilities": "pnpm --filter '@oxlayer/capabilities-*' --filter \"@oxlayer/capabilities-web\" run build",
     "build:proprietary": "pnpm --filter '@oxlayer/pro-*' build",
     "build:snippets": "pnpm --filter '@oxlayer/snippets*' build",
     "build:examples": "pnpm --filter '@oxlayer/examples-*' build"
