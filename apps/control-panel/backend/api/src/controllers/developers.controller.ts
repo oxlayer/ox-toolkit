@@ -4,7 +4,7 @@
  * HTTP controller for developer management endpoints
  */
 
-import { BaseController, HttpError } from '@oxlayer/foundation-http-kit';
+import { BaseController, HttpError, mapDomainErrorToHttpStatus } from '@oxlayer/foundation-http-kit';
 import type {
   CreateDeveloperUseCase,
   UpdateDeveloperUseCase,
@@ -29,30 +29,18 @@ export class DevelopersController extends BaseController {
    * Create a new developer
    */
   async create(request: Request, params: { organizationId: string }): Promise<Response> {
-    try {
-      const body = await request.json();
+    const body = await request.json();
 
-      const result = await this.createDev.execute({
-        organizationId: params.organizationId,
-        ...body,
-      });
+    const result = await this.createDev.execute({
+      organizationId: params.organizationId,
+      ...body,
+    });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const developer = result.value;
-
-      return Response.json(
-        { data: developer.toResponse() },
-        { status: 201 }
-      );
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.created({ data: result.value.toResponse() });
   }
 
   /**
@@ -60,24 +48,13 @@ export class DevelopersController extends BaseController {
    * Get a developer by ID
    */
   async getById(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const result = await this.getDev.execute({ id: params.id });
+    const result = await this.getDev.execute({ id: params.id });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const developer = result.value;
-
-      return Response.json({
-        data: developer.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -85,27 +62,18 @@ export class DevelopersController extends BaseController {
    * List developers by organization
    */
   async listByOrganization(request: Request, params: { organizationId: string }): Promise<Response> {
-    try {
-      const result = await this.listDevsByOrg.execute({
-        organizationId: params.organizationId,
-      });
+    const result = await this.listDevsByOrg.execute({
+      organizationId: params.organizationId,
+    });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const developers = result.value;
-
-      return Response.json({
-        data: developers.map(dev => dev.toResponse()),
-        meta: { count: developers.length },
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({
+      data: result.value.map(dev => dev.toResponse()),
+      meta: { count: result.value.length },
+    });
   }
 
   /**
@@ -113,26 +81,15 @@ export class DevelopersController extends BaseController {
    * Update a developer
    */
   async update(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const body = await request.json();
+    const body = await request.json();
 
-      const result = await this.updateDev.execute({ id: params.id, ...body });
+    const result = await this.updateDev.execute({ id: params.id, ...body });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const developer = result.value;
-
-      return Response.json({
-        data: developer.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -140,19 +97,12 @@ export class DevelopersController extends BaseController {
    * Delete a developer
    */
   async delete(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const result = await this.deleteDev.execute({ id: params.id });
+    const result = await this.deleteDev.execute({ id: params.id });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      return new Response(null, { status: 204 });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.noContent();
   }
 }

@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "example": "Production Key"
+    },
+    "developerId": { "type": "string", "format": "uuid" },
+    "licenseId": { "type": "string", "format": "uuid" },
+    "scopes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["read", "write", "admin", "install"]
+      },
+      "example": ["read", "write"],
+      "default": ["read"]
+    },
+    "expiresAt": { "type": "string", "format": "date-time", "nullable": true }
+  },
+  "required": ["name"],
+  "x-readme-ref-name": "CreateApiKey"
+}

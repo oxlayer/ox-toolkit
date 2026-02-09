@@ -4,7 +4,8 @@
  * HTTP controller for organization management endpoints
  */
 
-import { BaseController, HttpError, mapDomainErrorToHttpStatus } from '@oxlayer/foundation-http-kit';
+import { BaseController } from '@oxlayer/foundation-http-kit';
+import { HttpError, mapDomainErrorToHttpStatus } from '@oxlayer/foundation-http-kit';
 import type {
   CreateOrganizationUseCase,
   UpdateOrganizationUseCase,
@@ -31,27 +32,14 @@ export class OrganizationsController extends BaseController {
    * Create a new organization
    */
   async create(request: Request): Promise<Response> {
-    try {
-      const body = await request.json();
+    const body = await request.json();
+    const result = await this.createOrg.execute(body);
 
-      const result = await this.createOrg.execute(body);
-
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const organization = result.value;
-
-      return Response.json(
-        { data: organization.toResponse() },
-        { status: 201 }
-      );
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.created({ data: result.value.toResponse() });
   }
 
   /**
@@ -59,24 +47,13 @@ export class OrganizationsController extends BaseController {
    * Get an organization by ID
    */
   async getById(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const result = await this.getOrg.execute({ id: params.id });
+    const result = await this.getOrg.execute({ id: params.id });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const organization = result.value;
-
-      return Response.json({
-        data: organization.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -84,25 +61,16 @@ export class OrganizationsController extends BaseController {
    * List all organizations
    */
   async list(): Promise<Response> {
-    try {
-      const result = await this.listOrgs.execute();
+    const result = await this.listOrgs.execute();
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const organizations = result.value;
-
-      return Response.json({
-        data: organizations.map(org => org.toResponse()),
-        meta: { count: organizations.length },
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({
+      data: result.value.map(org => org.toResponse()),
+      meta: { count: result.value.length },
+    });
   }
 
   /**
@@ -110,24 +78,13 @@ export class OrganizationsController extends BaseController {
    * Get an organization by slug
    */
   async getBySlug(request: Request, params: { slug: string }): Promise<Response> {
-    try {
-      const result = await this.getOrgBySlug.execute({ slug: params.slug });
+    const result = await this.getOrgBySlug.execute({ slug: params.slug });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const organization = result.value;
-
-      return Response.json({
-        data: organization.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -135,26 +92,14 @@ export class OrganizationsController extends BaseController {
    * Update an organization
    */
   async update(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const body = await request.json();
+    const body = await request.json();
+    const result = await this.updateOrg.execute({ id: params.id, ...body });
 
-      const result = await this.updateOrg.execute({ id: params.id, ...body });
-
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const organization = result.value;
-
-      return Response.json({
-        data: organization.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -162,19 +107,12 @@ export class OrganizationsController extends BaseController {
    * Delete an organization
    */
   async delete(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const result = await this.deleteOrg.execute({ id: params.id });
+    const result = await this.deleteOrg.execute({ id: params.id });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      return new Response(null, { status: 204 });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.noContent();
   }
 }

@@ -1,0 +1,33 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "example": "Enterprise License"
+    },
+    "tier": {
+      "type": "string",
+      "enum": ["starter", "professional", "enterprise", "custom"],
+      "example": "enterprise",
+      "default": "starter"
+    },
+    "packages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["backend-sdk", "frontend-sdk", "cli-tools", "channels"]
+      },
+      "example": ["backend-sdk", "frontend-sdk"]
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": {},
+      "example": { "auth": { "maxRealms": 100, "sso": true, "rbac": true } }
+    },
+    "expiresAt": { "type": "string", "format": "date-time", "nullable": true }
+  },
+  "required": ["name", "tier"],
+  "x-readme-ref-name": "CreateLicense"
+}

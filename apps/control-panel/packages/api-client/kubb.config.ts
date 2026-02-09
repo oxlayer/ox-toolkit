@@ -9,7 +9,7 @@ export default defineConfig({
   },
   output: {
     path: './src',
-    clean: true,
+    clean: false,
   },
   plugins: [
     pluginOas(),
@@ -25,6 +25,9 @@ export default defineConfig({
         barrelType: 'named',
       },
       infinite: {},
+      client: {
+        importPath: '@oxlayer/api-client/client',
+      },
     }),
   ],
 })

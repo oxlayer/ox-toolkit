@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "name": { "type": "string", "minLength": 1, "maxLength": 255 },
+    "tier": {
+      "type": "string",
+      "enum": ["starter", "professional", "enterprise", "custom"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "suspended", "expired", "revoked"]
+    },
+    "expiresAt": { "type": "string", "format": "date-time", "nullable": true }
+  },
+  "x-readme-ref-name": "UpdateLicense"
+}

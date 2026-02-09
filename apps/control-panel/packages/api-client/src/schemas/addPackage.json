@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "package": {
+      "type": "string",
+      "enum": ["backend-sdk", "frontend-sdk", "cli-tools", "channels"],
+      "example": "backend-sdk"
+    }
+  },
+  "required": ["package"],
+  "x-readme-ref-name": "AddPackage"
+}

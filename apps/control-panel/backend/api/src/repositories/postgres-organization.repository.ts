@@ -1,159 +1,134 @@
 /**
  * PostgreSQL Organization Repository
  *
- * Implements organization persistence using PostgreSQL
+ * Implements organization persistence using PostgreSQL with Drizzle ORM
  */
 
-import type {
-  DatabaseAdapter,
-  TransactionalDatabaseAdapter,
-} from '@oxlayer/foundation-persistence-kit';
-import type {
-  IOrganizationRepository,
-} from './index.js';
-import type { Organization } from '../domain/index.js';
+import { eq, desc } from 'drizzle-orm';
+import type { IOrganizationRepository } from './index.js';
+import { Organization } from '../domain/index.js';
 import type { QueryOptions } from '@oxlayer/foundation-persistence-kit';
+import { organizations } from '../db/schema.js';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import type * as schema from '../db/schema.js';
 
 /**
  * PostgreSQL organization repository
  */
 export class PostgresOrganizationRepository implements IOrganizationRepository {
-  constructor(private readonly db: DatabaseAdapter | TransactionalDatabaseAdapter) {}
+  constructor(
+    private readonly db: PostgresJsDatabase<typeof schema>
+  ) {}
 
   async save(organization: Organization): Promise<void> {
     const props = organization.toPersistence();
+    const data = {
+      id: props.id,
+      name: props.name,
+      slug: props.slug,
+      tier: props.tier,
+      maxDevelopers: props.maxDevelopers,
+      maxProjects: props.maxProjects,
+      createdAt: props.createdAt,
+      updatedAt: props.updatedAt,
+    };
 
-    await this.db.query(`
-      INSERT INTO organizations (id, name, slug, tier, max_developers, max_projects, created_at, updated_at)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      ON CONFLICT (id) DO UPDATE SET
-        name = EXCLUDED.name,
-        slug = EXCLUDED.slug,
-        tier = EXCLUDED.tier,
-        max_developers = EXCLUDED.max_developers,
-        max_projects = EXCLUDED.max_projects,
-        updated_at = EXCLUDED.updated_at
-    `, [
-      props.id,
-      props.name,
-      props.slug,
-      props.tier,
-      props.maxDevelopers,
-      props.maxProjects,
-      props.createdAt,
-      props.updatedAt,
-    ]);
+    await this.db
+      .insert(organizations)
+      .values(data)
+      .onConflictDoUpdate({
+        target: organizations.id,
+        set: {
+          name: data.name,
+          slug: data.slug,
+          tier: data.tier,
+          maxDevelopers: data.maxDevelopers,
+          maxProjects: data.maxProjects,
+          updatedAt: data.updatedAt,
+        },
+      });
   }
 
   async findById(id: string): Promise<Organization | null> {
-    const result = await this.db.queryOne(`
-      SELECT id, name, slug, tier, max_developers, max_projects, created_at, updated_at
-      FROM organizations
-      WHERE id = $1
-    `, [id]);
+    const result = await this.db
+      .select()
+      .from(organizations)
+      .where(eq(organizations.id, id))
+      .limit(1);
 
-    if (!result) return null;
+    if (!result[0]) return null;
 
-    return Organization.fromPersistence({
-      id: result.id,
-      name: result.name,
-      slug: result.slug,
-      tier: result.tier,
-      maxDevelopers: parseInt(result.max_developers),
-      maxProjects: parseInt(result.max_projects),
-      createdAt: new Date(result.created_at),
-      updatedAt: new Date(result.updated_at),
-    });
+    return this.mapToDomain(result[0]);
   }
 
   async findAll(options?: QueryOptions): Promise<Organization[]> {
-    let query = `
-      SELECT id, name, slug, tier, max_developers, max_projects, created_at, updated_at
-      FROM organizations
-    `;
-
-    const params: unknown[] = [];
+    let query = this.db.select().from(organizations).$dynamic();
 
     if (options?.limit) {
-      query += ` LIMIT $${params.length + 1}`;
-      params.push(options.limit);
+      query = query.limit(options.limit);
     }
-
     if (options?.offset) {
-      query += ` OFFSET $${params.length + 1}`;
-      params.push(options.offset);
+      query = query.offset(options.offset);
     }
 
-    const results = await this.db.query(query, params);
-
-    return results.map((row: unknown) =>
-      Organization.fromPersistence({
-        id: row.id,
-        name: row.name,
-        slug: row.slug,
-        tier: row.tier,
-        maxDevelopers: parseInt(row.max_developers),
-        maxProjects: parseInt(row.max_projects),
-        createdAt: new Date(row.created_at),
-        updatedAt: new Date(row.updated_at),
-      })
-    );
+    const results = await query;
+    return results.map((row: any) => this.mapToDomain(row));
   }
 
   async delete(id: string): Promise<void> {
-    await this.db.query(`DELETE FROM organizations WHERE id = $1`, [id]);
+    await this.db.delete(organizations).where(eq(organizations.id, id));
   }
 
   async exists(id: string): Promise<boolean> {
-    const result = await this.db.queryOne(`SELECT 1 FROM organizations WHERE id = $1`, [id]);
-    return !!result;
+    const result = await this.db
+      .select({ id: organizations.id })
+      .from(organizations)
+      .where(eq(organizations.id, id))
+      .limit(1);
+    return !!result[0];
   }
 
   async findBySlug(slug: string): Promise<Organization | null> {
-    const result = await this.db.queryOne(`
-      SELECT id, name, slug, tier, max_developers, max_projects, created_at, updated_at
-      FROM organizations
-      WHERE slug = $1
-    `, [slug]);
+    const result = await this.db
+      .select()
+      .from(organizations)
+      .where(eq(organizations.slug, slug))
+      .limit(1);
 
-    if (!result) return null;
+    if (!result[0]) return null;
 
-    return Organization.fromPersistence({
-      id: result.id,
-      name: result.name,
-      slug: result.slug,
-      tier: result.tier,
-      maxDevelopers: parseInt(result.max_developers),
-      maxProjects: parseInt(result.max_projects),
-      createdAt: new Date(result.created_at),
-      updatedAt: new Date(result.updated_at),
-    });
+    return this.mapToDomain(result[0]);
   }
 
   async existsBySlug(slug: string): Promise<boolean> {
-    const result = await this.db.queryOne(`SELECT 1 FROM organizations WHERE slug = $1`, [slug]);
-    return !!result;
+    const result = await this.db
+      .select({ id: organizations.id })
+      .from(organizations)
+      .where(eq(organizations.slug, slug))
+      .limit(1);
+    return !!result[0];
   }
 
   async listByTier(tier: string): Promise<Organization[]> {
-    const results = await this.db.query(`
-      SELECT id, name, slug, tier, max_developers, max_projects, created_at, updated_at
-      FROM organizations
-      WHERE tier = $1
-      ORDER BY created_at DESC
-    `, [tier]);
+    const results = await this.db
+      .select()
+      .from(organizations)
+      .where(eq(organizations.tier, tier))
+      .orderBy(desc(organizations.createdAt));
 
-    return results.map((row: unknown) =>
-      Organization.fromPersistence({
-        id: row.id,
-        name: row.name,
-        slug: row.slug,
-        tier: row.tier,
-        maxDevelopers: parseInt(row.max_developers),
-        maxProjects: parseInt(row.max_projects),
-        createdAt: new Date(row.created_at),
-        updatedAt: new Date(row.updated_at),
-      })
-    );
+    return results.map((row: any) => this.mapToDomain(row));
+  }
+
+  private mapToDomain(row: any): Organization {
+    return Organization.fromPersistence({
+      id: row.id,
+      name: row.name,
+      slug: row.slug,
+      tier: row.tier,
+      maxDevelopers: row.maxDevelopers,
+      maxProjects: row.maxProjects,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
+    });
   }
 }

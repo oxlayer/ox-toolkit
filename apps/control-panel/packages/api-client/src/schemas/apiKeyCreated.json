@@ -1,0 +1,95 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "object",
+      "properties": {
+        "apiKey": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "example": "550e8400-e29b-41d4-a716-446655440003"
+            },
+            "organizationId": {
+              "type": "string",
+              "format": "uuid",
+              "example": "550e8400-e29b-41d4-a716-446655440000"
+            },
+            "developerId": {
+              "type": "string",
+              "nullable": true,
+              "format": "uuid",
+              "example": "550e8400-e29b-41d4-a716-446655440001"
+            },
+            "licenseId": {
+              "type": "string",
+              "format": "uuid",
+              "example": "550e8400-e29b-41d4-a716-446655440002"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "example": "Production Key"
+            },
+            "keyPrefix": { "type": "string", "example": "oxl_" },
+            "keyPreview": { "type": "string", "example": "oxl_****" },
+            "scopes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["read", "write", "admin", "install"]
+              },
+              "example": ["read", "write"]
+            },
+            "status": {
+              "type": "string",
+              "enum": ["active", "revoked", "expired"],
+              "example": "active"
+            },
+            "expiresAt": {
+              "type": "string",
+              "nullable": true,
+              "format": "date-time",
+              "example": "2026-01-01T00:00:00Z"
+            },
+            "lastUsedAt": {
+              "type": "string",
+              "nullable": true,
+              "format": "date-time",
+              "example": "2025-01-01T12:00:00Z"
+            },
+            "createdAt": { "type": "string", "format": "date-time" },
+            "updatedAt": { "type": "string", "format": "date-time" }
+          },
+          "required": [
+            "id",
+            "organizationId",
+            "developerId",
+            "licenseId",
+            "name",
+            "keyPrefix",
+            "keyPreview",
+            "scopes",
+            "status",
+            "expiresAt",
+            "lastUsedAt",
+            "createdAt",
+            "updatedAt"
+          ],
+          "x-readme-ref-name": "ApiKey"
+        },
+        "key": {
+          "type": "string",
+          "example": "oxl_kjhsd7832...",
+          "description": "The full API key (only returned on creation)"
+        }
+      },
+      "required": ["apiKey", "key"]
+    }
+  },
+  "required": ["data"],
+  "x-readme-ref-name": "ApiKeyCreated"
+}

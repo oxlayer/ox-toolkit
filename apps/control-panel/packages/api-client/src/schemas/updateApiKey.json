@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "name": { "type": "string", "minLength": 1, "maxLength": 255 },
+    "scopes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["read", "write", "admin", "install"]
+      }
+    },
+    "expiresAt": { "type": "string", "format": "date-time", "nullable": true }
+  },
+  "x-readme-ref-name": "UpdateApiKey"
+}

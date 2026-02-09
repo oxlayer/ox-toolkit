@@ -3,15 +3,19 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "bun --hot src/index.ts",
+    "dev": "bun src/index.ts",
     "build": "tsup",
     "build:with-client": "tsup && pnpm run generate:client",
     "start": "node dist/index.js",
-    "db:migrate": "bun src/db/migrate.ts",
-    "db:seed": "bun src/db/seed.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:migrate": "tsx src/db/migrate.ts",
+    "db:seed": "tsx src/db/seed.ts",
     "test": "vitest",
     "generate:openapi": "tsx scripts/generate-openapi.ts",
-    "generate:client": "pnpm run generate:openapi && cd ../../packages/api-client && pnpm run generate"
+    "generate:client": "pnpm run generate:openapi && cd ../../packages/api-client && pnpm run generate",
+    "kill-port": "lsof -ti:3004 | xargs kill -9"
   },
   "dependencies": {
     "@hono/node-server": "1.19.9",
@@ -20,12 +24,15 @@
     "@oxlayer/foundation-domain-kit": "workspace:*",
     "@oxlayer/foundation-http-kit": "workspace:*",
     "@oxlayer/foundation-persistence-kit": "workspace:*",
+    "drizzle-orm": "^0.45.1",
     "hono": "4.11.9",
+    "postgres": "^3.4.8",
     "zod": "4.3.6"
   },
   "devDependencies": {
     "@kubb/cli": "^4.21.2",
     "@types/node": "25.0.10",
+    "drizzle-kit": "^0.31.9",
     "tsup": "^8.3.5",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",

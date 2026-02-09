@@ -1,0 +1,70 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "example": "550e8400-e29b-41d4-a716-446655440002"
+    },
+    "organizationId": {
+      "type": "string",
+      "format": "uuid",
+      "example": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "example": "Enterprise License"
+    },
+    "tier": {
+      "type": "string",
+      "enum": ["starter", "professional", "enterprise", "custom"],
+      "example": "enterprise"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "suspended", "expired", "revoked"],
+      "example": "active"
+    },
+    "packages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["backend-sdk", "frontend-sdk", "cli-tools", "channels"]
+      },
+      "example": ["backend-sdk", "frontend-sdk"]
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": {},
+      "example": {
+        "auth": { "maxRealms": 100, "sso": true, "rbac": true },
+        "storage": { "encryption": true, "maxStorageGb": -1 }
+      }
+    },
+    "expiresAt": {
+      "type": "string",
+      "nullable": true,
+      "format": "date-time",
+      "example": "2026-01-01T00:00:00Z"
+    },
+    "isValid": { "type": "boolean", "example": true },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": [
+    "id",
+    "organizationId",
+    "name",
+    "tier",
+    "status",
+    "packages",
+    "capabilities",
+    "expiresAt",
+    "isValid",
+    "createdAt",
+    "updatedAt"
+  ],
+  "x-readme-ref-name": "License"
+}

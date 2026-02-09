@@ -4,7 +4,7 @@
  * HTTP controller for license management endpoints
  */
 
-import { BaseController, HttpError } from '@oxlayer/foundation-http-kit';
+import { BaseController, HttpError, mapDomainErrorToHttpStatus } from '@oxlayer/foundation-http-kit';
 import type {
   CreateLicenseUseCase,
   UpdateLicenseUseCase,
@@ -43,30 +43,18 @@ export class LicensesController extends BaseController {
    * Create a new license
    */
   async create(request: Request, params: { organizationId: string }): Promise<Response> {
-    try {
-      const body = await request.json();
+    const body = await request.json();
 
-      const result = await this.createLicense.execute({
-        organizationId: params.organizationId,
-        ...body,
-      });
+    const result = await this.createLicense.execute({
+      organizationId: params.organizationId,
+      ...body,
+    });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const license = result.value;
-
-      return Response.json(
-        { data: license.toResponse() },
-        { status: 201 }
-      );
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.created({ data: result.value.toResponse() });
   }
 
   /**
@@ -74,24 +62,13 @@ export class LicensesController extends BaseController {
    * Get a license by ID
    */
   async getById(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const result = await this.getLicense.execute({ id: params.id });
+    const result = await this.getLicense.execute({ id: params.id });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const license = result.value;
-
-      return Response.json({
-        data: license.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -99,27 +76,18 @@ export class LicensesController extends BaseController {
    * List licenses by organization
    */
   async listByOrganization(request: Request, params: { organizationId: string }): Promise<Response> {
-    try {
-      const result = await this.listLicensesByOrg.execute({
-        organizationId: params.organizationId,
-      });
+    const result = await this.listLicensesByOrg.execute({
+      organizationId: params.organizationId,
+    });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const licenses = result.value;
-
-      return Response.json({
-        data: licenses.map(lic => lic.toResponse()),
-        meta: { count: licenses.length },
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({
+      data: result.value.map(lic => lic.toResponse()),
+      meta: { count: result.value.length },
+    });
   }
 
   /**
@@ -127,26 +95,15 @@ export class LicensesController extends BaseController {
    * Update a license
    */
   async update(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const body = await request.json();
+    const body = await request.json();
 
-      const result = await this.updateLicense.execute({ id: params.id, ...body });
+    const result = await this.updateLicense.execute({ id: params.id, ...body });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const license = result.value;
-
-      return Response.json({
-        data: license.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -154,20 +111,13 @@ export class LicensesController extends BaseController {
    * Delete a license
    */
   async delete(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const result = await this.deleteLicense.execute({ id: params.id });
+    const result = await this.deleteLicense.execute({ id: params.id });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      return new Response(null, { status: 204 });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.noContent();
   }
 
   /**
@@ -175,24 +125,13 @@ export class LicensesController extends BaseController {
    * Activate a license
    */
   async activate(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const result = await this.activateLicense.execute({ id: params.id });
+    const result = await this.activateLicense.execute({ id: params.id });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const license = result.value;
-
-      return Response.json({
-        data: license.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -200,24 +139,13 @@ export class LicensesController extends BaseController {
    * Suspend a license
    */
   async suspend(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const result = await this.suspendLicense.execute({ id: params.id });
+    const result = await this.suspendLicense.execute({ id: params.id });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const license = result.value;
-
-      return Response.json({
-        data: license.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -225,24 +153,13 @@ export class LicensesController extends BaseController {
    * Revoke a license
    */
   async revoke(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const result = await this.revokeLicense.execute({ id: params.id });
+    const result = await this.revokeLicense.execute({ id: params.id });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const license = result.value;
-
-      return Response.json({
-        data: license.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -250,29 +167,18 @@ export class LicensesController extends BaseController {
    * Add package to license
    */
   async addPackage(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const body = await request.json();
+    const body = await request.json();
 
-      const result = await this.addPackage.execute({
-        id: params.id,
-        package: body.package,
-      });
+    const result = await this.addPackage.execute({
+      id: params.id,
+      package: body.package,
+    });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const license = result.value;
-
-      return Response.json({
-        data: license.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -280,27 +186,16 @@ export class LicensesController extends BaseController {
    * Remove package from license
    */
   async removePackage(request: Request, params: { id: string; package: string }): Promise<Response> {
-    try {
-      const result = await this.removePackage.execute({
-        id: params.id,
-        package: params.package,
-      });
+    const result = await this.removePackage.execute({
+      id: params.id,
+      package: params.package,
+    });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const license = result.value;
-
-      return Response.json({
-        data: license.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -308,30 +203,19 @@ export class LicensesController extends BaseController {
    * Update capability limits
    */
   async updateCapabilityLimits(request: Request, params: { id: string; capability: string }): Promise<Response> {
-    try {
-      const body = await request.json();
+    const body = await request.json();
 
-      const result = await this.updateCapability.execute({
-        id: params.id,
-        capability: params.capability,
-        limits: body.limits,
-      });
+    const result = await this.updateCapability.execute({
+      id: params.id,
+      capability: params.capability,
+      limits: body.limits,
+    });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const license = result.value;
-
-      return Response.json({
-        data: license.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -339,26 +223,15 @@ export class LicensesController extends BaseController {
    * Remove capability from license
    */
   async removeCapability(request: Request, params: { id: string; capability: string }): Promise<Response> {
-    try {
-      const result = await this.removeCapability.execute({
-        id: params.id,
-        capability: params.capability,
-      });
+    const result = await this.removeCapability.execute({
+      id: params.id,
+      capability: params.capability,
+    });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const license = result.value;
-
-      return Response.json({
-        data: license.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 }

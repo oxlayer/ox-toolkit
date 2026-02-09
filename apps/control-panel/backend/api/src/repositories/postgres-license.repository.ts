@@ -1,214 +1,186 @@
 /**
  * PostgreSQL License Repository
  *
- * Implements license persistence using PostgreSQL
+ * Implements license persistence using PostgreSQL with Drizzle ORM
  */
 
-import type {
-  DatabaseAdapter,
-  TransactionalDatabaseAdapter,
-} from '@oxlayer/foundation-persistence-kit';
-import type {
-  ILicenseRepository,
-} from './index.js';
-import type { License } from '../domain/index.js';
+import { eq, desc, and, gt, isNull, sql } from 'drizzle-orm';
+import type { ILicenseRepository } from './index.js';
+import { License } from '../domain/index.js';
 import type { QueryOptions } from '@oxlayer/foundation-persistence-kit';
+import { licenses, apiKeys } from '../db/schema.js';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import type * as schema from '../db/schema.js';
 
 /**
  * PostgreSQL license repository
  */
 export class PostgresLicenseRepository implements ILicenseRepository {
-  constructor(private readonly db: DatabaseAdapter | TransactionalDatabaseAdapter) {}
+  constructor(
+    private readonly db: PostgresJsDatabase<typeof schema>
+  ) {}
 
   async save(license: License): Promise<void> {
     const props = license.toPersistence();
+    const data = {
+      id: props.id,
+      organizationId: props.organizationId,
+      name: props.name,
+      tier: props.tier,
+      status: props.status,
+      packages: props.packages,
+      capabilities: props.capabilities,
+      environments: props.environments,
+      expiresAt: props.expiresAt,
+      createdAt: props.createdAt,
+      updatedAt: props.updatedAt,
+    };
 
-    await this.db.query(`
-      INSERT INTO licenses (
-        id, organization_id, name, tier, status, packages, capabilities,
-        environments, expires_at, created_at, updated_at
-      )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-      ON CONFLICT (id) DO UPDATE SET
-        name = EXCLUDED.name,
-        tier = EXCLUDED.tier,
-        status = EXCLUDED.status,
-        packages = EXCLUDED.packages,
-        capabilities = EXCLUDED.capabilities,
-        environments = EXCLUDED.environments,
-        expires_at = EXCLUDED.expires_at,
-        updated_at = EXCLUDED.updated_at
-    `, [
-      props.id,
-      props.organizationId,
-      props.name,
-      props.tier,
-      props.status,
-      JSON.stringify(props.packages),
-      JSON.stringify(props.capabilities),
-      JSON.stringify(props.environments),
-      props.expiresAt,
-      props.createdAt,
-      props.updatedAt,
-    ]);
+    await this.db
+      .insert(licenses)
+      .values(data)
+      .onConflictDoUpdate({
+        target: licenses.id,
+        set: {
+          name: data.name,
+          tier: data.tier,
+          status: data.status,
+          packages: data.packages,
+          capabilities: data.capabilities,
+          environments: data.environments,
+          expiresAt: data.expiresAt,
+          updatedAt: data.updatedAt,
+        },
+      });
   }
 
   async findById(id: string): Promise<License | null> {
-    const result = await this.db.queryOne(`
-      SELECT id, organization_id, name, tier, status, packages, capabilities,
-             environments, expires_at, created_at, updated_at
-      FROM licenses
-      WHERE id = $1
-    `, [id]);
+    const result = await this.db
+      .select()
+      .from(licenses)
+      .where(eq(licenses.id, id))
+      .limit(1);
 
-    if (!result) return null;
+    if (!result[0]) return null;
 
-    return License.fromPersistence({
-      id: result.id,
-      organizationId: result.organization_id,
-      name: result.name,
-      tier: result.tier,
-      status: result.status,
-      packages: JSON.parse(result.packages || '[]'),
-      capabilities: JSON.parse(result.capabilities || '{}'),
-      environments: JSON.parse(result.environments || '[]'),
-      expiresAt: result.expires_at ? new Date(result.expires_at) : null,
-      createdAt: new Date(result.created_at),
-      updatedAt: new Date(result.updated_at),
-    });
+    return this.mapToDomain(result[0]);
   }
 
   async findAll(options?: QueryOptions): Promise<License[]> {
-    let query = `
-      SELECT id, organization_id, name, tier, status, packages, capabilities,
-             environments, expires_at, created_at, updated_at
-      FROM licenses
-    `;
-
-    const params: unknown[] = [];
+    let query = this.db.select().from(licenses).$dynamic();
 
     if (options?.limit) {
-      query += ` LIMIT $${params.length + 1}`;
-      params.push(options.limit);
+      query = query.limit(options.limit);
     }
-
     if (options?.offset) {
-      query += ` OFFSET $${params.length + 1}`;
-      params.push(options.offset);
+      query = query.offset(options.offset);
     }
 
-    const results = await this.db.query(query, params);
-
-    return results.map((row: unknown) => this.mapRowToLicense(row));
+    const results = await query;
+    return results.map((row: any) => this.mapToDomain(row));
   }
 
   async delete(id: string): Promise<void> {
-    await this.db.query(`DELETE FROM licenses WHERE id = $1`, [id]);
+    await this.db.delete(licenses).where(eq(licenses.id, id));
   }
 
   async exists(id: string): Promise<boolean> {
-    const result = await this.db.queryOne(`SELECT 1 FROM licenses WHERE id = $1`, [id]);
-    return !!result;
+    const result = await this.db
+      .select({ id: licenses.id })
+      .from(licenses)
+      .where(eq(licenses.id, id))
+      .limit(1);
+    return !!result[0];
   }
 
   async findByOrganization(organizationId: string): Promise<License[]> {
-    const results = await this.db.query(`
-      SELECT id, organization_id, name, tier, status, packages, capabilities,
-             environments, expires_at, created_at, updated_at
-      FROM licenses
-      WHERE organization_id = $1
-      ORDER BY created_at DESC
-    `, [organizationId]);
+    const results = await this.db
+      .select()
+      .from(licenses)
+      .where(eq(licenses.organizationId, organizationId))
+      .orderBy(desc(licenses.createdAt));
 
-    return results.map((row: unknown) => this.mapRowToLicense(row));
+    return results.map((row: any) => this.mapToDomain(row));
   }
 
   async findActiveByOrganization(organizationId: string): Promise<License[]> {
-    const results = await this.db.query(`
-      SELECT id, organization_id, name, tier, status, packages, capabilities,
-             environments, expires_at, created_at, updated_at
-      FROM licenses
-      WHERE organization_id = $1
-        AND status = 'active'
-        AND (expires_at IS NULL OR expires_at > NOW())
-      ORDER BY created_at DESC
-    `, [organizationId]);
+    const now = new Date();
+    const results = await this.db
+      .select()
+      .from(licenses)
+      .where(
+        and(
+          eq(licenses.organizationId, organizationId),
+          eq(licenses.status, 'active'),
+          sql`${licenses.expiresAt} IS NULL OR ${licenses.expiresAt} > ${now}`
+        )
+      )
+      .orderBy(desc(licenses.createdAt));
 
-    return results.map((row: unknown) => this.mapRowToLicense(row));
+    return results.map((row: any) => this.mapToDomain(row));
   }
 
   async findByApiKey(apiKeyId: string): Promise<License | null> {
-    const result = await this.db.queryOne(`
-      SELECT l.id, l.organization_id, l.name, l.tier, l.status, l.packages, l.capabilities,
-             l.environments, l.expires_at, l.created_at, l.updated_at
-      FROM licenses l
-      INNER JOIN api_keys ak ON ak.license_id = l.id
-      WHERE ak.id = $1
-    `, [apiKeyId]);
+    const result = await this.db
+      .select({
+        id: licenses.id,
+        organizationId: licenses.organizationId,
+        name: licenses.name,
+        tier: licenses.tier,
+        status: licenses.status,
+        packages: licenses.packages,
+        capabilities: licenses.capabilities,
+        environments: licenses.environments,
+        expiresAt: licenses.expiresAt,
+        createdAt: licenses.createdAt,
+        updatedAt: licenses.updatedAt,
+      })
+      .from(licenses)
+      .innerJoin(apiKeys, eq(apiKeys.licenseId, licenses.id))
+      .where(eq(apiKeys.id, apiKeyId))
+      .limit(1);
 
-    if (!result) return null;
+    if (!result[0]) return null;
 
-    return License.fromPersistence({
-      id: result.id,
-      organizationId: result.organization_id,
-      name: result.name,
-      tier: result.tier,
-      status: result.status,
-      packages: JSON.parse(result.packages || '[]'),
-      capabilities: JSON.parse(result.capabilities || '{}'),
-      environments: JSON.parse(result.environments || '[]'),
-      expiresAt: result.expires_at ? new Date(result.expires_at) : null,
-      createdAt: new Date(result.created_at),
-      updatedAt: new Date(result.updated_at),
-    });
+    return this.mapToDomain(result[0]);
   }
 
   async findValidForOrganizationAndCapability(
     organizationId: string,
     capabilityName: string
   ): Promise<License | null> {
-    const result = await this.db.queryOne(`
-      SELECT id, organization_id, name, tier, status, packages, capabilities,
-             environments, expires_at, created_at, updated_at
-      FROM licenses
-      WHERE organization_id = $1
-        AND status = 'active'
-        AND (expires_at IS NULL OR expires_at > NOW())
-        AND capabilities ? $2
-      ORDER BY created_at DESC
-      LIMIT 1
-    `, [organizationId, capabilityName]);
+    const now = new Date();
+    const results = await this.db
+      .select()
+      .from(licenses)
+      .where(
+        and(
+          eq(licenses.organizationId, organizationId),
+          eq(licenses.status, 'active'),
+          sql`${licenses.expiresAt} IS NULL OR ${licenses.expiresAt} > ${now}`,
+          sql`${licenses.capabilities} ? ${capabilityName}`
+        )
+      )
+      .orderBy(desc(licenses.createdAt))
+      .limit(1);
 
-    if (!result) return null;
-
-    return License.fromPersistence({
-      id: result.id,
-      organizationId: result.organization_id,
-      name: result.name,
-      tier: result.tier,
-      status: result.status,
-      packages: JSON.parse(result.packages || '[]'),
-      capabilities: JSON.parse(result.capabilities || '{}'),
-      environments: JSON.parse(result.environments || '[]'),
-      expiresAt: result.expires_at ? new Date(result.expires_at) : null,
-      createdAt: new Date(result.created_at),
-      updatedAt: new Date(result.updated_at),
-    });
+    if (!results[0]) return null;
+    return this.mapToDomain(results[0]);
   }
 
-  private mapRowToLicense(row: unknown): License {
+  private mapToDomain(row: any): License {
     return License.fromPersistence({
       id: row.id,
-      organizationId: row.organization_id,
+      organizationId: row.organizationId,
       name: row.name,
       tier: row.tier,
       status: row.status,
-      packages: JSON.parse(row.packages || '[]'),
-      capabilities: JSON.parse(row.capabilities || '{}'),
-      environments: JSON.parse(row.environments || '[]'),
-      expiresAt: row.expires_at ? new Date(row.expires_at) : null,
-      createdAt: new Date(row.created_at),
-      updatedAt: new Date(row.updated_at),
+      packages: row.packages,
+      capabilities: row.capabilities,
+      environments: row.environments,
+      expiresAt: row.expiresAt,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
     });
   }
 }

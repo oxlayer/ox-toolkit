@@ -1,0 +1,65 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "example": "550e8400-e29b-41d4-a716-446655440000",
+      "description": "Organization unique identifier"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "example": "Acme Corp",
+      "description": "Organization display name"
+    },
+    "slug": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[a-z0-9-]+$",
+      "example": "acme-corp",
+      "description": "URL-friendly organization identifier"
+    },
+    "tier": {
+      "type": "string",
+      "enum": ["starter", "professional", "enterprise", "custom"],
+      "example": "professional",
+      "description": "License tier determining limits"
+    },
+    "maxDevelopers": {
+      "type": "integer",
+      "minimum": 0,
+      "example": 25,
+      "description": "Maximum number of developers allowed"
+    },
+    "maxProjects": {
+      "type": "integer",
+      "minimum": 0,
+      "example": 20,
+      "description": "Maximum number of projects allowed (-1 for unlimited)"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2025-01-01T00:00:00Z"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2025-01-01T00:00:00Z"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "slug",
+    "tier",
+    "maxDevelopers",
+    "maxProjects",
+    "createdAt",
+    "updatedAt"
+  ],
+  "x-readme-ref-name": "Organization"
+}

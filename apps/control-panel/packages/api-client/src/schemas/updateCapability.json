@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "limits": {
+      "type": "object",
+      "additionalProperties": {},
+      "example": { "maxRealms": 50, "sso": true, "rbac": true }
+    }
+  },
+  "required": ["limits"],
+  "x-readme-ref-name": "UpdateCapability"
+}

@@ -5,13 +5,15 @@
  */
 
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   useOrganizations,
   useCreateOrganization,
+  useUpdateOrganization,
   useDeleteOrganization,
   type CreateOrganizationInput,
-} from '@oxlayer/api-client';
-import { Card } from '@/components/ui/Card';
+} from '@/services/api-client';
+import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
@@ -27,9 +29,13 @@ const tierOptions = [
 ];
 
 export function OrganizationsPage() {
+  const queryClient = useQueryClient();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedOrg, setSelectedOrg] = useState<any>(null);
   const [newOrg, setNewOrg] = useState<CreateOrganizationInput>({
     name: '',
+    slug: '',
     tier: 'starter',
     maxDevelopers: 5,
     maxProjects: 3,
@@ -37,20 +43,58 @@ export function OrganizationsPage() {
 
   const { data: organizations, isLoading } = useOrganizations();
   const createMutation = useCreateOrganization();
+  const updateMutation = useUpdateOrganization();
   const deleteMutation = useDeleteOrganization();
 
   const handleCreate = () => {
-    createMutation.mutate(newOrg, {
+    createMutation.mutate({ data: newOrg }, {
       onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [{ url: '/v1/organizations' }] });
         setIsCreateModalOpen(false);
-        setNewOrg({ name: '', tier: 'starter', maxDevelopers: 5, maxProjects: 3 });
+        setNewOrg({ name: '', slug: '', tier: 'starter', maxDevelopers: 5, maxProjects: 3 });
       },
     });
   };
 
+  const handleUpdate = () => {
+    if (!selectedOrg) return;
+    updateMutation.mutate({
+      id: selectedOrg.id,
+      data: {
+        name: newOrg.name,
+        tier: newOrg.tier,
+        maxDevelopers: newOrg.maxDevelopers,
+        maxProjects: newOrg.maxProjects,
+      },
+    }, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [{ url: '/v1/organizations' }] });
+        setIsEditModalOpen(false);
+        setSelectedOrg(null);
+        setNewOrg({ name: '', slug: '', tier: 'starter', maxDevelopers: 5, maxProjects: 3 });
+      },
+    });
+  };
+
+  const openEditModal = (org: any) => {
+    setSelectedOrg(org);
+    setNewOrg({
+      name: org.name,
+      slug: org.slug,
+      tier: org.tier,
+      maxDevelopers: org.maxDevelopers,
+      maxProjects: org.maxProjects,
+    });
+    setIsEditModalOpen(true);
+  };
+
   const handleDelete = (id: string) => {
     if (confirm('Are you sure you want to delete this organization?')) {
-      deleteMutation.mutate(id);
+      deleteMutation.mutate({ id }, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [{ url: '/v1/organizations' }] });
+        },
+      });
     }
   };
 
@@ -151,7 +195,7 @@ export function OrganizationsPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => {/* TODO: Edit */}}
+                            onClick={() => openEditModal(org)}
                           >
                             Edit
                           </Button>
@@ -224,6 +268,12 @@ export function OrganizationsPage() {
             value={newOrg.name}
             onChange={(e) => setNewOrg({ ...newOrg, name: e.target.value })}
           />
+          <Input
+            label="Slug"
+            placeholder="acme-corp"
+            value={newOrg.slug}
+            onChange={(e) => setNewOrg({ ...newOrg, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
+          />
           <Select
             label="Tier"
             options={tierOptions}
@@ -234,13 +284,57 @@ export function OrganizationsPage() {
             label="Max Developers"
             type="number"
             value={newOrg.maxDevelopers}
-            onChange={(e) => setNewOrg({ ...newOrg, maxDevelopers: parseInt(e.target.value) })}
+            onChange={(e) => setNewOrg({ ...newOrg, maxDevelopers: parseInt(e.target.value) || 0 })}
           />
           <Input
             label="Max Projects"
             type="number"
             value={newOrg.maxProjects}
-            onChange={(e) => setNewOrg({ ...newOrg, maxProjects: parseInt(e.target.value) })}
+            onChange={(e) => setNewOrg({ ...newOrg, maxProjects: parseInt(e.target.value) || 0 })}
+          />
+        </div>
+      </Modal>
+
+      {/* Edit Modal */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        title="Edit Organization"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setIsEditModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleUpdate} disabled={updateMutation.isPending}>
+              {updateMutation.isPending ? 'Saving...' : 'Save'}
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <Input
+            label="Organization Name"
+            placeholder="Acme Corp"
+            value={newOrg.name}
+            onChange={(e) => setNewOrg({ ...newOrg, name: e.target.value })}
+          />
+          <Select
+            label="Tier"
+            options={tierOptions}
+            value={newOrg.tier}
+            onChange={(e) => setNewOrg({ ...newOrg, tier: e.target.value as any })}
+          />
+          <Input
+            label="Max Developers"
+            type="number"
+            value={newOrg.maxDevelopers}
+            onChange={(e) => setNewOrg({ ...newOrg, maxDevelopers: parseInt(e.target.value) || 0 })}
+          />
+          <Input
+            label="Max Projects"
+            type="number"
+            value={newOrg.maxProjects}
+            onChange={(e) => setNewOrg({ ...newOrg, maxProjects: parseInt(e.target.value) || 0 })}
           />
         </div>
       </Modal>

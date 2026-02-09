@@ -4,8 +4,7 @@
  * Shows overview statistics and recent activity
  */
 
-import { useQuery } from '@tanstack/react-query';
-import { controlPanelApi } from '@/services/api';
+import { useOrganizations } from '@/services/api-client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 
@@ -42,16 +41,13 @@ function StatCard({ title, value, change, icon }: {
 }
 
 export function DashboardPage() {
-  const { data: organizations } = useQuery({
-    queryKey: ['organizations'],
-    queryFn: () => controlPanelApi.organizations.list(),
-  });
+  const { data: organizations } = useOrganizations();
 
   const stats = {
     organizations: organizations?.data?.length || 0,
-    licenses: organizations?.data?.reduce((acc, org) => acc + 5, 0) || 0, // Mock
-    developers: organizations?.data?.reduce((acc, org) => acc + 12, 0) || 0, // Mock
-    apiKeys: organizations?.data?.reduce((acc, org) => acc + 8, 0) || 0, // Mock
+    licenses: organizations?.data?.reduce((acc, _org) => acc + 5, 0) || 0, // Mock
+    developers: organizations?.data?.reduce((acc, _org) => acc + 12, 0) || 0, // Mock
+    apiKeys: organizations?.data?.reduce((acc, _org) => acc + 8, 0) || 0, // Mock
   };
 
   return (

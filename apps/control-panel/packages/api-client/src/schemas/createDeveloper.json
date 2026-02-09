@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "example": "John Doe"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "example": "john@example.com"
+    },
+    "environments": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["development", "staging", "production"]
+      },
+      "example": ["development"],
+      "default": ["development"]
+    }
+  },
+  "required": ["name", "email"],
+  "x-readme-ref-name": "CreateDeveloper"
+}

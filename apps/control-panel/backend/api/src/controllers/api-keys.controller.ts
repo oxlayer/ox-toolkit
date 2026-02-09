@@ -4,7 +4,7 @@
  * HTTP controller for API key management endpoints
  */
 
-import { BaseController, HttpError } from '@oxlayer/foundation-http-kit';
+import { BaseController, HttpError, mapDomainErrorToHttpStatus } from '@oxlayer/foundation-http-kit';
 import type {
   CreateApiKeyUseCase,
   UpdateApiKeyUseCase,
@@ -37,35 +37,25 @@ export class ApiKeysController extends BaseController {
    * Note: Returns the raw key which is only shown once
    */
   async create(request: Request, params: { organizationId: string }): Promise<Response> {
-    try {
-      const body = await request.json();
+    const body = await request.json();
 
-      const result = await this.createApiKey.execute({
-        organizationId: params.organizationId,
-        ...body,
-      });
+    const result = await this.createApiKey.execute({
+      organizationId: params.organizationId,
+      ...body,
+    });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const { apiKey, rawKey } = result.value;
-
-      return Response.json(
-        {
-          data: {
-            ...apiKey.toResponse(),
-            rawKey, // Only shown once!
-          },
-        },
-        { status: 201 }
-      );
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    const { apiKey, rawKey } = result.value;
+
+    return this.created({
+      data: {
+        ...apiKey.toResponse(),
+        rawKey, // Only shown once!
+      },
+    });
   }
 
   /**
@@ -75,24 +65,13 @@ export class ApiKeysController extends BaseController {
    * Note: Does NOT return the raw key
    */
   async getById(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const result = await this.getApiKey.execute({ id: params.id });
+    const result = await this.getApiKey.execute({ id: params.id });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const apiKey = result.value;
-
-      return Response.json({
-        data: apiKey.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -100,27 +79,18 @@ export class ApiKeysController extends BaseController {
    * List API keys by organization
    */
   async listByOrganization(request: Request, params: { organizationId: string }): Promise<Response> {
-    try {
-      const result = await this.listApiKeysByOrg.execute({
-        organizationId: params.organizationId,
-      });
+    const result = await this.listApiKeysByOrg.execute({
+      organizationId: params.organizationId,
+    });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const apiKeys = result.value;
-
-      return Response.json({
-        data: apiKeys.map(key => key.toResponse()),
-        meta: { count: apiKeys.length },
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({
+      data: result.value.map(key => key.toResponse()),
+      meta: { count: result.value.length },
+    });
   }
 
   /**
@@ -128,27 +98,18 @@ export class ApiKeysController extends BaseController {
    * List API keys by developer
    */
   async listByDeveloper(request: Request, params: { developerId: string }): Promise<Response> {
-    try {
-      const result = await this.listApiKeysByDev.execute({
-        developerId: params.developerId,
-      });
+    const result = await this.listApiKeysByDev.execute({
+      developerId: params.developerId,
+    });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const apiKeys = result.value;
-
-      return Response.json({
-        data: apiKeys.map(key => key.toResponse()),
-        meta: { count: apiKeys.length },
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({
+      data: result.value.map(key => key.toResponse()),
+      meta: { count: result.value.length },
+    });
   }
 
   /**
@@ -156,27 +117,18 @@ export class ApiKeysController extends BaseController {
    * List API keys by license
    */
   async listByLicense(request: Request, params: { licenseId: string }): Promise<Response> {
-    try {
-      const result = await this.listApiKeysByLicense.execute({
-        licenseId: params.licenseId,
-      });
+    const result = await this.listApiKeysByLicense.execute({
+      licenseId: params.licenseId,
+    });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const apiKeys = result.value;
-
-      return Response.json({
-        data: apiKeys.map(key => key.toResponse()),
-        meta: { count: apiKeys.length },
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({
+      data: result.value.map(key => key.toResponse()),
+      meta: { count: result.value.length },
+    });
   }
 
   /**
@@ -184,26 +136,15 @@ export class ApiKeysController extends BaseController {
    * Update an API key
    */
   async update(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const body = await request.json();
+    const body = await request.json();
 
-      const result = await this.updateApiKey.execute({ id: params.id, ...body });
+    const result = await this.updateApiKey.execute({ id: params.id, ...body });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const apiKey = result.value;
-
-      return Response.json({
-        data: apiKey.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 
   /**
@@ -211,20 +152,13 @@ export class ApiKeysController extends BaseController {
    * Delete an API key
    */
   async delete(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const result = await this.deleteApiKey.execute({ id: params.id });
+    const result = await this.deleteApiKey.execute({ id: params.id });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      return new Response(null, { status: 204 });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.noContent();
   }
 
   /**
@@ -232,23 +166,12 @@ export class ApiKeysController extends BaseController {
    * Revoke an API key
    */
   async revoke(request: Request, params: { id: string }): Promise<Response> {
-    try {
-      const result = await this.revokeApiKey.execute({ id: params.id });
+    const result = await this.revokeApiKey.execute({ id: params.id });
 
-      if (result.isErr()) {
-        throw HttpError.fromDomainError(result.error);
-      }
-
-      const apiKey = result.value;
-
-      return Response.json({
-        data: apiKey.toResponse(),
-      });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        throw error;
-      }
-      throw HttpError.fromUnknown(error);
+    if (result.isErr()) {
+      throw new HttpError(mapDomainErrorToHttpStatus(result.error), result.error.message);
     }
+
+    return this.ok({ data: result.value.toResponse() });
   }
 }
