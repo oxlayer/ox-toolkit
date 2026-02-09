@@ -11,7 +11,7 @@
     "db:seed": "bun src/db/seed.ts",
     "test": "vitest",
     "generate:openapi": "tsx scripts/generate-openapi.ts",
-    "generate:client": "pnpm run generate:openapi && cd ../../../packages/api-client && pnpm run generate"
+    "generate:client": "pnpm run generate:openapi && cd ../../packages/api-client && pnpm run generate"
   },
   "dependencies": {
     "@hono/node-server": "1.19.9",

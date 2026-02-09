@@ -10,7 +10,7 @@
     "./fetcher": "./src/fetcher.ts"
   },
   "scripts": {
-    "generate": "kubb generate"
+    "generate": "node ../../../../node_modules/@kubb/cli/bin/kubb.cjs generate"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.64.2",
@@ -18,8 +18,11 @@
   },
   "devDependencies": {
     "@kubb/cli": "^4.21.2",
+    "@kubb/core": "^4.21.2",
+    "@kubb/plugin-oas": "^4.21.2",
     "@kubb/plugin-react-query": "^4.21.2",
     "@kubb/plugin-ts": "^4.21.2",
+    "prettier": "^3.5.3",
     "typescript": "^5.7.3"
   },
   "peerDependencies": {
