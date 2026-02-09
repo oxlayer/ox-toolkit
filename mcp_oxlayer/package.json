@@ -1,11 +1,11 @@
 {
-  "name": "mcp-oxlayer",
+  "name": "@oxlayer/mcp",
   "version": "1.0.0",
   "description": "MCP server for OxLayer DDD patterns and capabilities documentation",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "mcp-oxlayer": "dist/index.js"
+    "mcp": "dist/index.js"
   },
   "scripts": {
     "prebuild": "npx tsx scripts/embed-docs.ts",
