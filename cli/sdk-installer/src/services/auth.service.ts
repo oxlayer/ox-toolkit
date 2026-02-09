@@ -1,86 +1,121 @@
 /**
  * Authentication Service
  *
- * Handles API key storage and retrieval
+ * Handles CLI authentication with scoped tokens.
+ *
+ * @deprecated Most methods are now thin wrappers around device-auth.service.ts.
+ * New code should import from device-auth.service.ts directly.
  */
 
 import type { InstallerConfig } from '../types/index.js';
-import { promises as fs } from 'fs';
-import { join } from 'path';
-import { homedir } from 'os';
 
-const CONFIG_DIR = join(homedir(), '.oxlayer');
-const CONFIG_FILE = join(CONFIG_DIR, 'config.json');
+// Re-export everything from the new device-auth service
+export * from './device-auth.service.js';
+
+// ============================================================================
+// Legacy API (deprecated)
+// ============================================================================
+
+/**
+ * @deprecated Use loadConfig from device-auth.service.ts instead
+ * Returns CliConfig instead of InstallerConfig
+ */
+export async function loadConfig(): Promise<InstallerConfig | null> {
+  const { loadConfig: loadNewConfig } = await import('./device-auth.service.js');
+  const config = await loadNewConfig();
+
+  if (!config) {
+    return null;
+  }
+
+  // Convert new config to legacy format for backward compatibility
+  return {
+    apiKey: config.token, // Map token to apiKey for legacy consumers
+    environment: config.environment,
+    vendorDir: config.vendorDir,
+    apiEndpoint: config.apiEndpoint,
+  };
+}
+
+/**
+ * @deprecated Use saveConfig from device-auth.service.ts instead
+ * Accepts InstallerConfig but converts to CliConfig internally
+ */
+export async function saveConfig(config: InstallerConfig): Promise<void> {
+  const { saveConfig: saveNewConfig } = await import('./device-auth.service.js');
+
+  // For legacy API key config, we need to migrate
+  if (config.apiKey && !config.apiKey.startsWith('oxl_cli_')) {
+    // This is an old API key format - would need migration
+    // For now, save as-is to avoid breaking existing flows
+    const { promises: fs } = await import('fs');
+    const { join } = await import('path');
+    const { homedir } = await import('os');
+
+    const CONFIG_DIR = join(homedir(), '.oxlayer');
+    const CONFIG_FILE = join(CONFIG_DIR, 'config.json');
+
+    await fs.mkdir(CONFIG_DIR, { recursive: true });
+    await fs.writeFile(CONFIG_FILE, JSON.stringify(config, null, 2), {
+      mode: 0o600,
+    });
+    return;
+  }
+
+  // Convert legacy config to new format
+  await saveNewConfig({
+    token: config.apiKey,
+    tokenInfo: {
+      token: config.apiKey,
+      tokenType: 'Bearer',
+      scopes: ['sdk:read', 'capabilities:read', 'downloads:read'],
+      expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      deviceId: 'legacy',
+    },
+    organizationId: '',
+    environment: config.environment,
+    vendorDir: config.vendorDir,
+    apiEndpoint: config.apiEndpoint,
+    updatedAt: new Date().toISOString(),
+  });
+}
+
+/**
+ * @deprecated Use removeConfig from device-auth.service.ts instead
+ */
+export async function removeConfig(): Promise<void> {
+  const { removeConfig: removeNewConfig } = await import('./device-auth.service.js');
+  await removeNewConfig();
+}
+
+/**
+ * @deprecated Use getAccessToken from device-auth.service.ts instead
+ */
+export async function getApiKey(): Promise<string | null> {
+  const { getAccessToken } = await import('./device-auth.service.js');
+  return getAccessToken();
+}
+
+/**
+ * @deprecated Use validateToken from device-auth.service.ts instead
+ */
+export function validateApiKey(apiKey: string): boolean {
+  const { validateToken } = require('./device-auth.service.js');
+  return validateToken(apiKey);
+}
 
 /**
  * Get the configuration directory path
  */
 export function getConfigDir(): string {
-  return CONFIG_DIR;
+  const { join } = require('path');
+  const { homedir } = require('os');
+  return join(homedir(), '.oxlayer');
 }
 
 /**
  * Get the configuration file path
  */
 export function getConfigFile(): string {
-  return CONFIG_FILE;
-}
-
-/**
- * Load installer configuration from disk
- */
-export async function loadConfig(): Promise<InstallerConfig | null> {
-  try {
-    const content = await fs.readFile(CONFIG_FILE, 'utf-8');
-    return JSON.parse(content) as InstallerConfig;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Save installer configuration to disk
- */
-export async function saveConfig(config: InstallerConfig): Promise<void> {
-  await fs.mkdir(CONFIG_DIR, { recursive: true });
-  await fs.writeFile(CONFIG_FILE, JSON.stringify(config, null, 2));
-}
-
-/**
- * Remove stored configuration
- */
-export async function removeConfig(): Promise<void> {
-  try {
-    await fs.unlink(CONFIG_FILE);
-  } catch {
-    // Ignore if file doesn't exist
-  }
-}
-
-/**
- * Get API key from config or environment
- */
-export async function getApiKey(): Promise<string | null> {
-  // Check environment variable first
-  const envKey = process.env.OXLAYER_API_KEY;
-  if (envKey) {
-    return envKey;
-  }
-
-  // Check config file
-  const config = await loadConfig();
-  return config?.apiKey ?? null;
-}
-
-/**
- * Validate API key format
- */
-export function validateApiKey(apiKey: string): boolean {
-  // OxLayer API keys start with 'oxl_' and are at least 20 characters
-  const MIN_KEY_LENGTH = 20;
-  return (
-    typeof apiKey === 'string' &&
-    apiKey.startsWith('oxl_') &&
-    apiKey.length >= MIN_KEY_LENGTH
-  );
+  return require('path').join(getConfigDir(), 'config.json');
 }
