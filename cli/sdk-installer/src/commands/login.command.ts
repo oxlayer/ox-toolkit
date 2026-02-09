@@ -1,74 +1,138 @@
 /**
  * Login Command
  *
- * Authenticate with the OxLayer Control Panel
+ * Authenticate with the OxLayer Control Panel using Device Authorization Flow.
+ *
+ * This implements a browser-based login flow (similar to GitHub CLI, Azure CLI):
+ * 1. CLI requests a device code from the API
+ * 2. CLI opens the user's browser to a verification page
+ * 3. User logs in and approves the device
+ * 4. CLI polls for completion and receives a scoped access token
  */
 
-import { saveConfig, validateApiKey } from '../services/index.js';
-import { info, success, error, createSpinner } from '../utils/cli.js';
+import {
+  initiateDeviceAuth,
+  pollForToken,
+  saveConfig,
+  openBrowser,
+  getDeviceName,
+} from '../services/device-auth.service.js';
+import { info, success, error, createSpinner, header } from '../utils/cli.js';
+import type { CliConfig } from '../types/capabilities.js';
 
 export interface LoginOptions {
-  key?: string;
   environment?: 'development' | 'staging' | 'production';
+  apiEndpoint?: string;
+  'no-browser'?: boolean;
+  'poll-interval'?: number;
 }
 
 /**
- * Login command - authenticate and save API key
+ * Login command - authenticate using Device Authorization Flow
  */
 export async function login(options: LoginOptions = {}): Promise<void> {
-  let apiKey = options.key;
+  header('OxLayer Authentication');
 
-  // Prompt for API key if not provided
-  if (!apiKey) {
-    const { default: prompts } = await import('confirms');
+  const deviceName = await getDeviceName();
+  info(`Device: ${deviceName}`);
+  info(`Environment: ${options.environment || 'development'}`);
+  console.log();
 
-    const result = await prompts.input({
-      message: 'Enter your OxLayer API key:',
-      validate: (value) => {
-        if (!value) return 'API key is required';
-        if (!validateApiKey(value)) {
-          return 'Invalid API key format. OxLayer API keys start with "oxl_"';
-        }
-        return true;
-      },
-    });
+  // Step 1: Initiate device authorization
+  const spinner = createSpinner('Initiating device authorization...');
+  spinner.start();
 
-    apiKey = result;
-  }
-
-  // Validate API key
-  if (!validateApiKey(apiKey)) {
-    error('Invalid API key format. OxLayer API keys start with "oxl_"');
+  let deviceCodeResponse;
+  try {
+    deviceCodeResponse = await initiateDeviceAuth(
+      options.environment || 'development',
+      options.apiEndpoint
+    );
+    spinner.succeed('Device authorization initiated');
+  } catch (err) {
+    spinner.fail('Failed to initiate device authorization');
+    error(err instanceof Error ? err.message : 'Unknown error');
     process.exit(1);
   }
 
-  // Test the API key
-  const spinner = createSpinner('Verifying API key...');
-  spinner.start();
+  // Step 2: Display instructions
+  console.log();
+  info('To complete authentication, follow these steps:');
+  console.log();
+
+  const verificationUrl = deviceCodeResponse.verificationUrl;
+  const userCode = deviceCodeResponse.userCode;
+
+  // Show the URL and code
+  console.log(`  1. Visit this URL in your browser:`);
+  console.log(`     ${verificationUrl}`);
+  console.log();
+
+  console.log(`  2. Enter this code when prompted:`);
+  console.log(`     ${userCode}`);
+  console.log();
+
+  // Step 3: Open browser (unless --no-browser flag)
+  if (!options['no-browser']) {
+    try {
+      const urlWithCode = new URL(verificationUrl);
+      urlWithCode.searchParams.set('device_code', deviceCodeResponse.deviceCode);
+
+      const openSpinner = createSpinner('Opening browser...');
+      openSpinner.start();
+      await openBrowser(urlWithCode.toString());
+      openSpinner.succeed('Browser opened');
+    } catch (err) {
+      info('Could not open browser automatically. Please visit the URL manually.');
+    }
+  } else {
+    info('Browser auto-open disabled (--no-browser flag set)');
+  }
+
+  console.log();
+  info('Waiting for authentication to complete...');
+
+  // Step 4: Poll for token
+  const pollSpinner = createSpinner('Waiting for approval');
 
   try {
-    const { healthCheck } = await import('../services/index.js');
-    const isHealthy = await healthCheck();
+    pollSpinner.start();
 
-    if (!isHealthy) {
-      spinner.fail('API health check failed');
-      error('Could not connect to OxLayer API. Please check your network connection.');
-      process.exit(1);
-    }
-
-    spinner.succeed('API key verified');
-
-    // Save configuration
-    await saveConfig({
-      apiKey,
-      environment: options.environment || 'development',
-      vendorDir: '.capabilities-vendor',
+    const result = await pollForToken(deviceCodeResponse.pollEndpoint, {
+      interval: options['poll-interval'] || deviceCodeResponse.interval,
+      maxAttempts: 120, // 10 minutes
+      onProgress: (attempt, maxAttempts) => {
+        if (attempt % 12 === 0) {
+          // Update every minute
+          pollSpinner.text = `Waiting for approval (${Math.floor((attempt / maxAttempts) * 100)}%)`;
+        }
+      },
     });
 
+    pollSpinner.succeed('Authentication successful');
+
+    // Step 5: Save configuration
+    const config: CliConfig = {
+      token: result.accessToken!,
+      tokenInfo: result.tokenInfo!,
+      organizationId: result.organizationId!,
+      environment: options.environment || 'development',
+      vendorDir: '.capabilities-vendor',
+      apiEndpoint: options.apiEndpoint,
+      updatedAt: new Date().toISOString(),
+    };
+
+    await saveConfig(config);
+
+    console.log();
     success('Logged in successfully');
-    info(`API key saved to ${await import('../services/auth.service.js').then(m => m.getConfigFile())}`);
+    info(`Organization: ${result.organizationId}`);
+    info(`Device ID: ${result.tokenInfo!.deviceId}`);
+    info(`Scopes: ${result.tokenInfo!.scopes.join(', ')}`);
+    info(`Expires: ${new Date(result.tokenInfo!.expiresAt).toLocaleString()}`);
+
   } catch (err) {
-    spinner.fail('Authentication failed');
+    pollSpinner.fail('Authentication failed');
     error(err instanceof Error ? err.message : 'Unknown error');
     process.exit(1);
   }

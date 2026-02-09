@@ -2,20 +2,33 @@
  * SDK Installer Types
  *
  * Shared types for the SDK installer
+ *
+ * @deprecated Use {@link ./capabilities.ts} for the new capability-based schema.
+ * This file is maintained for backward compatibility during the migration.
  */
 
+// ============================================================================
+// NEW CAPABILITY-BASED TYPES (preferred)
+// ============================================================================
+
+export * from './capabilities.js';
+
+// ============================================================================
+// LEGACY TYPES (deprecated, will be removed)
+// ============================================================================
+
 /**
- * API key scopes
+ * @deprecated Use TokenScope from './capabilities.ts' instead
  */
 export type ApiKeyScope = 'read' | 'write' | 'admin' | 'install';
 
 /**
- * Environment types
+ * @deprecated Use Environment from './capabilities.ts' instead
  */
 export type Environment = 'development' | 'staging' | 'production';
 
 /**
- * Capability names
+ * @deprecated Use CapabilityCategory from './capabilities.ts' instead
  */
 export type CapabilityName =
   | 'auth'
@@ -30,12 +43,12 @@ export type CapabilityName =
   | 'scheduler';
 
 /**
- * Package types
+ * @deprecated Use CapabilityCategory from './capabilities.ts' instead
  */
 export type SdkPackageType = 'backend-sdk' | 'frontend-sdk' | 'cli-tools' | 'channels';
 
 /**
- * Capability limits
+ * @deprecated Use Capability from './capabilities.ts' instead
  */
 export interface CapabilityLimits {
   maxRealms?: number;
@@ -55,6 +68,7 @@ export interface CapabilityLimits {
 
 /**
  * Manifest from release
+ * @deprecated This will be replaced by CapabilityManifest
  */
 export interface ReleaseManifest {
   version: string;
@@ -69,7 +83,7 @@ export interface ReleaseManifest {
 }
 
 /**
- * Capability resolution response
+ * @deprecated Use CapabilityResolutionResponse from './capabilities.ts' instead
  */
 export interface CapabilityResolutionResponse {
   organizationId: string;
@@ -80,7 +94,7 @@ export interface CapabilityResolutionResponse {
 }
 
 /**
- * Package download response
+ * @deprecated Use PackageDownloadResponse from './capabilities.ts' instead
  */
 export interface PackageDownloadResponse {
   downloadUrl: string;
@@ -90,7 +104,7 @@ export interface PackageDownloadResponse {
 }
 
 /**
- * Installer configuration
+ * @deprecated Use CliConfig from './capabilities.ts' instead
  */
 export interface InstallerConfig {
   apiKey: string;
