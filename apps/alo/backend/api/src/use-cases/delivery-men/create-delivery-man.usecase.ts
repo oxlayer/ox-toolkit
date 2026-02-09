@@ -4,9 +4,9 @@
 
 import { CreateUseCaseTemplate } from '@oxlayer/snippets/use-cases';
 import type { AppResult } from '@oxlayer/snippets/use-cases';
-import { DeliveryManRepository } from '@/repositories/index.js';
-import { EventBus } from '@oxlayer/capabilities-events';
-import { DeliveryManEntity, DeliveryManCreatedEvent } from '@/domain/index.js';
+import type { DeliveryManRepository } from '@/repositories/index.js';
+import type { EventBus } from '@oxlayer/capabilities-events';
+import type { DeliveryManEntity, DeliveryManCreatedEvent } from '@/domain/index.js';
 
 export interface CreateDeliveryManInput {
   name: string;

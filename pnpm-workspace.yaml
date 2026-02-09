@@ -1,4 +1,7 @@
 packages:
+  # Shared packages
+  - 'packages/**'
+
   # Apps workspaces
   - 'apps/**'
 

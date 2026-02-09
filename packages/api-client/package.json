@@ -1,0 +1,29 @@
+{
+  "name": "@oxlayer/api-client",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Generated API client for OxLayer Control Panel",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./hooks": "./src/hooks/index.ts",
+    "./fetcher": "./src/fetcher.ts"
+  },
+  "scripts": {
+    "generate": "kubb generate"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.64.2",
+    "axios": "^1.7.9"
+  },
+  "devDependencies": {
+    "@kubb/cli": "^4.21.2",
+    "@kubb/plugin-react-query": "^4.21.2",
+    "@kubb/plugin-ts": "^4.21.2",
+    "typescript": "^5.7.3"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "react": "^18.0.0 || ^19.0.0"
+  }
+}

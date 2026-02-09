@@ -1,0 +1,35 @@
+{
+  "name": "@oxlayer/sdk-installer",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "OxLayer SDK Installer - Download and install private SDK packages",
+  "bin": {
+    "oxlayer": "./dist/cli.js"
+  },
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "build": "tsup",
+    "start": "node dist/cli.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "node-fetch": "^3.3.2",
+    "ora": "^8.1.1",
+    "chalk": "^5.4.1",
+    "cli-table3": "^0.6.5",
+    "dotenv": "^16.4.7",
+    "adm-zip": "^0.5.16",
+    "openpgp": "^6.3.0",
+    "glob": "^11.0.1",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "25.0.10",
+    "@types/adm-zip": "^0.5.7",
+    "@types/prompts": "^2.4.9",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

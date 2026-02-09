@@ -9,6 +9,8 @@
     "typescript": "^5.7.3"
   },
   "scripts": {
+    "panel": "pnpm --filter @oxlayer/control-panel-dashboard dev",
+    "panel:api": "pnpm --filter @oxlayer/control-panel-api dev",
     "alo:onboarding": "pnpm --filter @acme/onboarding dev",
     "alo:manager": "pnpm --filter @acme/manager dev",
     "alo:admin": "pnpm --filter @acme/admin dev",
@@ -22,6 +24,7 @@
     "backend:release": "cd ./backend && ./release.sh",
     "build:keycloak-bootstrap": "pnpm --filter @oxlayer/cli-keycloak-bootstrap build",
     "create-frontend": "node scripts/create-frontend.cjs",
+    "create-backend": "node scripts/create-backend.cjs",
     "sdk:build-scripts": "tsup --config scripts/sdk-release/tsup.config.ts",
     "sdk:version": "node scripts/sdk-release/dist/generate-version.js",
     "sdk:manifest": "node scripts/sdk-release/dist/generate-manifest.js",
