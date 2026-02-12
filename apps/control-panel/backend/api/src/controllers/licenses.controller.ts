@@ -182,13 +182,13 @@ export class LicensesController extends BaseController {
   }
 
   /**
-   * DELETE /licenses/:id/packages/:package
+   * DELETE /licenses/:id/packages/:packageName
    * Remove package from license
    */
-  async removePackage(request: Request, params: { id: string; package: string }): Promise<Response> {
+  async removePackage(request: Request, params: { id: string; packageName: string }): Promise<Response> {
     const result = await this.removePackage.execute({
       id: params.id,
-      package: params.package,
+      package: params.packageName,
     });
 
     if (result.isErr()) {

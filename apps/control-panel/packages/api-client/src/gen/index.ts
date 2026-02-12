@@ -48,13 +48,13 @@ export type {
   DeleteV1LicensesIdCapabilitiesCapabilityMutation,
 } from "./DeleteV1LicensesIdCapabilitiesCapability.ts";
 export type {
-  DeleteV1LicensesIdPackagesPackagePathParamsPackageEnumKey,
-  DeleteV1LicensesIdPackagesPackagePathParams,
-  DeleteV1LicensesIdPackagesPackage200,
-  DeleteV1LicensesIdPackagesPackage404,
-  DeleteV1LicensesIdPackagesPackageMutationResponse,
-  DeleteV1LicensesIdPackagesPackageMutation,
-} from "./DeleteV1LicensesIdPackagesPackage.ts";
+  DeleteV1LicensesIdPackagesPackagenamePathParamsPackageNameEnumKey,
+  DeleteV1LicensesIdPackagesPackagenamePathParams,
+  DeleteV1LicensesIdPackagesPackagename200,
+  DeleteV1LicensesIdPackagesPackagename404,
+  DeleteV1LicensesIdPackagesPackagenameMutationResponse,
+  DeleteV1LicensesIdPackagesPackagenameMutation,
+} from "./DeleteV1LicensesIdPackagesPackagename.ts";
 export type {
   DeleteV1OrganizationsIdPathParams,
   DeleteV1OrganizationsId204,
@@ -303,7 +303,7 @@ export { createDeveloperEnvironmentsEnum } from "./CreateDeveloper.ts";
 export { createLicenseTierEnum } from "./CreateLicense.ts";
 export { createLicensePackagesEnum } from "./CreateLicense.ts";
 export { deleteV1LicensesIdCapabilitiesCapabilityPathParamsCapabilityEnum } from "./DeleteV1LicensesIdCapabilitiesCapability.ts";
-export { deleteV1LicensesIdPackagesPackagePathParamsPackageEnum } from "./DeleteV1LicensesIdPackagesPackage.ts";
+export { deleteV1LicensesIdPackagesPackagenamePathParamsPackageNameEnum } from "./DeleteV1LicensesIdPackagesPackagename.ts";
 export { developerEnvironmentsEnum } from "./Developer.ts";
 export { licenseTierEnum } from "./License.ts";
 export { licenseStatusEnum } from "./License.ts";

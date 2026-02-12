@@ -46,7 +46,7 @@ import {
   usePostV1LicensesIdSuspend,
   usePostV1LicensesIdRevoke,
   usePostV1LicensesIdPackages,
-  useDeleteV1LicensesIdPackagesPackage,
+  useDeleteV1LicensesIdPackagesPackagename,
   usePutV1LicensesIdCapabilitiesCapability,
   useDeleteV1LicensesIdCapabilitiesCapability,
 
@@ -153,7 +153,7 @@ export function useAddPackageToLicense() {
 }
 
 export function useRemovePackageFromLicense() {
-  return useDeleteV1LicensesIdPackagesPackage();
+  return useDeleteV1LicensesIdPackagesPackagename();
 }
 
 export function useUpdateCapabilityLimits() {

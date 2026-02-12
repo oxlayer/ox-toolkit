@@ -90,12 +90,12 @@ export function setupLicensesRoutes(app: Hono, container: AppContainer) {
     return c.body(response.body, response.status as any, headersToObject(response.headers));
   });
 
-  // DELETE /licenses/:id/packages/:package - Remove package from license
-  app.delete('/licenses/:id/packages/:package', async (c) => {
+  // DELETE /licenses/:id/packages/:packageName - Remove package from license
+  app.delete('/licenses/:id/packages/:packageName', async (c) => {
     const request = new Request(c.req.raw);
     const response = await controller.removePackage(request, {
       id: c.req.param('id'),
-      package: c.req.param('package')
+      packageName: c.req.param('packageName')
     });
     return c.body(response.body, response.status as any, headersToObject(response.headers));
   });

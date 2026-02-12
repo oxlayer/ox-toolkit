@@ -2864,7 +2864,7 @@
         }
       }
     },
-    "/v1/licenses/{id}/packages/{package}": {
+    "/v1/licenses/{id}/packages/{packageName}": {
       "delete": {
         "parameters": [
           {
@@ -2889,7 +2889,7 @@
               "example": "backend-sdk"
             },
             "required": true,
-            "name": "package",
+            "name": "packageName",
             "in": "path"
           }
         ],
