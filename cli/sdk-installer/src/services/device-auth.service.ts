@@ -32,7 +32,7 @@ const CONFIG_DIR = join(homedir(), '.oxlayer');
 const CONFIG_FILE = join(CONFIG_DIR, 'config.json');
 const DEVICES_FILE = join(CONFIG_DIR, 'devices.json');
 
-const DEFAULT_API_ENDPOINT = 'https://api.oxlayer.dev';
+const DEFAULT_API_ENDPOINT = process.env.OXLAYER_API_ENDPOINT || 'https://api.oxlayer.dev';
 const DEFAULT_POLL_INTERVAL = 5; // seconds
 const MAX_POLL_ATTEMPTS = 120; // 10 minutes total
 
@@ -260,13 +260,15 @@ export async function getAccessToken(): Promise<string | null> {
 
 /**
  * Validate token format
+ * Accepts both JWT tokens (from device auth flow) and legacy scoped tokens (oxl_cli_*)
  */
 export function validateToken(token: string): boolean {
-  // OxLayer scoped tokens start with 'oxl_cli_' and are at least 32 characters
   const MIN_TOKEN_LENGTH = 32;
+  const isJwt = token.startsWith('eyJ'); // JWTs start with base64-encoded '{'
+  const isScopedToken = token.startsWith('oxl_cli_');
   return (
     typeof token === 'string' &&
-    token.startsWith('oxl_cli_') &&
+    (isJwt || isScopedToken) &&
     token.length >= MIN_TOKEN_LENGTH
   );
 }
@@ -296,7 +298,11 @@ export async function refreshManifest(
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to refresh manifest: ${response.statusText}`);
+    // Not implemented yet - return config without manifest
+    return {
+      ...config,
+      updatedAt: new Date().toISOString(),
+    };
   }
 
   const manifest: CapabilityManifest = await response.json();
@@ -436,7 +442,7 @@ export async function migrateFromApiKey(apiKey: string): Promise<CliConfig> {
   const deviceName = await getDeviceName();
 
   // Exchange API key for scoped token
-  const endpoint = process.env.OXLAYER_API_ENDPOINT || DEFAULT_API_ENDPOINT;
+  const endpoint = DEFAULT_API_ENDPOINT;
   const response = await fetch(`${endpoint}/v1/cli/migrate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

@@ -6,12 +6,13 @@
 
 import { promises as fs } from 'fs';
 import { join } from 'path';
-import { resolveCapabilities, requestPackageDownload } from '../services/index.js';
-import { getVendorDir, addSdkDependencies, hasPackageJson } from '../services/index.js';
-import { downloadFile, extractZip, verifyManifest, verifyExtractedIntegrity } from '../services/index.js';
+import { requestPackageDownload } from '../services/index.js';
+import { getVendorDir, hasPackageJson } from '../services/index.js';
+import { downloadFile, extractZip, verifyManifest } from '../services/index.js';
 import { detectProjectType } from '../utils/env.js';
-import { header, success, error, info, createSpinner, formatSize, formatDuration } from '../utils/cli.js';
+import { header, success, error, info, createSpinner, formatDuration } from '../utils/cli.js';
 import type { InstallOptions, SdkPackageType } from '../types/index.js';
+import { loadConfig, isTokenExpired } from '../services/device-auth.service.js';
 
 const PACKAGE_MAP: Record<string, SdkPackageType> = {
   'backend-sdk': 'backend-sdk',
@@ -67,45 +68,38 @@ export async function install(version: string, options: InstallOptions = {}): Pr
   const packagesToInstall = resolvePackagesToInstall(projectConfig.type, options);
   info(`Packages: ${packagesToInstall.join(', ')}`);
 
-  // Check capabilities first
-  const capabilitiesSpinner = createSpinner('Checking license capabilities...');
-  capabilitiesSpinner.start();
+  // Validate authentication
+  const authSpinner = createSpinner('Validating authentication...');
+  authSpinner.start();
 
   try {
-    // Resolve capabilities for each package
-    const requestedCapabilities: string[] = [];
+    const config = await loadConfig();
 
-    for (const pkg of packagesToInstall) {
-      switch (pkg) {
-        case 'backend-sdk':
-          requestedCapabilities.push('auth', 'storage', 'cache', 'events', 'queues');
-          break;
-        case 'frontend-sdk':
-          requestedCapabilities.push('auth');
-          break;
-        case 'channels':
-          requestedCapabilities.push('events');
-          break;
-      }
+    if (!config || !config.token) {
+      authSpinner.fail('Authentication required');
+      error('Please run: oxlayer login');
+      process.exit(1);
     }
 
-    const capabilities = await resolveCapabilities(
-      requestedCapabilities as any[],
-      options.environment || 'development'
-    );
-
-    capabilitiesSpinner.succeed('License verified');
-
-    // Show capabilities
-    info(`Organization: ${capabilities.organizationId}`);
-    info(`License: ${capabilities.licenseId}`);
-    info(`Environment: ${capabilities.environment}`);
-
-    if (Object.keys(capabilities.capabilities).length > 0) {
-      info(`Available capabilities: ${Object.keys(capabilities.capabilities).join(', ')}`);
+    // Check if token is expired
+    if (isTokenExpired(config)) {
+      authSpinner.fail('Token expired');
+      error('Your authentication token has expired. Please run: oxlayer login');
+      process.exit(1);
     }
+
+    authSpinner.succeed('Authenticated');
+
+    // Show auth info
+    info(`Organization: ${config.organizationId}`);
+    info(`Device: ${config.tokenInfo?.deviceId || 'Unknown'}`);
+
+    const expiresAt = new Date(config.tokenInfo.expiresAt);
+    const now = new Date();
+    const daysUntilExpiry = Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    info(`Token expires: ${expiresAt.toLocaleString()} (${daysUntilExpiry > 0 ? `in ${daysUntilExpiry} days` : 'expired'})`);
   } catch (err) {
-    capabilitiesSpinner.fail('License verification failed');
+    authSpinner.fail('Authentication failed');
     error(err instanceof Error ? err.message : 'Unknown error');
     process.exit(1);
   }
@@ -171,7 +165,7 @@ export async function install(version: string, options: InstallOptions = {}): Pr
       const extractedDir = join(tempDir, 'extracted');
 
       // Copy package contents to vendor directory
-      const { readdir, copyFile } = await import('fs/promises');
+      const { readdir } = await import('fs/promises');
 
       if (packageType === 'backend-sdk') {
         // Copy backend packages
@@ -208,24 +202,6 @@ export async function install(version: string, options: InstallOptions = {}): Pr
 
   console.log();
 
-  // Update package.json
-  if (options.save || options.saveDev) {
-    const packageSpinner = createSpinner('Updating package.json...');
-    packageSpinner.start();
-
-    try {
-      // Read manifest to get package list
-      const { downloadUrl } = await requestPackageDownload(packagesToInstall[0], version);
-
-      // For now, we'll add the packages as dependencies
-      // In a real implementation, we'd read the manifest and add each package
-
-      packageSpinner.succeed('Updated package.json');
-    } catch (err) {
-      packageSpinner.fail('Failed to update package.json');
-    }
-  }
-
   const duration = Date.now() - startTime;
 
   // Success
@@ -241,8 +217,8 @@ export async function install(version: string, options: InstallOptions = {}): Pr
   console.log(`    ${projectConfig.packageManager} install`);
 
   console.log();
-  info('To use the SDK in your code, import from the vendor directory:');
-  console.log('  import { SomeCapability } from \'.capabilities-vendor/2025_02_08_001/capabilities/auth\';');
+  info('To use SDK in your code, import from vendor directory:');
+  console.log(`  import { SomeCapability } from '.capabilities-vendor/${version}/capabilities/auth';`);
 }
 
 /**

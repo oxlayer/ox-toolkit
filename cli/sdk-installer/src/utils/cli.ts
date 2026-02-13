@@ -99,11 +99,13 @@ export function createSpinner(text: string) {
  */
 export async function confirm(message: string): Promise<boolean> {
   const { default: prompts } = await import('prompts');
-  const result = await prompts.confirm({
+  const result = await prompts({
+    type: 'confirm',
+    name: 'value',
     message,
-    default: false,
+    initial: false,
   });
-  return result;
+  return result.value;
 }
 
 /**
@@ -140,10 +142,8 @@ export function formatDuration(ms: number): string {
 }
 
 /**
- * Print the OxLayer banner
+ * Get the OxLayer banner
  */
-export function printBanner(): void {
-  console.log();
-  console.log(chalk.gray('Oxlayer CLI'));
-  console.log();
+export function getBanner(): string {
+  return `\n${chalk.gray('OxLayer CLI')}\n`;
 }
