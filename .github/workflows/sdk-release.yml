@@ -464,15 +464,14 @@ jobs:
           cp -r release-upload/channels release-sdk/$VERSION/ 2>/dev/null || true
           cp release-upload/manifest.json "release-sdk/$VERSION/" 2>/dev/null || true
 
-      - name: Install AWS CLI
+      - name: Install MinIO Client (mc)
         run: |
-          # Install AWS CLI v2 via official bundle
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip -q awscliv2.zip
-          sudo mv aws /usr/local/bin/aws
-          sudo chmod +x /usr/local/bin/aws
+          # Install mc (MinIO Client) - S3-compatible CLI
+          curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc -o mc
+          chmod +x mc
+          sudo mv mc /usr/local/bin/mc
 
-      - name: Upload to R2/S3
+      - name: Configure mc and Upload to R2/S3
         env:
           AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
@@ -482,18 +481,11 @@ jobs:
           VERSION="${{ needs.generate-version.outputs.version }}"
           RELEASE_PATH="capabilities-sdk/releases/$VERSION"
 
-          if [ -n "$AWS_ENDPOINT_URL" ]; then
-            # Use R2 endpoint
-            aws s3 sync "release-sdk/$VERSION/" "s3://$AWS_BUCKET_NAME/$RELEASE_PATH/" \
-              --endpoint="$AWS_ENDPOINT_URL" \
-              --acl private \
-              --follow-symlinks
-          else
-            # Use S3
-            aws s3 sync "release-sdk/$VERSION/" "s3://$AWS_BUCKET_NAME/$RELEASE_PATH/" \
-              --acl private \
-              --follow-symlinks
-          fi
+          # Configure mc alias for R2/S3 endpoint
+          mc alias set r2 "$AWS_ENDPOINT_URL" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY" --api S3v4
+
+          # Upload release files using mc mirror
+          mc mirror --overwrite --remove "release-sdk/$VERSION/" "r2/$AWS_BUCKET_NAME/$RELEASE_PATH/"
 
           echo "✅ Uploaded to: $RELEASE_PATH"
 
