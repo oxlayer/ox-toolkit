@@ -442,61 +442,48 @@ jobs:
             b3fd9048-fac6-4d3c-a264-b3f0001534c4 > AWS_ENDPOINT_URL
             102d45a6-e16e-471b-b3c5-b3f000150ed8 > AWS_BUCKET_NAME
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Download release artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: '*'
-          path: release-upload
-          merge-multiple: true
-
-      - name: Prepare upload directory
-        run: |
-          VERSION="${{ needs.generate-version.outputs.version }}"
-          mkdir -p "release-sdk/$VERSION"
-          cp -r release-upload/backend release-sdk/$VERSION/ 2>/dev/null || true
-          cp -r release-upload/frontend release-sdk/$VERSION/ 2>/dev/null || true
-          cp -r release-upload/cli release-sdk/$VERSION/ 2>/dev/null || true
-          cp -r release-upload/channels release-sdk/$VERSION/ 2>/dev/null || true
-          cp release-upload/manifest.json "release-sdk/$VERSION/" 2>/dev/null || true
-
       - name: Install MinIO Client (mc)
         run: |
-          # Install mc (MinIO Client) - S3-compatible CLI
           curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc -o mc
           chmod +x mc
           sudo mv mc /usr/local/bin/mc
+
+      - name: Download release archive
+        uses: actions/download-artifact@v4
+        with:
+          name: oxlayer-sdk-archive
+          path: release-upload
+
+      - name: Download manifest
+        uses: actions/download-artifact@v4
+        with:
+          name: release-manifest
+          path: release-upload
 
       - name: Configure mc and Upload to R2/S3
         run: |
           VERSION="${{ needs.generate-version.outputs.version }}"
           RELEASE_PATH="capabilities-sdk/releases/$VERSION"
           ZIP_FILE="oxlayer-sdk-${VERSION}.zip"
-          RELEASE_DIR="release-sdk/$VERSION"
-          ZIP_PATH="${RELEASE_DIR}/${ZIP_FILE}"
 
-          # Extract scheme and host from AWS_ENDPOINT_URL (strip any path component)
-          # mc requires URL format: scheme://host[:port]/ without resource component
-          # Note: set +x to avoid echoing secrets in logs
+          echo "📂 release-upload contents:"
+          ls -R release-upload
+
+          ZIP_PATH="release-upload/${ZIP_FILE}"
+          MANIFEST_PATH="release-upload/manifest.json"
+
+          # Avoid leaking secrets
           set +x
           AWS_ENDPOINT_CLEAN=$(echo "$AWS_ENDPOINT_URL" | sed -E 's|^([^/]*://[^/]*)/.*$|\1|')
-          # Ensure trailing slash
           AWS_ENDPOINT_CLEAN="${AWS_ENDPOINT_CLEAN}/"
 
-          # Configure mc alias for R2/S3 endpoint
           mc alias set r2 "$AWS_ENDPOINT_CLEAN" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY" --api S3v4
 
-          # Upload zip archive first
-          mc cp "${ZIP_PATH}" "r2/$AWS_BUCKET_NAME/$RELEASE_PATH/"
+          # Upload only what matters
+          mc cp "$ZIP_PATH" "r2/$AWS_BUCKET_NAME/$RELEASE_PATH/"
+          mc cp "$MANIFEST_PATH" "r2/$AWS_BUCKET_NAME/$RELEASE_PATH/"
 
-          # Upload release directory contents using mc mirror
-          mc mirror --overwrite --remove "${RELEASE_DIR}/" "r2/$AWS_BUCKET_NAME/$RELEASE_PATH/"
-
-          echo "✅ Uploaded to: $RELEASE_PATH"
+          echo "✅ Uploaded ZIP and manifest to: $RELEASE_PATH"
 
   create-github-release:
     name: Create GitHub Release
