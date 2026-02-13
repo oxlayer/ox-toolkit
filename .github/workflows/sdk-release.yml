@@ -472,11 +472,6 @@ jobs:
           sudo mv mc /usr/local/bin/mc
 
       - name: Configure mc and Upload to R2/S3
-        env:
-          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          AWS_ENDPOINT_URL: ${{ env.AWS_ENDPOINT_URL }}
-          AWS_BUCKET_NAME: ${{ env.AWS_BUCKET_NAME }}
         run: |
           VERSION="${{ needs.generate-version.outputs.version }}"
           RELEASE_PATH="capabilities-sdk/releases/$VERSION"
