@@ -22,7 +22,7 @@ export const apiKeyStatusEnum = pgEnum('api_key_status', ['active', 'revoked', '
 export const apiKeyScopeEnum = pgEnum('api_key_scope', ['read', 'write', 'admin', 'install']);
 export const environmentEnum = pgEnum('environment', ['development', 'staging', 'production']);
 export const sdkPackageTypeEnum = pgEnum('sdk_package_type', ['backend-sdk', 'frontend-sdk', 'cli-tools', 'channels']);
-export const deviceSessionStatusEnum = pgEnum('device_session_status', ['pending', 'approved', 'expired', 'revoked']);
+export const deviceSessionStatusEnum = pgEnum('device_session_status', ['pending', 'approved', 'expired', 'revoked', 'consumed']);
 
 // Organizations
 export const organizations = pgTable(
@@ -152,10 +152,12 @@ export const deviceSessions = pgTable(
   {
     id: text('id').primaryKey(),
     deviceCode: text('device_code').notNull().unique(),
+    deviceCodeHash: text('device_code_hash').notNull(),
     userCode: text('user_code').notNull().unique(),
     organizationId: text('organization_id').references(() => organizations.id, { onDelete: 'cascade' }),
     developerId: text('developer_id').references(() => developers.id, { onDelete: 'set null' }),
     deviceName: text('device_name').notNull(),
+    deviceFingerprint: text('device_fingerprint'),
     environment: environmentEnum('environment').notNull(),
     status: deviceSessionStatusEnum('status').notNull().default('pending'),
     scopes: jsonb('scopes').notNull().default(JSON.stringify(['read', 'install'])),
@@ -167,6 +169,7 @@ export const deviceSessions = pgTable(
   },
   (table) => ({
     deviceCodeIdx: index('idx_device_sessions_device_code').on(table.deviceCode),
+    deviceCodeHashIdx: index('idx_device_sessions_device_code_hash').on(table.deviceCodeHash),
     userCodeIdx: index('idx_device_sessions_user_code').on(table.userCode),
     organizationIdIdx: index('idx_device_sessions_organization_id').on(table.organizationId),
     expiresAtIdx: index('idx_device_sessions_expires_at').on(table.expiresAt),

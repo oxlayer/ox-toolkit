@@ -51,9 +51,10 @@ export class DeviceAuthController {
       }
 
       const baseUrl = this.getBaseUrl(request);
+      const deviceFingerprint = this.extractDeviceFingerprint(request);
 
       const result = await this.deviceAuthService.initiateDeviceAuth(
-        body,
+        { ...body, deviceFingerprint },
         baseUrl
       );
 
@@ -187,6 +188,22 @@ export class DeviceAuthController {
   private getBaseUrl(request: Request): string {
     const url = new URL(request.url);
     return `${url.protocol}//${url.host}`;
+  }
+
+  /**
+   * Extract device fingerprint from request headers
+   * This helps identify the device type for the approval page
+   */
+  private extractDeviceFingerprint(request: Request): string {
+    const userAgent = request.headers.get('user-agent') || '';
+    // Simple fingerprint based on user agent
+    // In production, you might want to use a more sophisticated approach
+    if (userAgent.includes('Windows')) return 'Windows';
+    if (userAgent.includes('Macintosh')) return 'macOS';
+    if (userAgent.includes('Linux')) return 'Linux';
+    if (userAgent.includes('Android')) return 'Android';
+    if (userAgent.includes('iOS') || userAgent.includes('iPhone') || userAgent.includes('iPad')) return 'iOS';
+    return 'Unknown Device';
   }
 
   /**
@@ -419,5 +436,37 @@ export class DeviceAuthController {
       "'": '&#x27;',
     };
     return text.replace(/[&<>"']/g, (m) => map[m] || m);
+  }
+
+  /**
+   * Approve device with authenticated developer and organization IDs
+   *
+   * This method is called by the Keycloak-protected approve endpoint
+   * to ensure organization_id cannot be injected via request body.
+   */
+  async approveWithAuth(request: Request, developerId: string, organizationId: string): Promise<Response> {
+    try {
+      const body = (await request.json()) as { userCode: string };
+
+      if (!body.userCode) {
+        throw new HttpError(400, 'Missing required field: userCode');
+      }
+
+      await this.deviceAuthService.approveDeviceWithAuth(body.userCode, developerId, organizationId);
+
+      return Response.json({
+        success: true,
+        message: 'Device approved successfully',
+      });
+    } catch (error) {
+      if (error instanceof HttpError) {
+        throw error;
+      }
+      if (error instanceof Error && error.message === 'Invalid user code') {
+        throw new HttpError(404, 'Invalid user code');
+      }
+      console.log(error);
+      throw new HttpError(500, error instanceof Error ? error.message : 'Internal server error');
+    }
   }
 }

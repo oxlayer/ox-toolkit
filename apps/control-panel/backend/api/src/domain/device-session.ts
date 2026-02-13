@@ -13,13 +13,13 @@
 
 import { Entity } from '@oxlayer/foundation-domain-kit';
 import { BusinessRuleViolationError, ValidationError } from '@oxlayer/foundation-domain-kit';
-import { randomBytes } from 'crypto';
+import { randomBytes, createHash } from 'crypto';
 import type { Environment } from './types.js';
 
 /**
  * Device session status
  */
-export type DeviceSessionStatus = 'pending' | 'approved' | 'expired' | 'revoked';
+export type DeviceSessionStatus = 'pending' | 'approved' | 'expired' | 'revoked' | 'consumed';
 
 /**
  * Device session properties
@@ -27,10 +27,12 @@ export type DeviceSessionStatus = 'pending' | 'approved' | 'expired' | 'revoked'
 export interface DeviceSessionProps {
   id: string;
   deviceCode: string;
+  deviceCodeHash: string;
   userCode: string;
   organizationId: string | null;
   developerId: string | null;
   deviceName: string;
+  deviceFingerprint: string | null;
   environment: Environment;
   status: DeviceSessionStatus;
   scopes: string[];
@@ -79,6 +81,10 @@ export class DeviceSession extends Entity<string> {
 
   get deviceName(): string {
     return this.props.deviceName;
+  }
+
+  get deviceFingerprint(): string | null {
+    return this.props.deviceFingerprint;
   }
 
   get environment(): Environment {
@@ -160,6 +166,17 @@ export class DeviceSession extends Entity<string> {
     this.touch();
   }
 
+  consume(): void {
+    if (this.props.status !== 'approved') {
+      throw new BusinessRuleViolationError(
+        'status',
+        `Cannot consume session with status: ${this.props.status}`
+      );
+    }
+    this.props.status = 'consumed';
+    this.touch();
+  }
+
   private touch(): void {
     this.props.updatedAt = new Date();
   }
@@ -169,9 +186,11 @@ export class DeviceSession extends Entity<string> {
     environment: Environment;
     scopes?: string[];
     expiresInSeconds?: number;
+    deviceFingerprint?: string | null;
   }): DeviceSession {
     const deviceName = validateDeviceName(data.deviceName);
     const deviceCode = generateDeviceCode();
+    const deviceCodeHash = hashDeviceCode(deviceCode);
     const userCode = generateUserCode();
     const scopes = data.scopes ?? ['read', 'install'];
     const expiresInSeconds = data.expiresInSeconds ?? DEFAULT_EXPIRES_IN;
@@ -181,10 +200,12 @@ export class DeviceSession extends Entity<string> {
     return new DeviceSession({
       id,
       deviceCode,
+      deviceCodeHash,
       userCode,
       organizationId: null,
       developerId: null,
       deviceName,
+      deviceFingerprint: data.deviceFingerprint ?? null,
       environment: data.environment,
       status: 'pending',
       scopes,
@@ -260,6 +281,10 @@ export class DeviceSession extends Entity<string> {
 
 function generateDeviceCode(): string {
   return randomBytes(DEVICE_CODE_LENGTH).toString('hex');
+}
+
+function hashDeviceCode(deviceCode: string): string {
+  return createHash('sha256').update(deviceCode, 'utf-8').digest('hex');
 }
 
 function generateUserCode(): string {

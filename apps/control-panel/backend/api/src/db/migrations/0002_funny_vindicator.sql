@@ -1,0 +1,1 @@
+ALTER TABLE "device_sessions" ADD COLUMN "device_fingerprint" text;

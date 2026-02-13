@@ -23,6 +23,7 @@ export interface InitiateDeviceAuthRequest {
   deviceName: string;
   environment: Environment;
   scopes?: string[];
+  deviceFingerprint?: string | null;
 }
 
 export interface InitiateDeviceAuthResponse {
@@ -87,6 +88,7 @@ export class DeviceAuthService {
       deviceName: request.deviceName,
       environment: request.environment,
       scopes: request.scopes,
+      deviceFingerprint: request.deviceFingerprint,
     });
 
     await this.deviceSessionRepo.save(session);
@@ -135,6 +137,10 @@ export class DeviceAuthService {
 
     const accessToken = this.generateJwt(session);
 
+    // Mark session as consumed after token issuance (one-time use)
+    session.consume();
+    await this.deviceSessionRepo.save(session);
+
     return session.toTokenResponse(accessToken);
   }
 
@@ -172,6 +178,32 @@ export class DeviceAuthService {
       session.revoke();
       await this.deviceSessionRepo.save(session);
     }
+  }
+
+  /**
+   * Approve a device session with authenticated developer and organization IDs
+   *
+   * This method is called by the Keycloak-protected approve endpoint
+   * to ensure organization_id cannot be injected via request body.
+   */
+  async approveDeviceWithAuth(userCode: string, developerId: string, organizationId: string): Promise<void> {
+    const session = await this.deviceSessionRepo.findByUserCodeForUpdate(userCode);
+
+    if (!session) {
+      throw new Error('Invalid user code');
+    }
+
+    if (session.isExpired()) {
+      throw new Error('Session expired. Please try again.');
+    }
+
+    if (session.isPending()) {
+      session.approve(developerId, organizationId);
+      await this.deviceSessionRepo.save(session);
+      return;
+    }
+
+    throw new Error('Session is not in pending state');
   }
 
   /**

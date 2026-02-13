@@ -1,0 +1,22 @@
+[
+  {
+    "content": "Implement device code hashing in repository",
+    "status": "in_progress"
+  },
+  {
+    "content": "Integrate Keycloak middleware for device approval",
+    "status": "completed"
+  },
+  {
+    "content": "Add FOR UPDATE lock to approval transaction",
+    "status": "pending"
+  },
+  {
+    "content": "Add device fingerprint to session and display",
+    "status": "pending"
+  },
+  {
+    "content": "Add consumed status after token issuance",
+    "status": "pending"
+  }
+]

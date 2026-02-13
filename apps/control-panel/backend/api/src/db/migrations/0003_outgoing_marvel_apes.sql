@@ -1,0 +1,1 @@
+ALTER TYPE "public"."device_session_status" ADD VALUE 'consumed';

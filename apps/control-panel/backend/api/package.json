@@ -20,14 +20,15 @@
   "dependencies": {
     "@hono/node-server": "1.19.9",
     "@hono/zod-openapi": "1.2.1",
+    "@oxlayer/capabilities-auth": "workspace:*",
     "@oxlayer/foundation-app-kit": "workspace:*",
     "@oxlayer/foundation-domain-kit": "workspace:*",
     "@oxlayer/foundation-http-kit": "workspace:*",
     "@oxlayer/foundation-persistence-kit": "workspace:*",
     "drizzle-orm": "^0.45.1",
-    "hono": "4.11.9",
+    "hono": "^4.11.9",
     "postgres": "^3.4.8",
-    "zod": "4.3.6"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.975.0",

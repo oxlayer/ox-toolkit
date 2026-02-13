@@ -4,11 +4,12 @@
  * Implements device session persistence using PostgreSQL with Drizzle ORM
  */
 
-import { eq, and, gt, isNull, desc } from 'drizzle-orm';
+import { eq, and, gt, desc } from 'drizzle-orm';
 import type { IDeviceSessionRepository } from './index.js';
 import { DeviceSession } from '../domain/index.js';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from '../db/schema.js';
+import { createHash } from 'crypto';
 
 /**
  * PostgreSQL device session repository
@@ -17,6 +18,13 @@ export class PostgresDeviceSessionRepository implements IDeviceSessionRepository
   constructor(
     private readonly db: PostgresJsDatabase<typeof schema>
   ) { }
+
+  /**
+   * Hash device code for secure storage
+   */
+  private hashDeviceCode(code: string): string {
+    return createHash('sha256').update(code, 'utf-8').digest('hex');
+  }
 
   async save(session: DeviceSession): Promise<void> {
     const props = session.toPersistence();
@@ -37,10 +45,12 @@ export class PostgresDeviceSessionRepository implements IDeviceSessionRepository
     const data = {
       id: props.id,
       deviceCode: props.deviceCode,
+      deviceCodeHash: props.deviceCodeHash,
       userCode: props.userCode,
       organizationId: props.organizationId,
       developerId: props.developerId,
       deviceName: props.deviceName,
+      deviceFingerprint: props.deviceFingerprint,
       environment: props.environment,
       status: props.status,
       scopes: props.scopes,
@@ -101,10 +111,12 @@ export class PostgresDeviceSessionRepository implements IDeviceSessionRepository
   }
 
   async findByDeviceCode(code: string): Promise<DeviceSession | null> {
+    const hash = this.hashDeviceCode(code);
+
     const result = await this.db
       .select()
       .from(schema.deviceSessions)
-      .where(eq(schema.deviceSessions.deviceCode, code))
+      .where(eq(schema.deviceSessions.deviceCodeHash, hash))
       .limit(1);
 
     if (!result[0]) return null;
@@ -131,6 +143,19 @@ export class PostgresDeviceSessionRepository implements IDeviceSessionRepository
       createdAt: result[0].createdAt,
       updatedAt: result[0].updatedAt,
     });
+
+    return this.mapToDomain(result[0]);
+  }
+
+  async findByUserCodeForUpdate(code: string): Promise<DeviceSession | null> {
+    const result = await this.db
+      .select()
+      .from(schema.deviceSessions)
+      .where(eq(schema.deviceSessions.userCode, code))
+      .for('update')
+      .limit(1);
+
+    if (!result[0]) return null;
 
     return this.mapToDomain(result[0]);
   }
@@ -163,10 +188,12 @@ export class PostgresDeviceSessionRepository implements IDeviceSessionRepository
     return DeviceSession.fromPersistence({
       id: row.id,
       deviceCode: row.deviceCode,
+      deviceCodeHash: row.deviceCodeHash,
       userCode: row.userCode,
       organizationId: row.organizationId,
       developerId: row.developerId,
       deviceName: row.deviceName,
+      deviceFingerprint: row.deviceFingerprint,
       environment: row.environment,
       status: row.status,
       scopes: row.scopes,

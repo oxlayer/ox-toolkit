@@ -25,6 +25,9 @@ import {
   setupDeviceAuthRoutes,
 } from './routes/v1/index.js';
 
+// Import auth middleware
+import { authMiddleware } from '@oxlayer/capabilities-auth';
+
 // ============================================================================
 // Main Application
 // ============================================================================
@@ -68,11 +71,21 @@ const v1 = new Hono();
 // Get container and wire up all routes
 const container = getContainer();
 
+// Configure Keycloak auth middleware for device approval endpoint
+const deviceAuthMiddleware = authMiddleware({
+  enableKeycloak: process.env.ENABLE_KEYCLOAK === 'true',
+  keycloak: {
+    url: process.env.KEYCLOAK_URL || '',
+    realm: process.env.KEYCLOAK_REALM || 'oxlayer',
+  },
+  enableJwt: false, // Disable JWT for device auth - only Keycloak
+});
+
 setupOrganizationsRoutes(v1, container);
 setupDevelopersRoutes(v1, container);
 setupLicensesRoutes(v1, container);
 setupApiKeysRoutes(v1, container);
-setupDeviceAuthRoutes(v1, container);
+setupDeviceAuthRoutes(v1, container, deviceAuthMiddleware);
 
 // Mount v1 routes
 app.route('/v1', v1);

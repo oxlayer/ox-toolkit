@@ -12,6 +12,7 @@ export interface IDeviceSessionRepository
     ReadRepository<DeviceSession> {
   findByDeviceCode(code: string): Promise<DeviceSession | null>;
   findByUserCode(code: string): Promise<DeviceSession | null>;
+  findByUserCodeForUpdate(code: string): Promise<DeviceSession | null>;
   findPendingByOrganization(organizationId: string): Promise<DeviceSession[]>;
   deleteExpired(): Promise<number>;
 }
