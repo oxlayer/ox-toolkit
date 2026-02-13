@@ -1,5 +1,6 @@
 CREATE TYPE "public"."api_key_scope" AS ENUM('read', 'write', 'admin', 'install');--> statement-breakpoint
 CREATE TYPE "public"."api_key_status" AS ENUM('active', 'revoked', 'expired');--> statement-breakpoint
+CREATE TYPE "public"."device_session_status" AS ENUM('pending', 'approved', 'expired', 'revoked');--> statement-breakpoint
 CREATE TYPE "public"."environment" AS ENUM('development', 'staging', 'production');--> statement-breakpoint
 CREATE TYPE "public"."license_status" AS ENUM('active', 'suspended', 'expired', 'revoked');--> statement-breakpoint
 CREATE TYPE "public"."license_tier" AS ENUM('starter', 'professional', 'enterprise', 'custom');--> statement-breakpoint
@@ -30,6 +31,25 @@ CREATE TABLE "developers" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "developers_email_unique" UNIQUE("email")
+);
+--> statement-breakpoint
+CREATE TABLE "device_sessions" (
+	"id" text PRIMARY KEY NOT NULL,
+	"device_code" text NOT NULL,
+	"user_code" text NOT NULL,
+	"organization_id" text,
+	"developer_id" text,
+	"device_name" text NOT NULL,
+	"environment" "environment" NOT NULL,
+	"status" "device_session_status" DEFAULT 'pending' NOT NULL,
+	"scopes" jsonb DEFAULT '["read","install"]' NOT NULL,
+	"expires_at" timestamp NOT NULL,
+	"approved_at" timestamp,
+	"approved_by" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "device_sessions_device_code_unique" UNIQUE("device_code"),
+	CONSTRAINT "device_sessions_user_code_unique" UNIQUE("user_code")
 );
 --> statement-breakpoint
 CREATE TABLE "licenses" (
@@ -73,6 +93,9 @@ ALTER TABLE "api_keys" ADD CONSTRAINT "api_keys_organization_id_organizations_id
 ALTER TABLE "api_keys" ADD CONSTRAINT "api_keys_developer_id_developers_id_fk" FOREIGN KEY ("developer_id") REFERENCES "public"."developers"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "api_keys" ADD CONSTRAINT "api_keys_license_id_licenses_id_fk" FOREIGN KEY ("license_id") REFERENCES "public"."licenses"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "developers" ADD CONSTRAINT "developers_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "device_sessions" ADD CONSTRAINT "device_sessions_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "device_sessions" ADD CONSTRAINT "device_sessions_developer_id_developers_id_fk" FOREIGN KEY ("developer_id") REFERENCES "public"."developers"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "device_sessions" ADD CONSTRAINT "device_sessions_approved_by_developers_id_fk" FOREIGN KEY ("approved_by") REFERENCES "public"."developers"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "licenses" ADD CONSTRAINT "licenses_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "usage_logs" ADD CONSTRAINT "usage_logs_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "usage_logs" ADD CONSTRAINT "usage_logs_license_id_licenses_id_fk" FOREIGN KEY ("license_id") REFERENCES "public"."licenses"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
@@ -85,6 +108,11 @@ CREATE INDEX "idx_api_keys_status" ON "api_keys" USING btree ("status");--> stat
 CREATE UNIQUE INDEX "idx_api_keys_key_hash_unique" ON "api_keys" USING btree ("key_hash");--> statement-breakpoint
 CREATE INDEX "idx_developers_organization_id" ON "developers" USING btree ("organization_id");--> statement-breakpoint
 CREATE INDEX "idx_developers_email" ON "developers" USING btree ("email");--> statement-breakpoint
+CREATE INDEX "idx_device_sessions_device_code" ON "device_sessions" USING btree ("device_code");--> statement-breakpoint
+CREATE INDEX "idx_device_sessions_user_code" ON "device_sessions" USING btree ("user_code");--> statement-breakpoint
+CREATE INDEX "idx_device_sessions_organization_id" ON "device_sessions" USING btree ("organization_id");--> statement-breakpoint
+CREATE INDEX "idx_device_sessions_expires_at" ON "device_sessions" USING btree ("expires_at");--> statement-breakpoint
+CREATE INDEX "idx_device_sessions_status" ON "device_sessions" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "idx_licenses_organization_id" ON "licenses" USING btree ("organization_id");--> statement-breakpoint
 CREATE INDEX "idx_licenses_status" ON "licenses" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "idx_licenses_expires_at" ON "licenses" USING btree ("expires_at");--> statement-breakpoint

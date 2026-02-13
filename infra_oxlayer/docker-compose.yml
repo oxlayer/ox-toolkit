@@ -222,45 +222,45 @@ services:
   #   restart: unless-stopped
 
   # Grafana (visualization for metrics and logs)
-  grafana:
-    image: grafana/grafana:12.3.1
-    container_name: oxlayer-grafana
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin123
-      - GF_INSTALL_PLUGINS=https://github.com/quickwit-oss/quickwit-datasource/releases/download/v0.5.0/quickwit-quickwit-datasource-0.5.0.zip;quickwit
-      - GF_USERS_ALLOW_SIGN_UP=false
-    ports:
-      - "3000:3000" # Grafana UI
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning:ro
-    depends_on:
-      - prometheus
-      # - influxdb
-    networks:
-      - oxlayer-network
-    restart: unless-stopped
+  # grafana:
+  #   image: grafana/grafana:12.3.1
+  #   container_name: oxlayer-grafana
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER=admin
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin123
+  #     - GF_INSTALL_PLUGINS=https://github.com/quickwit-oss/quickwit-datasource/releases/download/v0.5.0/quickwit-quickwit-datasource-0.5.0.zip;quickwit
+  #     - GF_USERS_ALLOW_SIGN_UP=false
+  #   ports:
+  #     - "3000:3000" # Grafana UI
+  #   volumes:
+  #     - grafana_data:/var/lib/grafana
+  #     - ./grafana/provisioning:/etc/grafana/provisioning:ro
+  #   depends_on:
+  #     - prometheus
+  #     # - influxdb
+  #   networks:
+  #     - oxlayer-network
+  #   restart: unless-stopped
 
-  # Prometheus (metrics collection and storage)
-  prometheus:
-    image: prom/prometheus:v2.48.0
-    container_name: oxlayer-prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--storage.tsdb.retention.time=15d"
-      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
-      - "--web.console.templates=/usr/share/prometheus/consoles"
-      - "--web.enable-lifecycle"
-    ports:
-      - "9090:9090" # Prometheus UI
-    volumes:
-      - prometheus_data:/prometheus
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    networks:
-      - oxlayer-network
-    restart: unless-stopped
+  # # Prometheus (metrics collection and storage)
+  # prometheus:
+  #   image: prom/prometheus:v2.48.0
+  #   container_name: oxlayer-prometheus
+  #   command:
+  #     - "--config.file=/etc/prometheus/prometheus.yml"
+  #     - "--storage.tsdb.path=/prometheus"
+  #     - "--storage.tsdb.retention.time=15d"
+  #     - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+  #     - "--web.console.templates=/usr/share/prometheus/consoles"
+  #     - "--web.enable-lifecycle"
+  #   ports:
+  #     - "9090:9090" # Prometheus UI
+  #   volumes:
+  #     - prometheus_data:/prometheus
+  #     - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  #   networks:
+  #     - oxlayer-network
+  #   restart: unless-stopped
 
   # ========================================
   # OpenTelemetry Collectors (split by intent)
@@ -269,122 +269,122 @@ services:
   # Collector A: Observability pipeline
   # Receives: logs, traces
   # Sends to: Quickwit
-  otel-collector-observability:
-    image: otel/opentelemetry-collector-contrib:0.143.0
-    container_name: oxlayer-otel-collector-observability
-    command: [--config=/etc/collector-observability.yaml]
-    ports:
-      - "14317:4317" # OTLP gRPC receiver
-      - "14318:4318" # OTLP HTTP receiver
-      - "8888:8888"  # Metrics endpoint
-      - "8889:8889"  # Prometheus exporter metrics
-    volumes:
-      - ./collector-observability.yaml:/etc/collector-observability.yaml:ro
-    networks:
-      - oxlayer-network
-    restart: unless-stopped
-    depends_on:
-      - quickwit
+  # otel-collector-observability:
+  #   image: otel/opentelemetry-collector-contrib:0.143.0
+  #   container_name: oxlayer-otel-collector-observability
+  #   command: [--config=/etc/collector-observability.yaml]
+  #   ports:
+  #     - "14317:4317" # OTLP gRPC receiver
+  #     - "14318:4318" # OTLP HTTP receiver
+  #     - "8888:8888"  # Metrics endpoint
+  #     - "8889:8889"  # Prometheus exporter metrics
+  #   volumes:
+  #     - ./collector-observability.yaml:/etc/collector-observability.yaml:ro
+  #   networks:
+  #     - oxlayer-network
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - quickwit
 
-  # Collector B: Domain events pipeline
-  # Receives: domain events, business metrics
-  # Sends to: ClickHouse
-  otel-collector-domain:
-    image: otel/opentelemetry-collector-contrib:0.143.0
-    container_name: oxlayer-otel-collector-domain
-    command: [--config=/etc/collector-domain.yaml]
-    ports:
-      - "24317:4317" # OTLP gRPC receiver
-      - "24318:4318" # OTLP HTTP receiver
-      - "18888:8888" # Metrics endpoint
-      - "18889:8889" # Prometheus exporter metrics
-    volumes:
-      - ./collector-domain.yaml:/etc/collector-domain.yaml:ro
-    networks:
-      - oxlayer-network
-    restart: unless-stopped
-    depends_on:
-      - clickhouse
+  # # Collector B: Domain events pipeline
+  # # Receives: domain events, business metrics
+  # # Sends to: ClickHouse
+  # otel-collector-domain:
+  #   image: otel/opentelemetry-collector-contrib:0.143.0
+  #   container_name: oxlayer-otel-collector-domain
+  #   command: [--config=/etc/collector-domain.yaml]
+  #   ports:
+  #     - "24317:4317" # OTLP gRPC receiver
+  #     - "24318:4318" # OTLP HTTP receiver
+  #     - "18888:8888" # Metrics endpoint
+  #     - "18889:8889" # Prometheus exporter metrics
+  #   volumes:
+  #     - ./collector-domain.yaml:/etc/collector-domain.yaml:ro
+  #   networks:
+  #     - oxlayer-network
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - clickhouse
 
-  # Quickwit (log search and analytics engine)
-  quickwit:
-    image: quickwit/quickwit:0.8.2
-    container_name: oxlayer-quickwit
-    command: ["run"]
-    ports:
-      - "7280:7280" # REST API
-      - "7281:7281" # gRPC API (OTLP traces/logs)
-    environment:
-      # - QW_ENABLE_OPENTELEMETRY_OTLP_EXPORTER=true
-      # - OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:7281 # To send quickwit traces to otel-collector and ingest itself
-      - QW_METASTORE_URI=file:///quickwit/data/qw.metastore
-      - QW_DATA_DIR=/quickwit/data
-      - QW_JAEGER_STORAGE_ENABLED=true
-    volumes:
-      - quickwit_data:/quickwit/data
-    networks:
-      - oxlayer-network
-    restart: unless-stopped
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--quiet",
-          "--tries=1",
-          "--spider",
-          "http://localhost:7280/health",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+  # # Quickwit (log search and analytics engine)
+  # quickwit:
+  #   image: quickwit/quickwit:0.8.2
+  #   container_name: oxlayer-quickwit
+  #   command: ["run"]
+  #   ports:
+  #     - "7280:7280" # REST API
+  #     - "7281:7281" # gRPC API (OTLP traces/logs)
+  #   environment:
+  #     # - QW_ENABLE_OPENTELEMETRY_OTLP_EXPORTER=true
+  #     # - OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:7281 # To send quickwit traces to otel-collector and ingest itself
+  #     - QW_METASTORE_URI=file:///quickwit/data/qw.metastore
+  #     - QW_DATA_DIR=/quickwit/data
+  #     - QW_JAEGER_STORAGE_ENABLED=true
+  #   volumes:
+  #     - quickwit_data:/quickwit/data
+  #   networks:
+  #     - oxlayer-network
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD",
+  #         "wget",
+  #         "--quiet",
+  #         "--tries=1",
+  #         "--spider",
+  #         "http://localhost:7280/health",
+  #       ]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 40s
 
-  jaeger-query:
-    image: jaegertracing/jaeger-query:1.52
-    ports:
-      - 16686:16686
-      - 16687:16687  # admin port for health checks
-    environment:
-      - SPAN_STORAGE_TYPE=grpc-plugin
-      - GRPC_STORAGE_SERVER=quickwit:7281
-      - GRPC_STORAGE_TLS=false
-    networks:
-      - oxlayer-network
-    restart: unless-stopped
-    # depends_on:
-    #   quickwit:
-    #     condition: service_healthy
+  # jaeger-query:
+  #   image: jaegertracing/jaeger-query:1.52
+  #   ports:
+  #     - 16686:16686
+  #     - 16687:16687  # admin port for health checks
+  #   environment:
+  #     - SPAN_STORAGE_TYPE=grpc-plugin
+  #     - GRPC_STORAGE_SERVER=quickwit:7281
+  #     - GRPC_STORAGE_TLS=false
+  #   networks:
+  #     - oxlayer-network
+  #   restart: unless-stopped
+  #   # depends_on:
+  #   #   quickwit:
+  #   #     condition: service_healthy
 
-  # ClickHouse (analytical database)
-  clickhouse:
-    image: clickhouse/clickhouse-server:24.3
-    container_name: oxlayer-clickhouse
-    ports:
-      - "8123:8123" # HTTP interface
-      - "9000:9000" # Native interface
-    environment:
-      CLICKHOUSE_DB: analytics
-      CLICKHOUSE_USER: default
-      CLICKHOUSE_PASSWORD: "default"
-      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
-    volumes:
-      - clickhouse_data:/var/lib/clickhouse
-      - clickhouse_logs:/var/log/clickhouse-server
-      - ./db/clickhouse:/docker-entrypoint-initdb.d:ro
-    networks:
-      - oxlayer-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    ulimits:
-      nofile:
-        soft: 262144
-        hard: 262144
+  # # ClickHouse (analytical database)
+  # clickhouse:
+  #   image: clickhouse/clickhouse-server:24.3
+  #   container_name: oxlayer-clickhouse
+  #   ports:
+  #     - "8123:8123" # HTTP interface
+  #     - "9000:9000" # Native interface
+  #   environment:
+  #     CLICKHOUSE_DB: analytics
+  #     CLICKHOUSE_USER: default
+  #     CLICKHOUSE_PASSWORD: "default"
+  #     CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+  #   volumes:
+  #     - clickhouse_data:/var/lib/clickhouse
+  #     - clickhouse_logs:/var/log/clickhouse-server
+  #     - ./db/clickhouse:/docker-entrypoint-initdb.d:ro
+  #   networks:
+  #     - oxlayer-network
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 10s
+  #   ulimits:
+  #     nofile:
+  #       soft: 262144
+  #       hard: 262144
 
   # MinIO (S3-compatible object storage)
   # minio:
@@ -475,24 +475,24 @@ volumes:
   #   driver: local
   # influxdb_config:
   #   driver: local
-  grafana_data:
-    driver: local
-  grafana_config:
-    driver: local
-  grafana_provisioning:
-    driver: local
-  prometheus_data:
-    driver: local
-  clickhouse_data:
-    driver: local
-  clickhouse_logs:
-    driver: local
+  # grafana_data:
+  #   driver: local
+  # grafana_config:
+  #   driver: local
+  # grafana_provisioning:
+  #   driver: local
+  # prometheus_data:
+  #   driver: local
+  # clickhouse_data:
+  #   driver: local
+  # clickhouse_logs:
+  #   driver: local
   # minio_data:
   #   driver: local
   # qdrant_data:
   #   driver: local
-  quickwit_data:
-    driver: local
+  # quickwit_data:
+  #   driver: local
   # mongodb_data:
   #   driver: local
   # mongodb_config:

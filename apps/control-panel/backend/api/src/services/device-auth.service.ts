@@ -16,7 +16,7 @@ import { randomBytes } from 'crypto';
 import type { IDeviceSessionRepository } from '../repositories/index.js';
 import type { DeviceSession, Environment } from '../domain/index.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = '24h';
 
 export interface InitiateDeviceAuthRequest {
@@ -70,7 +70,7 @@ export interface JwtPayload {
 export class DeviceAuthService {
   constructor(
     private readonly deviceSessionRepo: IDeviceSessionRepository
-  ) {}
+  ) { }
 
   /**
    * Initiate device authorization flow
@@ -154,6 +154,13 @@ export class DeviceAuthService {
 
     session.approve(request.developerId, request.organizationId);
     await this.deviceSessionRepo.save(session);
+  }
+
+  /**
+   * Find device session by user code
+   */
+  async findByUserCode(userCode: string): Promise<DeviceSession | null> {
+    return await this.deviceSessionRepo.findByUserCode(userCode);
   }
 
   /**

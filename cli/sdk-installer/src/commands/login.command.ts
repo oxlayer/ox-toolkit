@@ -99,16 +99,20 @@ export async function login(options: LoginOptions = {}): Promise<void> {
   try {
     pollSpinner.start();
 
-    const result = await pollForToken(deviceCodeResponse.pollEndpoint, {
-      interval: options['poll-interval'] || deviceCodeResponse.interval,
-      maxAttempts: 120, // 10 minutes
-      onProgress: (attempt, maxAttempts) => {
-        if (attempt % 12 === 0) {
-          // Update every minute
-          pollSpinner.text = `Waiting for approval (${Math.floor((attempt / maxAttempts) * 100)}%)`;
-        }
-      },
-    });
+    const result = await pollForToken(
+      deviceCodeResponse.pollEndpoint,
+      deviceCodeResponse.deviceCode,
+      {
+        interval: options['poll-interval'] || deviceCodeResponse.interval,
+        maxAttempts: 120, // 2 minutes
+        onProgress: (attempt, maxAttempts) => {
+          if (attempt % 8 === 0) {
+            // Update every 15 seconds
+            pollSpinner.text = `Waiting for approval (${Math.floor((attempt / maxAttempts) * 100)}%)`;
+          }
+        },
+      }
+    );
 
     pollSpinner.succeed('Authentication successful');
 

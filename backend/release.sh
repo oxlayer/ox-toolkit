@@ -48,7 +48,6 @@ EOF
 # ---- roots to preserve ----
 ROOTS=(
   foundation
-  cli
   capabilities
   capabilities-web
   pro

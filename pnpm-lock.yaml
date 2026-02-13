@@ -777,40 +777,6 @@ importers:
         specifier: latest
         version: 5.9.3
 
-  backend/cli/keycloak-bootstrap:
-    dependencies:
-      chalk:
-        specifier: ^5.3.0
-        version: 5.6.2
-      commander:
-        specifier: ^12.0.0
-        version: 12.1.0
-      dotenv:
-        specifier: ^16.4.0
-        version: 16.6.1
-      js-yaml:
-        specifier: ^4.1.0
-        version: 4.1.1
-      ora:
-        specifier: ^5.4.1
-        version: 5.4.1
-      zod:
-        specifier: ^3.22.0
-        version: 3.25.76
-    devDependencies:
-      '@types/js-yaml':
-        specifier: ^4.0.9
-        version: 4.0.9
-      '@types/node':
-        specifier: ^20.0.0
-        version: 20.19.30
-      tsup:
-        specifier: latest
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
-      typescript:
-        specifier: latest
-        version: 5.9.3
-
   backend/foundation:
     devDependencies:
       bun-types:
@@ -1210,6 +1176,40 @@ importers:
       '@types/prompts':
         specifier: ^2.4.9
         version: 2.4.9
+      tsup:
+        specifier: latest
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
+      typescript:
+        specifier: latest
+        version: 5.9.3
+
+  cli/keycloak-bootstrap:
+    dependencies:
+      chalk:
+        specifier: ^5.3.0
+        version: 5.6.2
+      commander:
+        specifier: ^12.0.0
+        version: 12.1.0
+      dotenv:
+        specifier: ^16.4.0
+        version: 16.6.1
+      js-yaml:
+        specifier: ^4.1.0
+        version: 4.1.1
+      ora:
+        specifier: ^5.4.1
+        version: 5.4.1
+      zod:
+        specifier: ^3.22.0
+        version: 3.25.76
+    devDependencies:
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.30
       tsup:
         specifier: latest
         version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
@@ -14477,7 +14477,7 @@ snapshots:
 
   '@types/adm-zip@0.5.7':
     dependencies:
-      '@types/node': 25.2.2
+      '@types/node': 20.19.30
 
   '@types/amqplib@0.10.8':
     dependencies:

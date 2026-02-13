@@ -6,10 +6,9 @@
 
 import { eq, and, gt, isNull, desc } from 'drizzle-orm';
 import type { IDeviceSessionRepository } from './index.js';
-import type { DeviceSession } from '../domain/index.js';
+import { DeviceSession } from '../domain/index.js';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from '../db/schema.js';
-import type * as schema from '../db/schema.js';
 
 /**
  * PostgreSQL device session repository
@@ -17,10 +16,24 @@ import type * as schema from '../db/schema.js';
 export class PostgresDeviceSessionRepository implements IDeviceSessionRepository {
   constructor(
     private readonly db: PostgresJsDatabase<typeof schema>
-  ) {}
+  ) { }
 
   async save(session: DeviceSession): Promise<void> {
     const props = session.toPersistence();
+
+    // Debug logging
+    console.log('[DEBUG] Saving device session:', {
+      id: props.id,
+      status: props.status,
+      expiresAt: props.expiresAt,
+      expiresAtIsValid: props.expiresAt instanceof Date && !isNaN(props.expiresAt.getTime()),
+      approvedAt: props.approvedAt,
+      approvedAtIsValid: props.approvedAt === null || (props.approvedAt instanceof Date && !isNaN(props.approvedAt.getTime())),
+      approvedBy: props.approvedBy,
+      createdAt: props.createdAt,
+      updatedAt: props.updatedAt,
+    });
+
     const data = {
       id: props.id,
       deviceCode: props.deviceCode,
@@ -108,6 +121,17 @@ export class PostgresDeviceSessionRepository implements IDeviceSessionRepository
 
     if (!result[0]) return null;
 
+    console.log('[DEBUG] findByUserCode raw result:', {
+      id: result[0].id,
+      expiresAt: result[0].expiresAt,
+      expiresAtType: typeof result[0].expiresAt,
+      expiresAtIsValid: result[0].expiresAt instanceof Date && !isNaN(result[0].expiresAt.getTime()),
+      approvedAt: result[0].approvedAt,
+      approvedAtType: typeof result[0].approvedAt,
+      createdAt: result[0].createdAt,
+      updatedAt: result[0].updatedAt,
+    });
+
     return this.mapToDomain(result[0]);
   }
 
@@ -138,19 +162,19 @@ export class PostgresDeviceSessionRepository implements IDeviceSessionRepository
   private mapToDomain(row: any): DeviceSession {
     return DeviceSession.fromPersistence({
       id: row.id,
-      deviceCode: row.device_code,
-      userCode: row.user_code,
-      organizationId: row.organization_id,
-      developerId: row.developer_id,
-      deviceName: row.device_name,
+      deviceCode: row.deviceCode,
+      userCode: row.userCode,
+      organizationId: row.organizationId,
+      developerId: row.developerId,
+      deviceName: row.deviceName,
       environment: row.environment,
       status: row.status,
       scopes: row.scopes,
-      expiresAt: new Date(row.expires_at),
-      approvedAt: row.approved_at ? new Date(row.approved_at) : null,
-      approvedBy: row.approved_by,
-      createdAt: new Date(row.created_at),
-      updatedAt: new Date(row.updated_at),
+      expiresAt: new Date(row.expiresAt.getTime()),
+      approvedAt: row.approvedAt ? new Date(row.approvedAt.getTime()) : null,
+      approvedBy: row.approvedBy,
+      createdAt: new Date(row.createdAt.getTime()),
+      updatedAt: new Date(row.updatedAt.getTime()),
     });
   }
 }

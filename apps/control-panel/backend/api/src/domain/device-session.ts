@@ -215,7 +215,7 @@ export class DeviceSession extends Entity<string> {
     return {
       deviceCode: this.props.deviceCode,
       userCode: this.props.userCode,
-      verificationUrl: `${baseUrl}/device?code=${this.props.userCode}`,
+      verificationUrl: `${baseUrl}/v1/device?code=${this.props.userCode}`,
       pollEndpoint: `${baseUrl}/v1/cli/device/poll`,
       expiresAt: this.props.expiresAt.toISOString(),
       interval: 5,
