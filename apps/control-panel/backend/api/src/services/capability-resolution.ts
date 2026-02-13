@@ -2,7 +2,7 @@
  * Capability Resolution Service
  *
  * This service is called by SDKs to resolve their capabilities and limits.
- * It implements the capability-based authorization model as described in the architecture brief.
+ * It implements capability-based authorization model as described in architecture brief.
  *
  * Key Principles:
  * - We return capability CONFIGURATION, not boolean "licensed" flags
@@ -15,6 +15,46 @@ import type { ILicenseRepository } from '../repositories/index.js';
 import type { ApiKey, License } from '../domain/index.js';
 import type { CapabilityName, Environment, CapabilityLimits } from '../domain/index.js';
 import { UnauthorizedError, BusinessRuleViolationError } from '@oxlayer/foundation-domain-kit';
+
+// R2/S3 for presigned URLs
+let s3Client: S3Client | null = null;
+
+function getS3Client(): S3Client {
+  if (!s3Client) {
+    const endpoint = process.env.R2_ENDPOINT;
+    const accessKeyId = process.env.R2_ACCESS_KEY_ID;
+    const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
+    const bucketName = process.env.R2_BUCKET_NAME;
+
+    if (!endpoint || !accessKeyId || !secretAccessKey || !bucketName) {
+      throw new Error('Missing R2 configuration. Set R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME.');
+    }
+
+    s3Client = new S3Client({
+      endpoint,
+      region: 'auto',
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+    });
+  }
+  return s3Client;
+}
+
+async function importS3Client(): Promise<void> {
+  if (!s3Client) {
+    const { S3Client } = await import('@aws-sdk/client-s3');
+    s3Client = new S3Client({
+      endpoint: process.env.R2_ENDPOINT,
+      region: 'auto',
+      credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+      },
+    }) as any;
+  }
+}
 
 /**
  * Capability resolution request
@@ -40,7 +80,7 @@ export interface ResolveCapabilitiesResponse {
 }
 
 /**
- * Package download request
+ * Package download request (using API key)
  */
 export interface RequestPackageDownloadRequest {
   apiKey: string;
@@ -49,9 +89,18 @@ export interface RequestPackageDownloadRequest {
 }
 
 /**
+ * Package download request (using JWT)
+ */
+export interface RequestPackageDownloadWithJwtRequest {
+  organizationId: string;
+  packageType: string;
+  version?: string;
+}
+
+/**
  * Package download response
  *
- * Returns a signed URL for downloading the package
+ * Returns a signed URL for downloading a package
  */
 export interface RequestPackageDownloadResponse {
   downloadUrl: string;
@@ -73,7 +122,7 @@ export class CapabilityResolutionService {
    * Resolve capabilities for a SDK request
    *
    * This is the main method that SDKs call to get their configuration.
-   * It returns the actual limits and features they can use.
+   * It returns actual limits and features they can use.
    *
    * @param request - The capability resolution request
    * @returns Capability configuration with limits
@@ -82,7 +131,7 @@ export class CapabilityResolutionService {
     // 1. Validate API key and get associated license
     const { apiKey, license } = await this.validateApiKeyAndGetLicense(request.apiKey);
 
-    // 2. Check if API key can be used in the requested environment
+    // 2. Check if API key can be used in requested environment
     if (!apiKey.canBeUsedIn(request.environment)) {
       throw new UnauthorizedError(
         `API key is not authorized for environment: ${request.environment}`
@@ -96,7 +145,7 @@ export class CapabilityResolutionService {
       );
     }
 
-    // 4. Check if license includes the requested environment
+    // 4. Check if license includes requested environment
     if (!license.environments.includes(request.environment)) {
       throw new UnauthorizedError(
         `License does not include environment: ${request.environment}`
@@ -120,9 +169,9 @@ export class CapabilityResolutionService {
   }
 
   /**
-   * Request a package download
+   * Request a package download (API key auth)
    *
-   * Validates that the organization has access to the requested package
+   * Validates that organization has access to requested package
    * and returns a signed URL for download from R2/S3.
    *
    * @param request - The package download request
@@ -149,9 +198,8 @@ export class CapabilityResolutionService {
     }
 
     // 4. Generate signed URL for package download
-    // In a real implementation, this would use R2/S3 presigned URLs
     const version = request.version || await this.getLatestVersion(request.packageType);
-    const downloadUrl = this.generateSignedUrl(request.packageType, version, license.organizationId);
+    const downloadUrl = await this.generateSignedUrl(request.packageType, version);
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     // 5. Mark API key as used
@@ -167,9 +215,56 @@ export class CapabilityResolutionService {
   }
 
   /**
+   * Request a package download (JWT auth - for CLI)
+   *
+   * Validates that organization has access to requested package
+   * and returns a signed URL for download from R2/S3.
+   *
+   * @param request - The package download request
+   * @returns Signed download URL
+   */
+  async requestPackageDownloadWithJwt(
+    request: RequestPackageDownloadWithJwtRequest
+  ): Promise<RequestPackageDownloadResponse> {
+    // 1. Validate organization and get license
+    const license = await this.licenseRepo.findByOrganization(request.organizationId);
+    if (!license) {
+      throw new UnauthorizedError(
+        `No valid license found for organization: ${request.organizationId}`
+      );
+    }
+
+    // 2. Check if license has access to the requested package
+    if (!license.hasPackage(request.packageType as any)) {
+      throw new UnauthorizedError(
+        `License does not include package: ${request.packageType}`
+      );
+    }
+
+    // 3. Check if license is valid
+    if (!license.isValid()) {
+      throw new UnauthorizedError(
+        `License is not valid (status: ${license.status})`
+      );
+    }
+
+    // 4. Generate signed URL for package download
+    const version = request.version || await this.getLatestVersion(request.packageType);
+    const downloadUrl = await this.generateSignedUrl(request.packageType, version);
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    return {
+      downloadUrl,
+      expiresAt: expiresAt.toISOString(),
+      packageType: request.packageType,
+      version,
+    };
+  }
+
+  /**
    * Validate API key and get associated license
    *
-   * @param rawApiKey - The raw API key from the request
+   * @param rawApiKey - The raw API key from request
    * @returns The API key and associated license
    * @throws UnauthorizedError if API key is invalid
    */
@@ -178,7 +273,7 @@ export class CapabilityResolutionService {
       throw new UnauthorizedError('Invalid API key format');
     }
 
-    // Hash the API key to lookup in database
+    // Hash API key to lookup in database
     const { createHash } = await import('crypto');
     const keyHash = createHash('sha256').update(rawApiKey).digest('hex');
 
@@ -202,35 +297,47 @@ export class CapabilityResolutionService {
   }
 
   /**
-   * Generate a signed URL for package download
+   * Generate a signed URL for package download from R2/S3
    *
-   * In a real implementation, this would use R2/S3 presigned URLs.
-   * For now, this is a placeholder.
+   * Uses AWS SDK v3 presigned URLs for secure, time-limited access.
    *
    * @param packageType - The type of package
    * @param version - The version of the package
-   * @param organizationId - The organization ID
-   * @returns Signed download URL
+   * @returns Signed download URL (valid for 5 minutes)
    */
-  private generateSignedUrl(packageType: string, version: string, organizationId: string): string {
-    // TODO: Implement R2/S3 presigned URL generation
-    // This is a placeholder that returns a mock URL
-    return `https://r2.example.com/capabilities-sdk/releases/${version}/${packageType}.zip?org=${organizationId}`;
+  private async generateSignedUrl(packageType: string, version: string): Promise<string> {
+    // Import S3 client dynamically
+    await importS3Client();
+
+    const bucketName = process.env.R2_BUCKET_NAME!;
+    const key = `capabilities-sdk/releases/${version}/oxlayer-sdk-${version}.zip`;
+
+    const { getSignedUrl } = await import('@aws-sdk/s3-request-presigner');
+    const { GetObjectCommand } = await import('@aws-sdk/client-s3');
+
+    const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+    });
+
+    // Generate URL that expires in 5 minutes
+    return await getSignedUrl(s3Client!, command, { expiresIn: 300 });
   }
 
   /**
-   * Get the latest version of a package
+   * Get latest version of a package
    *
-   * In a real implementation, this would query the package storage.
-   * For now, this is a placeholder.
+   * In production, this would query a releases table or R2 listing.
+   * For now, returns the current version format.
    *
    * @param packageType - The type of package
    * @returns The latest version
    */
   private async getLatestVersion(packageType: string): Promise<string> {
-    // TODO: Implement version lookup from package storage
-    // For now, return a mock version
-    return '2025_02_08_001';
+    // TODO: Implement version lookup from database or R2
+    // For now, parse from workflow or use a default
+    // The actual version comes from the GitHub workflow
+    return process.env.LATEST_SDK_VERSION || '2026_02_13_001';
   }
 }
 
@@ -238,5 +345,6 @@ export type {
   ResolveCapabilitiesRequest,
   ResolveCapabilitiesResponse,
   RequestPackageDownloadRequest,
+  RequestPackageDownloadWithJwtRequest,
   RequestPackageDownloadResponse,
 };

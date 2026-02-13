@@ -10,6 +10,7 @@ import type {
   IDeveloperRepository,
   ILicenseRepository,
   IApiKeyRepository,
+  IDeviceSessionRepository,
 } from '../../repositories/index.js';
 
 import {
@@ -17,6 +18,7 @@ import {
   PostgresDeveloperRepository,
   PostgresLicenseRepository,
   PostgresApiKeyRepository,
+  PostgresDeviceSessionRepository,
 } from '../../repositories/index-impl.js';
 
 // Use Cases
@@ -71,8 +73,14 @@ import {
   ApiKeysController,
 } from '../../controllers/index.js';
 
+// Device Auth
+import { DeviceAuthService } from '../../services/device-auth.service.js';
+import { DeviceAuthController } from '../../controllers/device-auth.controller.js';
+
 // Database
 import { db } from '../../db/index.js';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import * as schema from '../../db/schema.js';
 
 /**
  * Application Container
@@ -87,6 +95,7 @@ export class AppContainer {
   public readonly developerRepository: IDeveloperRepository;
   public readonly licenseRepository: ILicenseRepository;
   public readonly apiKeyRepository: IApiKeyRepository;
+  public readonly deviceSessionRepository: IDeviceSessionRepository;
 
   // Use Cases - Organizations
   public readonly createOrganizationUseCase: CreateOrganizationUseCase;
@@ -132,13 +141,50 @@ export class AppContainer {
   public readonly developersController: DevelopersController;
   public readonly licensesController: LicensesController;
   public readonly apiKeysController: ApiKeysController;
+  public readonly deviceAuthService: DeviceAuthService;
+  public readonly deviceAuthController: DeviceAuthController;
 
-  private constructor() {
+  /**
+   * Get authenticated developer ID from request
+   * For device approval endpoint, extracts developer ID from authenticated session
+   */
+  getDeveloperId(request: Request): string {
+    // TODO: Implement proper authentication middleware
+    // For now, use hardcoded dev ID in development mode
+    if (process.env.MIDDLEWARE_DEV_MODE === 'true') {
+      return 'dev-developer-id';
+    }
+    throw new Error('Authentication required');
+  }
+
+  /**
+   * Get authenticated organization ID from request
+   * For device approval endpoint, extracts organization ID from authenticated session
+   */
+  getOrganizationId(request: Request): string {
+    // TODO: Implement proper authentication middleware
+    // For now, use hardcoded dev org in development mode
+    if (process.env.MIDDLEWARE_DEV_MODE === 'true') {
+      return 'dev-org-id';
+    }
+    throw new Error('Authentication required');
+  }
+
+  private constructor(db: PostgresJsDatabase<typeof schema>) {
     // Initialize Repositories (use Drizzle ORM)
     this.organizationRepository = new PostgresOrganizationRepository(db);
     this.developerRepository = new PostgresDeveloperRepository(db);
     this.licenseRepository = new PostgresLicenseRepository(db);
     this.apiKeyRepository = new PostgresApiKeyRepository(db);
+    this.deviceSessionRepository = new PostgresDeviceSessionRepository(db);
+
+    // Device Auth
+    this.deviceAuthService = new DeviceAuthService(this.deviceSessionRepository);
+    this.deviceAuthController = new DeviceAuthController(
+      this.deviceAuthService,
+      (request: Request) => this.getDeveloperId(request),
+      (request: Request) => this.getOrganizationId(request)
+    );
 
     // Initialize Use Cases - Organizations
     this.createOrganizationUseCase = new CreateOrganizationUseCase(
@@ -295,7 +341,7 @@ export class AppContainer {
    */
   public static getInstance(): AppContainer {
     if (!AppContainer.instance) {
-      AppContainer.instance = new AppContainer();
+      AppContainer.instance = new AppContainer(db);
     }
     return AppContainer.instance;
   }

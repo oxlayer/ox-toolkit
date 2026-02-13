@@ -4,7 +4,7 @@
  * Diagnostic tool for troubleshooting SDK installation and configuration
  */
 
-import { loadConfig } from '../services/index.js';
+import { loadConfig } from '../services/auth.service.js';
 import { getInstalledVersion, getVendorDir } from '../services/index.js';
 import { healthCheck } from '../services/index.js';
 import { detectProjectType } from '../utils/env.js';

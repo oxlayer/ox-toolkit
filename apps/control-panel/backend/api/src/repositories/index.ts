@@ -5,7 +5,7 @@
  */
 
 import type { Repository, ReadRepository, QueryOptions } from '@oxlayer/foundation-persistence-kit';
-import type { Organization, Developer, License, ApiKey } from '../domain/index.js';
+import type { Organization, Developer, License, ApiKey, DeviceSession } from '../domain/index.js';
 
 /**
  * Organization repository interface
@@ -50,9 +50,12 @@ export interface IApiKeyRepository extends Repository<ApiKey>, ReadRepository<Ap
   findActiveByOrganization(organizationId: string): Promise<ApiKey[]>;
 }
 
+export * from './device-session.js';
+
 export type {
   IOrganizationRepository,
   IDeveloperRepository,
   ILicenseRepository,
   IApiKeyRepository,
+  IDeviceSessionRepository,
 };

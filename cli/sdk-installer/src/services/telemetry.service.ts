@@ -83,8 +83,10 @@ async function saveTelemetryConfig(config: TelemetryConfig): Promise<void> {
  */
 function generateAnonymousId(): string {
   // Generate a random ID that persists across sessions
-  const { randomBytes } = require('crypto');
-  return randomBytes(8).toString('hex');
+  // Use webcrypto API which is available in Node.js
+  const bytes = new Uint8Array(8);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
 }
 
 /**

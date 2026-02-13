@@ -4,7 +4,7 @@
  * Remove stored API key and configuration
  */
 
-import { removeConfig, getConfigFile } from '../services/index.js';
+import { removeConfig, getConfigFile } from '../services/auth.service.js';
 import { success, info, warning } from '../utils/cli.js';
 
 /**

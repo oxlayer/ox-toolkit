@@ -2,25 +2,26 @@
  * Capability Resolution Controller
  *
  * HTTP controller for SDK capability resolution endpoints.
- * These are the endpoints that SDKs will call to get their configuration.
+ * These are endpoints that SDKs will call to get their configuration.
  */
 
 import { HttpError } from '@oxlayer/foundation-http-kit';
-import { ApiKeyAuthMiddleware, type AuthContext } from '../middleware/api-key-auth.js';
 import { CapabilityResolutionService } from '../services/capability-resolution.js';
+import { extractJwt } from '../middleware/jwt-auth.js';
+import type { AuthContext } from '../middleware/jwt-auth.js';
 
 /**
  * Controller for SDK capability resolution
  *
- * This controller provides the endpoints that SDKs use to:
+ * This controller provides endpoints that SDKs use to:
  * 1. Resolve their capabilities and limits
  * 2. Request package downloads
  *
- * These endpoints are authenticated using API keys.
+ * Note: The resolve endpoint uses API key auth (for SDKs)
+ * The download endpoint uses JWT auth (for CLI)
  */
 export class CapabilityResolutionController {
   constructor(
-    private readonly authMiddleware: ApiKeyAuthMiddleware,
     private readonly resolutionService: CapabilityResolutionService
   ) {}
 
@@ -88,9 +89,14 @@ export class CapabilityResolutionController {
    * POST /v1/packages/download
    * Request a package download
    *
+   * This endpoint uses JWT Bearer token authentication (for CLI).
+   * The CLI gets a JWT token via the device auth flow.
+   *
+   * Request headers:
+   *   Authorization: Bearer <jwt_token>
+   *
    * Request body:
    * {
-   *   "apiKey": "oxl_...",
    *   "packageType": "backend-sdk",
    *   "version": "2025_02_08_001"
    * }
@@ -107,16 +113,16 @@ export class CapabilityResolutionController {
     try {
       const body = await request.json();
 
+      // Extract and verify JWT from Authorization header
+      const auth: AuthContext = extractJwt(request);
+
       // Validate request body
-      if (!body.apiKey) {
-        throw new HttpError(400, 'Missing required field: apiKey');
-      }
       if (!body.packageType) {
         throw new HttpError(400, 'Missing required field: packageType');
       }
 
-      const result = await this.resolutionService.requestPackageDownload({
-        apiKey: body.apiKey,
+      const result = await this.resolutionService.requestPackageDownloadWithJwt({
+        organizationId: auth.organizationId,
         packageType: body.packageType,
         version: body.version,
       });
@@ -128,6 +134,9 @@ export class CapabilityResolutionController {
       }
       if (error instanceof Error && error.message.includes('not valid')) {
         throw new HttpError(401, error.message);
+      }
+      if (error instanceof Error && error.message.includes('not include')) {
+        throw new HttpError(403, error.message);
       }
       throw HttpError.fromUnknown(error);
     }

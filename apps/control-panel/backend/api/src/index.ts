@@ -14,6 +14,7 @@ import { HttpError } from '@oxlayer/foundation-http-kit';
 
 // Import DDD infrastructure
 import { getContainer } from './infrastructure/di/container.js';
+import { DeviceAuthController } from './controllers/device-auth.controller.js';
 
 // Import route setup functions
 import {
@@ -21,6 +22,7 @@ import {
   setupDevelopersRoutes,
   setupLicensesRoutes,
   setupApiKeysRoutes,
+  setupDeviceAuthRoutes,
 } from './routes/v1/index.js';
 
 // ============================================================================
@@ -69,6 +71,7 @@ setupOrganizationsRoutes(v1, container);
 setupDevelopersRoutes(v1, container);
 setupLicensesRoutes(v1, container);
 setupApiKeysRoutes(v1, container);
+setupDeviceAuthRoutes(v1, container);
 
 // Mount v1 routes
 app.route('/v1', v1);

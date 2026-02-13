@@ -22,6 +22,7 @@ export const apiKeyStatusEnum = pgEnum('api_key_status', ['active', 'revoked', '
 export const apiKeyScopeEnum = pgEnum('api_key_scope', ['read', 'write', 'admin', 'install']);
 export const environmentEnum = pgEnum('environment', ['development', 'staging', 'production']);
 export const sdkPackageTypeEnum = pgEnum('sdk_package_type', ['backend-sdk', 'frontend-sdk', 'cli-tools', 'channels']);
+export const deviceSessionStatusEnum = pgEnum('device_session_status', ['pending', 'approved', 'expired', 'revoked']);
 
 // Organizations
 export const organizations = pgTable(
@@ -144,6 +145,37 @@ export type NewLicense = typeof licenses.$inferInsert;
 
 export type ApiKey = typeof apiKeys.$inferSelect;
 export type NewApiKey = typeof apiKeys.$inferInsert;
+
+// Device Sessions
+export const deviceSessions = pgTable(
+  'device_sessions',
+  {
+    id: text('id').primaryKey(),
+    deviceCode: text('device_code').notNull().unique(),
+    userCode: text('user_code').notNull().unique(),
+    organizationId: text('organization_id').references(() => organizations.id, { onDelete: 'cascade' }),
+    developerId: text('developer_id').references(() => developers.id, { onDelete: 'set null' }),
+    deviceName: text('device_name').notNull(),
+    environment: environmentEnum('environment').notNull(),
+    status: deviceSessionStatusEnum('status').notNull().default('pending'),
+    scopes: jsonb('scopes').notNull().default(JSON.stringify(['read', 'install'])),
+    expiresAt: timestamp('expires_at').notNull(),
+    approvedAt: timestamp('approved_at'),
+    approvedBy: text('approved_by').references(() => developers.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    deviceCodeIdx: index('idx_device_sessions_device_code').on(table.deviceCode),
+    userCodeIdx: index('idx_device_sessions_user_code').on(table.userCode),
+    organizationIdIdx: index('idx_device_sessions_organization_id').on(table.organizationId),
+    expiresAtIdx: index('idx_device_sessions_expires_at').on(table.expiresAt),
+    statusIdx: index('idx_device_sessions_status').on(table.status),
+  })
+);
+
+export type DeviceSession = typeof deviceSessions.$inferSelect;
+export type NewDeviceSession = typeof deviceSessions.$inferInsert;
 
 export type UsageLog = typeof usageLogs.$inferSelect;
 export type NewUsageLog = typeof usageLogs.$inferInsert;
