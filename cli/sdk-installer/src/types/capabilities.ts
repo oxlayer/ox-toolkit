@@ -118,20 +118,14 @@ export interface DeviceSession {
  * Token information stored locally
  */
 export interface TokenInfo {
-  /** The scoped access token */
-  token: string;
-
-  /** Token type (always "Bearer") */
-  tokenType: 'Bearer';
+  /** Device this token belongs to */
+  deviceId: string;
 
   /** Granted scopes */
-  scopes: TokenScope[];
+  scopes: string[];
 
   /** Token expiration */
   expiresAt: string;
-
-  /** Device this token belongs to */
-  deviceId: string;
 }
 
 /**
@@ -179,8 +173,8 @@ export interface DeviceCodeResponse {
   /** Interval in seconds between poll attempts */
   interval: number;
 
-  /** Expiration time for device code */
-  expiresIn: number;
+  /** Expiration time for device code (ISO 8601 timestamp) */
+  expiresAt: string;
 
   /** Polling endpoint */
   pollEndpoint: string;
@@ -191,16 +185,13 @@ export interface DeviceCodeResponse {
  */
 export interface TokenPollResponse {
   /** Pending status */
-  pending: boolean;
+  pending?: boolean;
 
   /** Access token (if complete) */
   accessToken?: string;
 
   /** Token info (if complete) */
   tokenInfo?: TokenInfo;
-
-  /** Device session (if complete) */
-  session?: DeviceSession;
 
   /** Organization ID (if complete) */
   organizationId?: string;

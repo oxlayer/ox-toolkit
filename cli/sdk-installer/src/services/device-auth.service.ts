@@ -165,6 +165,7 @@ export async function initiateDeviceAuth(
  */
 export async function pollForToken(
   pollEndpoint: string,
+  deviceCode: string,
   options: PollingOptions = {}
 ): Promise<TokenPollResponse & { success: true }> {
   const interval = options.interval || DEFAULT_POLL_INTERVAL;
@@ -176,6 +177,7 @@ export async function pollForToken(
     const response = await fetch(pollEndpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deviceCode }),
     });
 
     if (!response.ok) {
