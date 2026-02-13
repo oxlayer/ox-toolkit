@@ -433,7 +433,7 @@ jobs:
 
       - name: Retrieve secrets from Bitwarden
         id: bw
-        uses: bitwarden/sm-action@v3
+        uses: bitwarden/sm-action@v2.2.0
         with:
           access_token: ${{ secrets.SM_ACCESS_TOKEN }}
           secrets: |
