@@ -9,6 +9,53 @@ overrides:
   ora: ^5.4.1
   react: 19.2.3
   react-dom: 19.2.3
+  '@oxlayer/capabilities-internal': workspace:*
+  '@oxlayer/capabilities-events': workspace:*
+  '@oxlayer/capabilities-adapters-web': workspace:*
+  '@oxlayer/capabilities-metrics': workspace:*
+  '@oxlayer/capabilities-telemetry': workspace:*
+  '@oxlayer/capabilities-telemetry-quickwit': workspace:*
+  '@oxlayer/capabilities-openapi': workspace:*
+  '@oxlayer/capabilities-vector': workspace:*
+  '@oxlayer/capabilities-testing': workspace:*
+  '@oxlayer/capabilities-adapters-object-storage': workspace:*
+  '@oxlayer/capabilities-adapters-qdrant': workspace:*
+  '@oxlayer/capabilities-adapters-influxdb': workspace:*
+  '@oxlayer/capabilities-adapters-mongo': workspace:*
+  '@oxlayer/capabilities-adapters-redis': workspace:*
+  '@oxlayer/capabilities-adapters-clickhouse': workspace:*
+  '@oxlayer/capabilities-adapters-postgres': workspace:*
+  '@oxlayer/capabilities-adapters-bitwarden-secrets': workspace:*
+  '@oxlayer/capabilities-adapters-search-quickwit': workspace:*
+  '@oxlayer/capabilities-adapters-eventemitter': workspace:*
+  '@oxlayer/capabilities-adapters-sqs': workspace:*
+  '@oxlayer/capabilities-adapters-rabbitmq': workspace:*
+  '@oxlayer/capabilities-adapters-mqtt': workspace:*
+  '@oxlayer/capabilities-adapters-bullmq': workspace:*
+  '@oxlayer/capabilities-adapters-bullmq-scheduler': workspace:*
+  '@oxlayer/capabilities-scheduler': workspace:*
+  '@oxlayer/capabilities-search': workspace:*
+  '@oxlayer/capabilities-cache': workspace:*
+  '@oxlayer/capabilities-auth': workspace:*
+  '@oxlayer/capabilities-queues': workspace:*
+  '@oxlayer/foundation-domain-kit': workspace:*
+  '@oxlayer/foundation-app-kit': workspace:*
+  '@oxlayer/foundation-http-kit': workspace:*
+  '@oxlayer/foundation-persistence-kit': workspace:*
+  '@oxlayer/foundation-testing-kit': workspace:*
+  '@oxlayer/pro-tenancy': workspace:*
+  '@oxlayer/pro-adapters-object-storage-tenancy': workspace:*
+  '@oxlayer/pro-adapters-qdrant-tenancy': workspace:*
+  '@oxlayer/pro-adapters-mongo-tenancy': workspace:*
+  '@oxlayer/pro-adapters-clickhouse-tenancy': workspace:*
+  '@oxlayer/pro-adapters-redis-tenancy': workspace:*
+  '@oxlayer/pro-adapters-influxdb-tenancy': workspace:*
+  '@oxlayer/pro-adapters-postgres-tenancy': workspace:*
+  '@oxlayer/pro-adapters-quickwit-tenancy': workspace:*
+  '@oxlayer/pro-adapters-mqtt-tenancy': workspace:*
+  '@oxlayer/pro-adapters-sqs-tenancy': workspace:*
+  '@oxlayer/pro-adapters-rabbitmq-tenancy': workspace:*
+  '@oxlayer/snippets': workspace:*
 
 packageExtensionsChecksum: sha256-9OcKT5ivvkCBBt4k7TUQ032eCXPPvOiFtAEtbhntfHY=
 
@@ -16040,7 +16087,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 25.2.2
+      '@types/node': 20.19.30
       merge-stream: 2.0.0
       supports-color: 8.1.1
     optional: true
