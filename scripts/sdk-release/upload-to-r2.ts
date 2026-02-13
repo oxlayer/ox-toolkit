@@ -17,7 +17,7 @@
  *   AWS_REGION - AWS region (when using S3, default: us-east-1)
  */
 
-import { readFileSync, readdirSync, statSync } from 'fs';
+import { readFileSync, readdirSync, statSync, writeFileSync } from 'fs';
 import { join, extname, basename } from 'path';
 import { createHash } from 'crypto';
 
@@ -175,7 +175,7 @@ async function main() {
   // Generate and save upload manifest
   const uploadManifest = generateUploadManifest(version, uploads);
   const manifestPath = join(inputDir, 'upload-manifest.json');
-  require('fs').writeFileSync(manifestPath, uploadManifest);
+  writeFileSync(manifestPath, uploadManifest);
 
   console.log();
   console.log('✅ Upload complete!');
