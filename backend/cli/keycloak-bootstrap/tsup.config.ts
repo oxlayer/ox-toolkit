@@ -7,7 +7,7 @@ const baseConfig = {
   clean: true,
   target: "es2022",
   minify: false,
-  dts: process.env.CI ? false : true,
+  dts: true,
   esbuildOptions(options) {
     options.keepNames = true;
     return options;
