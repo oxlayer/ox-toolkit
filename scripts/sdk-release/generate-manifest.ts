@@ -14,7 +14,7 @@
  *   node scripts/sdk-release/generate-manifest.ts <version> <output-dir>
  */
 
-import { existsSync, readdirSync, readFileSync, statSync } from 'fs';
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { createHash } from 'crypto';
 import { execSync } from 'child_process';
@@ -192,7 +192,7 @@ function main() {
   // Write manifest to output directory
   const manifestPath = join(outputDir, 'manifest.json');
   const manifestContent = JSON.stringify(manifest, null, 2);
-  require('fs').writeFileSync(manifestPath, manifestContent);
+  writeFileSync(manifestPath, manifestContent);
 
   console.log(`✅ Manifest generated: ${manifestPath}`);
   console.log(`   Version: ${manifest.version}`);
