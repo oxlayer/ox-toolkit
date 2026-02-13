@@ -182,3 +182,28 @@ export type NewDeviceSession = typeof deviceSessions.$inferInsert;
 
 export type UsageLog = typeof usageLogs.$inferSelect;
 export type NewUsageLog = typeof usageLogs.$inferInsert;
+
+// Package Releases
+export const packageReleases = pgTable(
+  'package_releases',
+  {
+    id: text('id').primaryKey(),
+    packageType: sdkPackageTypeEnum('package_type').notNull(),
+    version: text('version').notNull(),
+    checksum: text('checksum').notNull(),
+    sizeBytes: integer('size_bytes').notNull(),
+    r2Key: text('r2_key').notNull(),
+    isLatest: timestamp('is_latest').notNull().defaultNow(),
+    releasedAt: timestamp('released_at').notNull().defaultNow(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    packageTypeIdx: index('idx_package_releases_package_type').on(table.packageType),
+    versionIdx: index('idx_package_releases_version').on(table.version),
+    packageTypeVersionUnique: uniqueIndex('idx_package_releases_type_version').on(table.packageType, table.version),
+    latestIdx: index('idx_package_releases_is_latest').on(table.isLatest),
+  })
+);
+
+export type PackageRelease = typeof packageReleases.$inferSelect;
+export type NewPackageRelease = typeof packageReleases.$inferInsert;

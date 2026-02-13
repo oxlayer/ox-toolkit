@@ -104,6 +104,10 @@ export class KeycloakService {
    * Validate JWT token from Authorization header
    * Supports both "Bearer <token>" and raw token formats
    * Returns realm extracted from token claims
+   *
+   * Supports two token types:
+   * 1. Keycloak-issued tokens (verified via JWKS with RS256)
+   * 2. Device-issued tokens (verified via JWT_SECRET with HS256)
    */
   async validateToken(authHeader: string): Promise<TokenValidationResult> {
     try {
@@ -139,6 +143,40 @@ export class KeycloakService {
         };
       }
 
+      // Check if this is a device-issued token (uses symmetric HS256)
+      const DEVICE_AUTH_KEY_ID = 'oxlayer-device-auth-key';
+      const DEVICE_AUTH_SECRET = process.env.JWT_SECRET || 'replace-with-strong-random-secret';
+
+      if (kid === DEVICE_AUTH_KEY_ID) {
+        // Device-issued token - verify with local secret
+        try {
+          const payload = jwt.verify(token, DEVICE_AUTH_SECRET, {
+            algorithms: ['HS256'],
+          }) as any;
+
+          return {
+            valid: true,
+            payload: {
+              sub: payload.deviceId,
+              email: payload.deviceId,
+              preferred_username: payload.deviceId,
+              organization_id: payload.organizationId,
+              realm_access: { roles: [] },
+              aud: 'oxlayer-device-auth',
+              iss: 'oxlayer-device-auth',
+              azp: payload.organizationId,
+            },
+            realm: this.config.realm,
+          };
+        } catch (verifyError: any) {
+          return {
+            valid: false,
+            error: `Device token verification failed: ${verifyError.message}`,
+          };
+        }
+      }
+
+      // Keycloak-issued token - continue with normal JWKS verification
       // Get signing key
       let signingKey: string;
       try {

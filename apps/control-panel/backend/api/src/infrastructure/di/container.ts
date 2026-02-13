@@ -77,6 +77,10 @@ import {
 import { DeviceAuthService } from '../../services/device-auth.service.js';
 import { DeviceAuthController } from '../../controllers/device-auth.controller.js';
 
+// Capability Resolution
+import { CapabilityResolutionService } from '../../services/capability-resolution.js';
+import { CapabilityResolutionController } from '../../controllers/capability-resolution.controller.js';
+
 // Database
 import { db } from '../../db/index.js';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
@@ -143,6 +147,8 @@ export class AppContainer {
   public readonly apiKeysController: ApiKeysController;
   public readonly deviceAuthService: DeviceAuthService;
   public readonly deviceAuthController: DeviceAuthController;
+  public readonly capabilityResolutionService: CapabilityResolutionService;
+  public readonly capabilityResolutionController: CapabilityResolutionController;
 
   /**
    * Get authenticated developer ID from request
@@ -184,6 +190,16 @@ export class AppContainer {
       this.deviceAuthService,
       (request: Request) => this.getDeveloperId(request),
       (request: Request) => this.getOrganizationId(request)
+    );
+
+    // Capability Resolution
+    this.capabilityResolutionService = new CapabilityResolutionService(
+      this.apiKeyRepository,
+      this.licenseRepository,
+      db
+    );
+    this.capabilityResolutionController = new CapabilityResolutionController(
+      this.capabilityResolutionService
     );
 
     // Initialize Use Cases - Organizations

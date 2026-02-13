@@ -243,7 +243,7 @@ export class DeviceSession extends Entity<string> {
     };
   }
 
-  toTokenResponse(accessToken: string): {
+  toTokenResponse(accessToken?: string): {
     accessToken: string;
     tokenInfo: {
       deviceId: string;
@@ -254,6 +254,20 @@ export class DeviceSession extends Entity<string> {
     pending?: boolean;
     error?: string;
   } {
+    // If session is consumed, return error (token already issued)
+    if (this.props.status === 'consumed') {
+      return {
+        accessToken: '',
+        tokenInfo: {
+          deviceId: this.props.id,
+          scopes: this.props.scopes,
+          expiresAt: this.props.expiresAt.toISOString(),
+        },
+        organizationId: '',
+        error: 'Token already issued. Please initiate a new device authorization.',
+      };
+    }
+
     if (this.props.status !== 'approved' || !this.props.organizationId) {
       return {
         accessToken: '',
@@ -268,7 +282,7 @@ export class DeviceSession extends Entity<string> {
     }
 
     return {
-      accessToken,
+      accessToken: accessToken || '',
       tokenInfo: {
         deviceId: this.props.id,
         scopes: this.props.scopes,

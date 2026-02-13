@@ -207,9 +207,13 @@ export class DeviceAuthController {
   }
 
   /**
-   * Render device approval page HTML
+   * Render device approval page HTML with Keycloak integration
    */
   private renderDevicePage(userCode: string, error: string | null): string {
+    const keycloakUrl = process.env.KEYCLOAK_URL;
+    const keycloakRealm = process.env.KEYCLOAK_REALM;
+    const keycloakClientId = process.env.KEYCLOAK_CLIENT_ID;
+
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -332,9 +336,26 @@ export class DeviceAuthController {
     }
 
   </style>
+
+  <!-- Keycloak JS Adapter from CDN -->
+  <script type="module">
+    import Keycloak from 'https://cdn.jsdelivr.net/npm/keycloak-js@26.2.3/+esm';
+    window.Keycloak = Keycloak;
+  </script>
 </head>
 
 <body>
+  <div id="login-container" style="display:none;">
+    <div class="container">
+      <h1>Sign In Required</h1>
+      <p class="instructions">
+        Please sign in to authorize this device.
+      </p>
+      <button id="loginBtn" class="btn">Sign In with OxLayer</button>
+    </div>
+  </div>
+
+  <div id="approve-container" style="display:none;">
   <div class="container">
     <h1>Authorize Device</h1>
 
@@ -353,7 +374,7 @@ export class DeviceAuthController {
       Once approved, this page will automatically update.
     </p>
 
-    <button id="approveBtn" class="btn" onclick="approveDevice()">
+    <button id="approveBtn" class="btn">
       <span class="btn-text">Approve Device</span>
       <span class="spinner"></span>
     </button>
@@ -362,9 +383,64 @@ export class DeviceAuthController {
       Secure device authentication flow
     </div>
   </div>
+  </div>
 
-<script>
+<script type="module">
+  import Keycloak from 'https://cdn.jsdelivr.net/npm/keycloak-js@26.2.3/+esm';
+
   const userCode = '${this.escapeHtml(userCode)}';
+  let keycloak = null;
+  let isAuthenticated = false;
+
+  // Initialize Keycloak
+  const initKeycloak = async () => {
+    try {
+      keycloak = new Keycloak({
+        url: '${keycloakUrl}',
+        realm: '${keycloakRealm}',
+        clientId: '${keycloakClientId}',
+        redirectUri: window.location.href,
+      });
+
+      const authenticated = await keycloak.init({
+        pkceMethod: 'S256',
+        enableLogging: true,
+        checkLoginIframe: false,
+        flow: 'standard',
+        onLoad: 'check-sso',
+      });
+
+      isAuthenticated = authenticated;
+
+      if (authenticated) {
+        // User is authenticated, show approve container
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('approve-container').style.display = 'block';
+      } else {
+        // User needs to login
+        document.getElementById('login-container').style.display = 'flex';
+        document.getElementById('approve-container').style.display = 'none';
+
+        // Setup login button
+        (document.getElementById('loginBtn')).addEventListener('click', () => {
+          keycloak.login({
+            redirectUri: window.location.href,
+          });
+        });
+      }
+    } catch (err) {
+      console.error('Keycloak init failed:', err);
+      // If Keycloak fails (e.g., not available in dev), show approve button anyway
+      (document.getElementById('login-container')).style.display = 'none';
+      (document.getElementById('approve-container')).style.display = 'block';
+    }
+  };
+
+  // Setup approve button listener
+  document.getElementById('approveBtn').addEventListener('click', approveDevice);
+
+  // Initialize on page load
+  initKeycloak();
 
   async function approveDevice() {
     const btn = document.getElementById('approveBtn');
@@ -372,19 +448,29 @@ export class DeviceAuthController {
     btn.disabled = true;
 
     try {
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+
+      // Add Authorization header if authenticated with Keycloak
+      if (keycloak && isAuthenticated) {
+        const token = keycloak.token;
+        if (token) {
+          headers['Authorization'] = 'Bearer ' + token;
+        }
+      }
+
       const response = await fetch('/v1/cli/device/approve', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ userCode })
       });
 
       if (response.ok) {
-        document.querySelector('.container').innerHTML = \`
-          <h1 class="success">Authorization Complete</h1>
-          <p class="instructions">
-            You may close this window and return to your CLI.
-          </p>
-        \`;
+        const container = document.querySelector('.container');
+        if (container) {
+          container.innerHTML = '<h1 class="success">Authorization Complete</h1><p class="instructions">You may close this window and return to your CLI.</p>';
+        }
       } else {
         throw new Error();
       }
@@ -393,30 +479,6 @@ export class DeviceAuthController {
       btn.disabled = false;
       alert('Failed to approve device. Please try again.');
     }
-  }
-
-  let pollCount = 0;
-  const maxPolls = 60;
-
-  async function pollStatus() {
-    if (pollCount >= maxPolls) return;
-
-    try {
-      const response = await fetch('/v1/cli/device/status?code=' + encodeURIComponent(userCode));
-      if (response.ok) {
-        const data = await response.json();
-        if (data.data.approved) {
-          window.location.reload();
-        }
-      }
-    } catch {}
-
-    pollCount++;
-    setTimeout(pollStatus, 5000);
-  }
-
-  if (userCode) {
-    pollStatus();
   }
 </script>
 
@@ -444,15 +506,13 @@ export class DeviceAuthController {
    * This method is called by the Keycloak-protected approve endpoint
    * to ensure organization_id cannot be injected via request body.
    */
-  async approveWithAuth(request: Request, developerId: string, organizationId: string): Promise<Response> {
+  async approveWithAuth(userCode: string, developerId: string, organizationId: string): Promise<Response> {
     try {
-      const body = (await request.json()) as { userCode: string };
-
-      if (!body.userCode) {
+      if (!userCode) {
         throw new HttpError(400, 'Missing required field: userCode');
       }
 
-      await this.deviceAuthService.approveDeviceWithAuth(body.userCode, developerId, organizationId);
+      await this.deviceAuthService.approveDeviceWithAuth(userCode, developerId, organizationId);
 
       return Response.json({
         success: true,

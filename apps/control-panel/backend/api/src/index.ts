@@ -11,10 +11,10 @@ import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { config } from './config/index.js';
 import { HttpError } from '@oxlayer/foundation-http-kit';
+import { runMigrations } from './db/migrate.js';
 
 // Import DDD infrastructure
 import { getContainer } from './infrastructure/di/container.js';
-import { DeviceAuthController } from './controllers/device-auth.controller.js';
 
 // Import route setup functions
 import {
@@ -23,6 +23,7 @@ import {
   setupLicensesRoutes,
   setupApiKeysRoutes,
   setupDeviceAuthRoutes,
+  setupCapabilityResolutionRoutes,
 } from './routes/v1/index.js';
 
 // Import auth middleware
@@ -40,10 +41,9 @@ app.use('*', prettyJSON());
 app.use('*', cors({
   origin: (origin) => {
     const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:3004',
       'http://localhost:5173',
-      process.env.FRONTEND_URL || '',
+      'http://localhost:8080',
+      'http://localhost:5174'
     ].filter(Boolean);
     return allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
   },
@@ -72,20 +72,24 @@ const v1 = new Hono();
 const container = getContainer();
 
 // Configure Keycloak auth middleware for device approval endpoint
-const deviceAuthMiddleware = authMiddleware({
-  enableKeycloak: process.env.ENABLE_KEYCLOAK === 'true',
-  keycloak: {
-    url: process.env.KEYCLOAK_URL || '',
-    realm: process.env.KEYCLOAK_REALM || 'oxlayer',
-  },
-  enableJwt: false, // Disable JWT for device auth - only Keycloak
-});
+// Only use auth middleware if Keycloak is explicitly enabled
+const deviceAuthMiddleware = process.env.ENABLE_KEYCLOAK === 'true'
+  ? authMiddleware({
+    enableKeycloak: true,
+    keycloak: {
+      url: process.env.KEYCLOAK_URL || '',
+      realm: process.env.KEYCLOAK_REALM || 'oxlayer',
+    },
+    enableJwt: false,
+  })
+  : undefined;
 
 setupOrganizationsRoutes(v1, container);
 setupDevelopersRoutes(v1, container);
 setupLicensesRoutes(v1, container);
 setupApiKeysRoutes(v1, container);
 setupDeviceAuthRoutes(v1, container, deviceAuthMiddleware);
+setupCapabilityResolutionRoutes(v1, container, deviceAuthMiddleware);
 
 // Mount v1 routes
 app.route('/v1', v1);
@@ -188,13 +192,29 @@ async function main() {
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   🚀 Server starting...
-`);
 
-  // serve({
-  //   fetch: app.fetch,
-  //   port: config.port,
-  //   hostname: config.host,
-  // });
+`);
+  console.log('🔧 Running database migrations...');
+  try {
+    await runMigrations();
+    console.log('✅ Migrations completed successfully');
+  } catch (error) {
+    // If migrations fail, it's likely because schema already exists
+    // Log warning but continue starting the server
+    const isAlreadyExists = error instanceof Error && (
+      error.message.includes('already exists') ||
+      error.message.includes('42710') ||
+      error.message.includes('42P07') ||
+      error.message.includes('42P06')
+    );
+    if (isAlreadyExists) {
+      console.log('⚠️  Schema already exists, skipping migrations');
+    } else {
+      console.error('❌ Migration failed:', error);
+      // Continue starting the server anyway for development
+      console.log('⚠️  Continuing server startup despite migration error...');
+    }
+  }
 
   console.log(`✅ Server ready at http://${config.host}:${config.port}`);
   console.log(`📚 API organized with DDD structure`);

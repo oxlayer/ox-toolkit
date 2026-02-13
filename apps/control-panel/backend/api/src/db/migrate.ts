@@ -1,15 +1,17 @@
 /**
  * Database Migration Script
  *
- * Runs Drizzle migrations from the migrations folder
+ * For development: Uses drizzle-kit push (idempotent)
+ * For production: Uses drizzle migrations
  */
 
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
-import { db, close } from './index.js';
+import { db } from './index.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import postgres from 'postgres';
 import { config } from '../config/index.js';
+import { spawn } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -49,24 +51,69 @@ async function ensureDatabaseExists(): Promise<void> {
   }
 }
 
+/**
+ * Run drizzle-kit push command (idempotent, creates missing tables)
+ */
+async function runPush(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(
+      'pnpm',
+      ['db:push'],
+      {
+        stdio: 'inherit',
+        cwd: join(__dirname, '../..'),
+        shell: true,
+      }
+    );
+
+    proc.on('close', (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`drizzle-kit push exited with code ${code}`));
+      }
+    });
+
+    proc.on('error', reject);
+  });
+}
+
 async function runMigrations() {
   console.log('🔧 Running database migrations...');
 
   try {
     await ensureDatabaseExists();
-    await migrate(db, { migrationsFolder: join(__dirname, 'migrations') });
+
+    // For development, use push which is more idempotent
+    // It reads the schema and creates/updates tables as needed
+    if (config.env === 'development') {
+      console.log('📝 Using drizzle-push (development mode)...');
+      await runPush();
+    } else {
+      // For production, use tracked migrations
+      await migrate(db, { migrationsFolder: join(__dirname, 'migrations') });
+    }
+
     console.log('✅ Migrations completed successfully!');
     console.log('');
   } catch (error) {
-    console.error('❌ Migration failed:', error);
+    // Don't close connection on error - let caller decide
     throw error;
   } finally {
-    await close();
+    // Don't close connection - caller will manage it
   }
 }
 
-// Run migrations
-runMigrations().catch((error) => {
-  console.error('Failed to run migrations:', error);
-  process.exit(1);
-});
+/**
+ * Run database migrations
+ * Can be imported and called from other modules
+ */
+export { runMigrations };
+
+// Run migrations if this file is executed directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  runMigrations().catch((error) => {
+    console.error('Failed to run migrations:', error);
+    process.exit(1);
+  });
+}

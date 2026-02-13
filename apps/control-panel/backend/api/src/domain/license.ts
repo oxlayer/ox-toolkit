@@ -136,7 +136,8 @@ export class License extends AggregateRoot<string> {
    * Check if license has access to package
    */
   hasPackage(pkg: SdkPackageType): boolean {
-    return this.props.packages.includes(pkg);
+    // Check if packages array exists and contains the package
+    return Array.isArray(this.props.packages) && this.props.packages.includes(pkg);
   }
 
   /**

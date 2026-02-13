@@ -4,7 +4,7 @@
  * Implements license persistence using PostgreSQL with Drizzle ORM
  */
 
-import { eq, desc, and, gt, isNull, sql } from 'drizzle-orm';
+import { eq, desc, and, or, gt, isNull, sql } from 'drizzle-orm';
 import type { ILicenseRepository } from './index.js';
 import { License } from '../domain/index.js';
 import type { QueryOptions } from '@oxlayer/foundation-persistence-kit';
@@ -112,7 +112,10 @@ export class PostgresLicenseRepository implements ILicenseRepository {
         and(
           eq(licenses.organizationId, organizationId),
           eq(licenses.status, 'active'),
-          sql`${licenses.expiresAt} IS NULL OR ${licenses.expiresAt} > ${now}`
+          or(
+            isNull(licenses.expiresAt),
+            gt(licenses.expiresAt, now)
+          )
         )
       )
       .orderBy(desc(licenses.createdAt));
@@ -157,7 +160,10 @@ export class PostgresLicenseRepository implements ILicenseRepository {
         and(
           eq(licenses.organizationId, organizationId),
           eq(licenses.status, 'active'),
-          sql`${licenses.expiresAt} IS NULL OR ${licenses.expiresAt} > ${now}`,
+          or(
+            isNull(licenses.expiresAt),
+            gt(licenses.expiresAt, now)
+          ),
           sql`${licenses.capabilities} ? ${capabilityName}`
         )
       )

@@ -45,9 +45,11 @@ export async function login(options: LoginOptions = {}): Promise<void> {
 
   let deviceCodeResponse;
   try {
+    const apiEndpoint = options.apiEndpoint || process.env.OXLAYER_API_ENDPOINT;
+    info(`API Endpoint: ${apiEndpoint}`);
     deviceCodeResponse = await initiateDeviceAuth(
       options.environment || 'development',
-      options.apiEndpoint || process.env.OXLAYER_API_ENDPOINT
+      apiEndpoint
     );
     spinner.succeed('Device authorization initiated');
   } catch (err) {
@@ -117,17 +119,20 @@ export async function login(options: LoginOptions = {}): Promise<void> {
     pollSpinner.succeed('Authentication successful');
 
     // Step 5: Save configuration
+    const apiEndpoint = options.apiEndpoint || process.env.OXLAYER_API_ENDPOINT;
     const config: CliConfig = {
       token: result.accessToken!,
       tokenInfo: result.tokenInfo!,
       organizationId: result.organizationId!,
       environment: options.environment || 'development',
       vendorDir: '.capabilities-vendor',
-      apiEndpoint: options.apiEndpoint,
+      apiEndpoint: apiEndpoint,
       updatedAt: new Date().toISOString(),
     };
 
     await saveConfig(config);
+
+    pollSpinner.stop();
 
     console.log();
     success('Logged in successfully');
@@ -136,6 +141,8 @@ export async function login(options: LoginOptions = {}): Promise<void> {
     info(`Scopes: ${result.tokenInfo!.scopes.join(', ')}`);
     info(`Expires: ${new Date(result.tokenInfo!.expiresAt).toLocaleString()}`);
 
+    // Ensure clean exit
+    process.exit(0);
   } catch (err) {
     pollSpinner.fail('Authentication failed');
     error(err instanceof Error ? err.message : 'Unknown error');

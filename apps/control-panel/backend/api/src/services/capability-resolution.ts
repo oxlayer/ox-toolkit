@@ -15,6 +15,11 @@ import type { ILicenseRepository } from '../repositories/index.js';
 import type { ApiKey, License } from '../domain/index.js';
 import type { CapabilityName, Environment, CapabilityLimits } from '../domain/index.js';
 import { UnauthorizedError, BusinessRuleViolationError } from '@oxlayer/foundation-domain-kit';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import type * as schema from '../db/schema.js';
+import { eq, desc } from 'drizzle-orm';
+import { packageReleases } from '../db/schema.js';
+import { S3Client } from '@aws-sdk/client-s3';
 
 // R2/S3 for presigned URLs
 let s3Client: S3Client | null = null;
@@ -115,8 +120,9 @@ export interface RequestPackageDownloadResponse {
 export class CapabilityResolutionService {
   constructor(
     private readonly apiKeyRepo: IApiKeyRepository,
-    private readonly licenseRepo: ILicenseRepository
-  ) {}
+    private readonly licenseRepo: ILicenseRepository,
+    private readonly db: PostgresJsDatabase<typeof schema>
+  ) { }
 
   /**
    * Resolve capabilities for a SDK request
@@ -227,12 +233,14 @@ export class CapabilityResolutionService {
     request: RequestPackageDownloadWithJwtRequest
   ): Promise<RequestPackageDownloadResponse> {
     // 1. Validate organization and get license
-    const license = await this.licenseRepo.findByOrganization(request.organizationId);
-    if (!license) {
+    const licenses = await this.licenseRepo.findActiveByOrganization(request.organizationId);
+    if (!licenses || licenses.length === 0) {
       throw new UnauthorizedError(
         `No valid license found for organization: ${request.organizationId}`
       );
     }
+
+    const license = licenses[0];
 
     // 2. Check if license has access to the requested package
     if (!license.hasPackage(request.packageType as any)) {
@@ -327,24 +335,23 @@ export class CapabilityResolutionService {
   /**
    * Get latest version of a package
    *
-   * In production, this would query a releases table or R2 listing.
-   * For now, returns the current version format.
+   * Queries the package_releases table for the latest version of the given package type.
    *
    * @param packageType - The type of package
    * @returns The latest version
    */
   private async getLatestVersion(packageType: string): Promise<string> {
-    // TODO: Implement version lookup from database or R2
-    // For now, parse from workflow or use a default
-    // The actual version comes from the GitHub workflow
-    return process.env.LATEST_SDK_VERSION || '2026_02_13_001';
+    const result = await this.db
+      .select({ version: packageReleases.version })
+      .from(packageReleases)
+      .where(eq(packageReleases.packageType, packageType as any))
+      .orderBy(desc(packageReleases.releasedAt))
+      .limit(1);
+
+    if (!result[0]) {
+      return 'Failed to retrieve, version unknown';
+    }
+
+    return result[0].version;
   }
 }
-
-export type {
-  ResolveCapabilitiesRequest,
-  ResolveCapabilitiesResponse,
-  RequestPackageDownloadRequest,
-  RequestPackageDownloadWithJwtRequest,
-  RequestPackageDownloadResponse,
-};

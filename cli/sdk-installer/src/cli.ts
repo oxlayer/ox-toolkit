@@ -6,7 +6,7 @@
  */
 
 import { Command } from 'commander';
-import { printBanner } from './utils/cli.js';
+import { getBanner } from './utils/cli.js';
 import { login } from './commands/login.command.js';
 import { status } from './commands/status.command.js';
 import { install } from './commands/install.command.js';
@@ -16,12 +16,12 @@ import { doctor } from './commands/doctor.command.js';
 import { diff, showLatest } from './commands/diff.command.js';
 import { telemetryEnable, telemetryDisable, telemetryStatus } from './commands/telemetry.command.js';
 import { update, check } from './commands/update.command.js';
-import { trackCommand } from './services/telemetry.service.js';
+import { trackCommand, trackError } from './services/telemetry.service.js';
 
 const program = new Command();
 
 // Show banner on help/version
-program.addHelpText('beforeAll', printBanner());
+program.addHelpText('beforeAll', getBanner());
 
 program
   .name('oxlayer')

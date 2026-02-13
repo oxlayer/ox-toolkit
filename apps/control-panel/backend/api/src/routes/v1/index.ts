@@ -9,3 +9,4 @@ export { setupDevelopersRoutes } from './developers.routes.js';
 export { setupLicensesRoutes } from './licenses.routes.js';
 export { setupApiKeysRoutes } from './api-keys.routes.js';
 export { setupDeviceAuthRoutes } from './device-auth.routes.js';
+export { setupCapabilityResolutionRoutes } from './capability-resolution.routes.js';

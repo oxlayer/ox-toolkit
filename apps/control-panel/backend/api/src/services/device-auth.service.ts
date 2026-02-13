@@ -16,7 +16,7 @@ import { randomBytes } from 'crypto';
 import type { IDeviceSessionRepository } from '../repositories/index.js';
 import type { DeviceSession, Environment } from '../domain/index.js';
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || 'replace-with-strong-random-secret';
 const JWT_EXPIRES_IN = '24h';
 
 export interface InitiateDeviceAuthRequest {
@@ -128,6 +128,14 @@ export class DeviceAuthService {
       return { pending: true };
     }
 
+    // If already consumed, return error (token was already issued)
+    if (session.props.status === 'consumed') {
+      return {
+        pending: false,
+        error: 'Token already issued. Please initiate a new device authorization.',
+      };
+    }
+
     if (!session.isValid()) {
       return {
         pending: false,
@@ -137,11 +145,14 @@ export class DeviceAuthService {
 
     const accessToken = this.generateJwt(session);
 
+    // Get token response BEFORE consuming session (toTokenResponse checks status first)
+    const response = session.toTokenResponse(accessToken);
+
     // Mark session as consumed after token issuance (one-time use)
     session.consume();
     await this.deviceSessionRepo.save(session);
 
-    return session.toTokenResponse(accessToken);
+    return response;
   }
 
   /**
@@ -223,8 +234,15 @@ export class DeviceAuthService {
       scopes: session.scopes,
     };
 
+    // Generate JWT with kid header to be compatible with Keycloak middleware
+    // Using a fixed key ID for device-issued tokens
     return jwt.sign(payload, JWT_SECRET, {
       expiresIn: JWT_EXPIRES_IN,
+      header: {
+        kid: 'oxlayer-device-auth-key', // Fixed key ID for device tokens
+        typ: 'JWT',
+        alg: 'HS256',
+      },
     });
   }
 

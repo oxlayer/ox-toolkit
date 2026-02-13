@@ -5,7 +5,7 @@
  * These are endpoints that SDKs will call to get their configuration.
  */
 
-import { HttpError } from '@oxlayer/foundation-http-kit';
+import { HttpError, errorToResponse } from '@oxlayer/foundation-http-kit';
 import { CapabilityResolutionService } from '../services/capability-resolution.js';
 import { extractJwt } from '../middleware/jwt-auth.js';
 import type { AuthContext } from '../middleware/jwt-auth.js';
@@ -23,7 +23,7 @@ import type { AuthContext } from '../middleware/jwt-auth.js';
 export class CapabilityResolutionController {
   constructor(
     private readonly resolutionService: CapabilityResolutionService
-  ) {}
+  ) { }
 
   /**
    * POST /v1/capabilities/resolve
@@ -81,7 +81,7 @@ export class CapabilityResolutionController {
       if (error instanceof Error && error.message.includes('not valid')) {
         throw new HttpError(401, error.message);
       }
-      throw HttpError.fromUnknown(error);
+      return errorToResponse(error);
     }
   }
 
@@ -138,7 +138,7 @@ export class CapabilityResolutionController {
       if (error instanceof Error && error.message.includes('not include')) {
         throw new HttpError(403, error.message);
       }
-      throw HttpError.fromUnknown(error);
+      return errorToResponse(error);
     }
   }
 

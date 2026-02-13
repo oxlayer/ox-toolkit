@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun src/index.ts",
+    "keycloak": "node ./node_modules/@oxlayer/cli-keycloak-bootstrap/dist/bin/index.js bootstrap --config keycloak.config.json",
     "build": "tsup",
     "build:with-client": "tsup && pnpm run generate:client",
     "start": "node dist/index.js",
@@ -15,7 +16,7 @@
     "test": "vitest",
     "generate:openapi": "tsx scripts/generate-openapi.ts",
     "generate:client": "pnpm run generate:openapi && cd ../../packages/api-client && pnpm run generate",
-    "kill-port": "lsof -ti:3004 | xargs kill -9"
+    "kill-port": "lsof -ti:3001 | xargs kill -9"
   },
   "dependencies": {
     "@hono/node-server": "1.19.9",
@@ -25,6 +26,7 @@
     "@oxlayer/foundation-domain-kit": "workspace:*",
     "@oxlayer/foundation-http-kit": "workspace:*",
     "@oxlayer/foundation-persistence-kit": "workspace:*",
+    "@oxlayer/cli-keycloak-bootstrap": "workspace:*",
     "drizzle-orm": "^0.45.1",
     "hono": "^4.11.9",
     "postgres": "^3.4.8",

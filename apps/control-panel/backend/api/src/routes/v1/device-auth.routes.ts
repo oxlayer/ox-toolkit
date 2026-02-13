@@ -68,7 +68,7 @@ export function setupDeviceAuthRoutes(
       }
 
       // Call approve with auth-derived IDs (org comes from Keycloak token, NOT from body)
-      await controller.approveWithAuth(c.req.raw, userId, organizationId);
+      await controller.approveWithAuth(body.userCode, userId, organizationId);
 
       return c.json({
         success: true,
