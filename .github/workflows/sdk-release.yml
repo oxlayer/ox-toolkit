@@ -431,6 +431,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Retrieve secrets from Bitwarden
+        id: bw
+        uses: bitwarden/sm-action@v3
+        with:
+          access_token: ${{ secrets.SM_ACCESS_TOKEN }}
+          secrets: |
+            <R2_ACCESS_KEY_ID_UUID> > AWS_ACCESS_KEY_ID
+            <R2_SECRET_ACCESS_KEY_UUID> > AWS_SECRET_ACCESS_KEY
+            <R2_ENDPOINT_UUID> > AWS_ENDPOINT_URL
+            <R2_BUCKET_NAME_UUID> > AWS_BUCKET_NAME
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -460,10 +471,10 @@ jobs:
 
       - name: Upload to R2/S3
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          AWS_ENDPOINT_URL: ${{ secrets.R2_ENDPOINT }}
-          AWS_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          AWS_ENDPOINT_URL: ${{ env.AWS_ENDPOINT_URL }}
+          AWS_BUCKET_NAME: ${{ env.AWS_BUCKET_NAME }}
         run: |
           VERSION="${{ needs.generate-version.outputs.version }}"
           RELEASE_PATH="capabilities-sdk/releases/$VERSION"
