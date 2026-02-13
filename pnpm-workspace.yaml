@@ -1,7 +1,4 @@
 packages:
-  # Shared packages
-  - 'packages/**'
-
   # Apps workspaces
   - 'apps/**'
 
@@ -12,52 +9,8 @@ packages:
   - 'backend/**'
   - '!backend/release/**'
 
-  # Snippets
-  - 'backend/snippets'
-
   # CLI packages
   - 'cli/**'
 
   # MCP packages
-  - 'mcp-oxlayer/**'
-
-  # Foundation packages
-  # - core/foundation/domain-kit
-  # - core/foundation/app-kit
-  # - core/foundation/http-kit
-  # - core/foundation/persistence-kit
-  # - core/foundation/testing-kit
-
-  # # Capabilities packages
-  # - core/capabilities/auth
-  # - core/capabilities/cache
-  # - core/capabilities/events
-  # - core/capabilities/internal
-  # - core/capabilities/metrics
-  # - core/capabilities/openapi
-  # - core/capabilities/queues
-  # - core/capabilities/scheduler
-  # - core/capabilities/search
-  # - core/capabilities/telemetry
-  # - core/capabilities/testing
-  # - core/capabilities/vector
-
-  # # Capabilities adapters
-  # - core/capabilities/adapters/bitwarden-secrets
-  # - core/capabilities/adapters/database/postgres
-  # - core/capabilities/adapters/database/redis
-  # - core/capabilities/adapters/database/mongo
-  # - core/capabilities/adapters/messaging/rabbitmq
-  # - core/capabilities/adapters/messaging/bullmq
-  # - core/capabilities/adapters/messaging/bullmq-scheduler
-  # - core/capabilities/adapters/messaging/eventemitter
-  # - core/capabilities/adapters-web
-
-  # # CLI packages
-  # - core/cli/keycloak-bootstrap
-
-  # # Proprietary packages
-  # - core/proprietary/tenancy
-  # - core/proprietary/adapters/database/postgres-tenancy
-
-  # - core/snippets
+  - 'mcp_oxlayer/**'

@@ -7,6 +7,7 @@
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import type { CapabilityLimits } from '../types/index.js';
+import ora from 'ora';
 
 /**
  * Print an info message
@@ -87,7 +88,6 @@ export function printList(items: string[]): void {
  * Create a spinner for long-running operations
  */
 export function createSpinner(text: string) {
-  const ora = (await import('ora')).default;
   return ora({
     text,
     color: 'blue',
@@ -98,7 +98,7 @@ export function createSpinner(text: string) {
  * Ask for confirmation
  */
 export async function confirm(message: string): Promise<boolean> {
-  const { default: prompts } = await import('confirms');
+  const { default: prompts } = await import('prompts');
   const result = await prompts.confirm({
     message,
     default: false,
@@ -144,18 +144,6 @@ export function formatDuration(ms: number): string {
  */
 export function printBanner(): void {
   console.log();
-  console.log(
-    chalk.cyan.bold(
-      `
-   ____  __  __          _____ _
-  |  _ \\|  \\/  |   /\\   / ____| |
-  | |_) | \\  / |  /  \\ | |    | |
-  |  _ <| |\\/| | / /\\ \\| |    | |
-  | |_) | |  | |/ ____ \\ |____| |____
-  |____/|_|  |_/_/    \\_\\_____|______|
-  `
-    )
-  );
-  console.log(chalk.gray('  Private SDK Distribution Control Panel'));
+  console.log(chalk.gray('Oxlayer CLI'));
   console.log();
 }

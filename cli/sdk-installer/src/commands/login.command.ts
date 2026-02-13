@@ -36,6 +36,7 @@ export async function login(options: LoginOptions = {}): Promise<void> {
   const deviceName = await getDeviceName();
   info(`Device: ${deviceName}`);
   info(`Environment: ${options.environment || 'development'}`);
+  info(`API Endpoint: ${options.apiEndpoint || process.env.OXLAYER_API_ENDPOINT}`);
   console.log();
 
   // Step 1: Initiate device authorization
@@ -46,7 +47,7 @@ export async function login(options: LoginOptions = {}): Promise<void> {
   try {
     deviceCodeResponse = await initiateDeviceAuth(
       options.environment || 'development',
-      options.apiEndpoint
+      options.apiEndpoint || process.env.OXLAYER_API_ENDPOINT
     );
     spinner.succeed('Device authorization initiated');
   } catch (err) {
