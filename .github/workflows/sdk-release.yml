@@ -487,7 +487,10 @@ jobs:
           # Configure mc alias for R2/S3 endpoint
           mc alias set r2 "$AWS_ENDPOINT_CLEAN" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY" --api S3v4
 
-          # Upload release files using mc mirror
+          # Upload the zip archive first
+          mc cp "release-sdk/oxlayer-sdk-${VERSION}.zip" "r2/$AWS_BUCKET_NAME/$RELEASE_PATH/"
+
+          # Upload release directory contents using mc mirror
           mc mirror --overwrite --remove "release-sdk/$VERSION/" "r2/$AWS_BUCKET_NAME/$RELEASE_PATH/"
 
           echo "✅ Uploaded to: $RELEASE_PATH"
