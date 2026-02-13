@@ -7,6 +7,7 @@
  * - Allows multiple releases per day (NNN = daily increment)
  * - Provides easy rollback capability
  * - Creates a clean audit trail
+ * - Syncs with GitHub releases to avoid conflicts
  *
  * Usage:
  *   node scripts/sdk-release/generate-version.ts
@@ -17,6 +18,7 @@
 
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import { execSync } from 'child_process';
 
 interface VersionState {
   lastVersion: string;
@@ -30,6 +32,37 @@ function getCurrentDateStr(): string {
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
   return `${year}_${month}_${day}`;
+}
+
+/**
+ * Get the highest version number for today from GitHub releases
+ * Returns 0 if no releases exist for today
+ */
+function getLatestIncrementForToday(datePrefix: string): number {
+  try {
+    // Get all tags matching today's date pattern
+    const tags = execSync(
+      `git tag -l "${datePrefix}_*" --sort=-v:refname`,
+      { encoding: 'utf-8' }
+    ).trim().split('\n').filter(Boolean);
+
+    if (tags.length === 0) {
+      return 0;
+    }
+
+    // Extract increment numbers and find the highest
+    const increments = tags
+      .map(tag => {
+        const match = tag.match(/_(\d+)$/);
+        return match ? parseInt(match[1], 10) : 0;
+      })
+      .filter(n => n > 0);
+
+    return increments.length > 0 ? Math.max(...increments) : 0;
+  } catch (e) {
+    // If git command fails, return 0
+    return 0;
+  }
 }
 
 function generateVersion(): string {
@@ -59,6 +92,14 @@ function generateVersion(): string {
   } else {
     // New day, reset counter
     state.count = 1;
+  }
+
+  // IMPORTANT: Check GitHub for existing releases with today's date
+  // This handles cases where local state is out of sync with remote
+  const gitIncrement = getLatestIncrementForToday(currentDateStr);
+  if (gitIncrement > 0) {
+    // Use the higher of: local state + 1, or GitHub's latest + 1
+    state.count = Math.max(state.count, gitIncrement + 1);
   }
 
   // Generate version string
