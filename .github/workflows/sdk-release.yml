@@ -475,9 +475,14 @@ jobs:
         run: |
           VERSION="${{ needs.generate-version.outputs.version }}"
           RELEASE_PATH="capabilities-sdk/releases/$VERSION"
+          ZIP_FILE="oxlayer-sdk-${VERSION}.zip"
+          RELEASE_DIR="release-sdk/$VERSION"
+          ZIP_PATH="${RELEASE_DIR}/${ZIP_FILE}"
 
           # Extract scheme and host from AWS_ENDPOINT_URL (strip any path component)
           # mc requires URL format: scheme://host[:port]/ without resource component
+          # Note: set +x to avoid echoing secrets in logs
+          set +x
           AWS_ENDPOINT_CLEAN=$(echo "$AWS_ENDPOINT_URL" | sed -E 's|^([^/]*://[^/]*)/.*$|\1|')
           # Ensure trailing slash
           AWS_ENDPOINT_CLEAN="${AWS_ENDPOINT_CLEAN}/"
@@ -485,11 +490,11 @@ jobs:
           # Configure mc alias for R2/S3 endpoint
           mc alias set r2 "$AWS_ENDPOINT_CLEAN" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY" --api S3v4
 
-          # Upload the zip archive first
-          mc cp "release-sdk/oxlayer-sdk-${VERSION}.zip" "r2/$AWS_BUCKET_NAME/$RELEASE_PATH/"
+          # Upload zip archive first
+          mc cp "${ZIP_PATH}" "r2/$AWS_BUCKET_NAME/$RELEASE_PATH/"
 
           # Upload release directory contents using mc mirror
-          mc mirror --overwrite --remove "release-sdk/$VERSION/" "r2/$AWS_BUCKET_NAME/$RELEASE_PATH/"
+          mc mirror --overwrite --remove "${RELEASE_DIR}/" "r2/$AWS_BUCKET_NAME/$RELEASE_PATH/"
 
           echo "✅ Uploaded to: $RELEASE_PATH"
 
