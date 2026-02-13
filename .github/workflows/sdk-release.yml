@@ -476,8 +476,16 @@ jobs:
           VERSION="${{ needs.generate-version.outputs.version }}"
           RELEASE_PATH="capabilities-sdk/releases/$VERSION"
 
+          # Extract scheme and host from AWS_ENDPOINT_URL (strip any path component)
+          # mc requires URL format: scheme://host[:port]/ without resource component
+          AWS_ENDPOINT_CLEAN=$(echo "$AWS_ENDPOINT_URL" | sed -E 's|^([^/]*://[^/]*)/.*$|\1|')
+          # Ensure trailing slash
+          AWS_ENDPOINT_CLEAN="${AWS_ENDPOINT_CLEAN}/"
+
+          echo "Using endpoint: $AWS_ENDPOINT_CLEAN"
+
           # Configure mc alias for R2/S3 endpoint
-          mc alias set r2 "$AWS_ENDPOINT_URL" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY" --api S3v4
+          mc alias set r2 "$AWS_ENDPOINT_CLEAN" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY" --api S3v4
 
           # Upload release files using mc mirror
           mc mirror --overwrite --remove "release-sdk/$VERSION/" "r2/$AWS_BUCKET_NAME/$RELEASE_PATH/"
