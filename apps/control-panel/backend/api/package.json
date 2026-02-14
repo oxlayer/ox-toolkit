@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "bun src/index.ts",
+    "dev": "bin/dev.sh",
+    "dev:bare": "bun src/index.ts",
     "keycloak": "node ./node_modules/@oxlayer/cli-keycloak-bootstrap/dist/bin/index.js bootstrap --config keycloak.config.json",
     "build": "tsup",
     "build:with-client": "tsup && pnpm run generate:client",
