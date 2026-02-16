@@ -125,7 +125,7 @@ export async function login(options: LoginOptions = {}): Promise<void> {
       tokenInfo: result.tokenInfo!,
       organizationId: result.organizationId!,
       environment: options.environment || 'development',
-      vendorDir: '.capabilities-vendor',
+      vendorDir: '.ox',
       apiEndpoint: apiEndpoint,
       updatedAt: new Date().toISOString(),
     };

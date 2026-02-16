@@ -1,10 +1,14 @@
 {
   "name": "@oxlayer/cli",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "description": "OxLayer CLI - Install and manage OxLayer SDK packages",
   "bin": {
-    "oxlayer": "./dist/cli.js"
+    "ox": "./dist/cli.js"
   },
   "files": [
     "dist",
@@ -13,9 +17,10 @@
   "scripts": {
     "dev": "bun src/cli.ts",
     "build": "tsup",
+    "build:obfuscated": "tsup && bun scripts/obfuscate.ts",
     "start": "node dist/cli.js",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "bun run build:obfuscated"
   },
   "dependencies": {
     "commander": "^12.1.0",
@@ -35,6 +40,7 @@
     "@types/prompts": "^2.4.9",
     "tsup": "^8.3.5",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "javascript-obfuscator": "^4.1.1"
   }
 }
