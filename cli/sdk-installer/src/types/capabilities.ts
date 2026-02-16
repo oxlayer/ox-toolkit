@@ -249,9 +249,15 @@ export interface PackageDownloadResponse {
   /** URL expiration */
   expiresAt: string;
 
+  /** Resolved version (e.g., '2026_02_14_001') */
+  version: string;
+
+  /** Package type */
+  packageType: string;
+
   /** Package checksum */
-  checksum: string;
+  checksum?: string;
 
   /** Package size in bytes */
-  size: number;
+  size?: number;
 }

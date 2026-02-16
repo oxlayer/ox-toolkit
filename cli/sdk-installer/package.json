@@ -1,16 +1,21 @@
 {
-  "name": "@oxlayer/sdk-installer",
+  "name": "@oxlayer/cli",
   "version": "0.0.1",
   "type": "module",
-  "description": "OxLayer SDK Installer - Download and install private SDK packages",
+  "description": "OxLayer CLI - Install and manage OxLayer SDK packages",
   "bin": {
     "oxlayer": "./dist/cli.js"
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "dev": "bun src/cli.ts",
     "build": "tsup",
     "start": "node dist/cli.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
   },
   "dependencies": {
     "commander": "^12.1.0",

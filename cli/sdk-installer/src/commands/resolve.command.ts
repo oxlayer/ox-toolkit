@@ -45,17 +45,6 @@ export async function resolve(options: ResolveOptions = {}): Promise<void> {
     case 'frontend':
       capabilitiesToRequest.push('auth', 'storage');
       break;
-    case 'fullstack':
-      capabilitiesToRequest.push(
-        'auth',
-        'storage',
-        'cache',
-        'events',
-        'queues',
-        'metrics',
-        'telemetry'
-      );
-      break;
     default:
       // Request all capabilities for unknown projects
       capabilitiesToRequest.push(
