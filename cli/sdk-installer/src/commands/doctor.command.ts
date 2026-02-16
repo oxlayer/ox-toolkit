@@ -43,7 +43,7 @@ async function runDiagnostics(options: DoctorOptions): Promise<DiagnosticResult[
       name: 'Authentication',
       status: 'fail',
       message: 'Not authenticated',
-      fix: 'Run: oxlayer login',
+      fix: 'Run: ox login',
     });
   }
 
@@ -123,7 +123,7 @@ async function runDiagnostics(options: DoctorOptions): Promise<DiagnosticResult[
         name: 'SDK Installation',
         status: 'warn',
         message: `SDK version ${installedVersion} incomplete (missing manifest)`,
-        fix: 'Run: oxlayer install --force',
+        fix: 'Run: ox install --force',
       });
     }
   } else {
@@ -131,7 +131,7 @@ async function runDiagnostics(options: DoctorOptions): Promise<DiagnosticResult[
       name: 'SDK Installation',
       status: 'warn',
       message: 'No SDK installed',
-      fix: 'Run: oxlayer install',
+      fix: 'Run: ox install',
     });
   }
 
@@ -139,7 +139,7 @@ async function runDiagnostics(options: DoctorOptions): Promise<DiagnosticResult[
   const gitignorePath = join(process.cwd(), '.gitignore');
   if (existsSync(gitignorePath)) {
     const gitignoreContent = await import('fs/promises').then(fs => fs.readFile(gitignorePath, 'utf-8'));
-    const hasVendorIgnore = gitignoreContent.includes('.capabilities-vendor');
+    const hasVendorIgnore = gitignoreContent.includes('.ox');
 
     if (hasVendorIgnore) {
       results.push({
@@ -152,7 +152,7 @@ async function runDiagnostics(options: DoctorOptions): Promise<DiagnosticResult[
         name: '.gitignore',
         status: 'warn',
         message: 'Vendor directory not in .gitignore',
-        fix: 'Add ".capabilities-vendor/" to .gitignore',
+        fix: 'Add ".ox/" to .gitignore',
       });
     }
   } else {
@@ -160,7 +160,7 @@ async function runDiagnostics(options: DoctorOptions): Promise<DiagnosticResult[
       name: '.gitignore',
       status: 'warn',
       message: 'No .gitignore found',
-      fix: 'Create .gitignore and add ".capabilities-vendor/"',
+      fix: 'Create .gitignore and add ".ox/"',
     });
   }
 
@@ -176,7 +176,7 @@ async function runDiagnostics(options: DoctorOptions): Promise<DiagnosticResult[
       name: 'Environment Variables',
       status: 'warn',
       message: 'No API key in environment or config',
-      fix: 'Set OXLAYER_API_KEY or run: oxlayer login',
+      fix: 'Set OXLAYER_API_KEY or run: ox login',
     });
   }
 

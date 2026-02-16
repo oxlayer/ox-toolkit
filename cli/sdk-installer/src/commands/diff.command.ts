@@ -251,7 +251,7 @@ export async function showLatest(): Promise<void> {
     if (installed !== latest) {
       console.log();
       success('New version available!');
-      info(`Run: oxlayer install ${latest}`);
+      info(`Run: ox install ${latest}`);
     } else if (installed) {
       console.log();
       success('You\'re up to date!');

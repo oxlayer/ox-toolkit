@@ -5,13 +5,13 @@ A command-line tool for downloading and installing OxLayer SDK packages.
 ## Installation
 
 ```bash
-npm install -g @oxlayer/sdk-installer
+npm install -g @oxlayer/cli
 ```
 
 Or use without installing:
 
 ```bash
-npx @oxlayer/sdk-installer <command>
+npx @oxlayer/cli <command>
 ```
 
 ## Commands

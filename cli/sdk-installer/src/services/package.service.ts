@@ -125,7 +125,7 @@ export async function hasPackageJson(cwd: string = process.cwd()): Promise<boole
  * Get the vendor directory path for a specific version
  */
 export function getVendorDir(version: string, cwd: string = process.cwd()): string {
-  return join(cwd, '.capabilities-vendor', version);
+  return join(cwd, '.ox', version);
 }
 
 /**
@@ -149,7 +149,7 @@ export async function isVersionInstalled(
  * Get the currently installed version (if any)
  */
 export async function getInstalledVersion(cwd: string = process.cwd()): Promise<string | null> {
-  const vendorDir = join(cwd, '.capabilities-vendor');
+  const vendorDir = join(cwd, '.ox');
 
   try {
     const versions = await fs.readdir(vendorDir);

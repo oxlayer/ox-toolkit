@@ -15,8 +15,7 @@ import { header, success, error, info, createSpinner, formatDuration } from '../
 import type { InstallOptions, SdkPackageType } from '../types/index.js';
 import { loadConfig, isTokenExpired } from '../services/device-auth.service.js';
 
-const VENDOR_DIR = '.capabilities-vendor';
-const CAPABILITIES_DIR = '.capabilities';
+const VENDOR_DIR = '.ox';
 
 /**
  * Resolve which packages to install based on project type
@@ -41,43 +40,68 @@ function resolvePackagesToInstall(
 }
 
 /**
- * Generate package.json for the SDK workspace package
+ * Convert version format to semver-compatible format
+ * e.g., 2026_02_14_001 → 2026.2.14-1
  */
-function generatePackageJson(version: string, manifest: any): string {
-  // Build exports map from manifest packages
-  const exports: Record<string, string> = {};
-  const dependencies: Record<string, string> = {};
+function toSemverVersion(version: string): string {
+  const parts = version.split('_');
+  if (parts.length === 4) {
+    const [year, month, day, build] = parts;
+    return `${year}.${parseInt(month, 10)}.${parseInt(day, 10)}-${parseInt(build, 10)}`;
+  }
+  return version;
+}
+
+/**
+ * Create individual package.json files for each sub-package
+ * This allows importing from @oxlayer/capabilities-auth, etc.
+ * Preserves existing dependencies from the SDK's package.json files.
+ */
+async function createSubPackageJsons(vendorVersionDir: string, manifest: any): Promise<void> {
+  const semverVersion = toSemverVersion(manifest.version);
 
   for (const [name, pkg] of Object.entries(manifest.packages) as [string, any][]) {
-    const relativePath = pkg.path;
-    exports[name] = `./${relativePath}`;
-    dependencies[name] = `workspace:*`;
+    const packageDir = join(vendorVersionDir, pkg.path);
+    const packageJsonPath = join(packageDir, 'package.json');
 
-    // Also export sub-paths for better DX
-    const parts = name.split('/').slice(1); // Remove @oxlayer prefix
-    if (parts.length > 1) {
-      const subPath = parts.join('-');
-      exports[`@oxlayer/${subPath}`] = `./${relativePath}`;
+    // Read existing package.json to preserve dependencies
+    let existingDeps: Record<string, string> = {};
+    try {
+      const existingContent = await fs.readFile(packageJsonPath, 'utf-8');
+      const existingPkg = JSON.parse(existingContent);
+      existingDeps = existingPkg.dependencies || {};
+    } catch {
+      // File doesn't exist or invalid JSON, that's okay
     }
-  }
 
-  return JSON.stringify({
-    name: '@oxlayer/sdk-workspace',
-    version: version,
-    private: true,
-    description: `OxLayer SDK v${version} - Local workspace package`,
-    type: 'module',
-    exports,
-    dependencies,
-  }, null, 2);
+    const packageJson = {
+      name: name,
+      version: semverVersion,
+      private: true,
+      type: 'module',
+      main: pkg.main || './dist/index.js',
+      dependencies: existingDeps,
+      exports: {
+        '.': {
+          types: pkg.main?.replace('.js', '.d.ts') || './dist/index.d.ts',
+          default: pkg.main || './dist/index.js'
+        },
+        './package.json': './package.json'
+      }
+    };
+
+    await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n', 'utf-8');
+  }
 }
 
 /**
  * Update or create pnpm-workspace.yaml to include vendor directory
  */
-async function updateWorkspaceConfig(rootDir: string, vendorVersionDir: string): Promise<void> {
+async function updateWorkspaceConfig(rootDir: string): Promise<void> {
   const workspacePath = join(rootDir, 'pnpm-workspace.yaml');
-  const relativeVendorPath = vendorVersionDir.replace(rootDir + '/', '').replace(/^\//, '');
+  // Workspace patterns
+  const includePattern = '.ox/**';
+  const excludePattern = '!.ox/**/node_modules/**';
 
   let workspaceConfig: { packages?: string[] };
 
@@ -98,58 +122,16 @@ async function updateWorkspaceConfig(rootDir: string, vendorVersionDir: string):
     workspaceConfig = { packages: [] };
   }
 
-  // Add vendor path if not already present
-  if (!workspaceConfig.packages?.includes(relativeVendorPath)) {
-    workspaceConfig.packages = [...(workspaceConfig.packages || []), relativeVendorPath];
-
-    const yamlContent = `packages:\n${workspaceConfig.packages.map(p => `  - '${p}'`).join('\n')}\n`;
-    await fs.writeFile(workspacePath, yamlContent, 'utf-8');
-  }
-}
-
-/**
- * Create or update the 'current' symlink
- */
-async function updateCurrentSymlink(baseDir: string, version: string): Promise<void> {
-  const currentPath = join(baseDir, 'current');
-  const versionPath = join(baseDir, version);
-
-  try {
-    // Remove existing symlink
-    await fs.unlink(currentPath);
-  } catch {
-    // Doesn't exist, that's fine
-  }
-
-  // Create new symlink
-  await fs.symlink(versionPath, currentPath, 'dir');
-}
-
-/**
- * Add workspace dependency to project's package.json
- */
-async function addWorkspaceDependency(rootDir: string, vendorVersionPath: string): Promise<void> {
-  const packageJsonPath = join(rootDir, 'package.json');
-
-  try {
-    const content = await fs.readFile(packageJsonPath, 'utf-8');
-    const pkg = JSON.parse(content);
-
-    // Add @oxlayer/sdk-workspace as a workspace dependency
-    if (!pkg.dependencies) {
-      pkg.dependencies = {};
+  // Add patterns if not already present
+  const patternsToAdd = [includePattern, excludePattern];
+  for (const pattern of patternsToAdd) {
+    if (!workspaceConfig.packages || !workspaceConfig.packages.includes(pattern)) {
+      workspaceConfig.packages = [...(workspaceConfig.packages || []), pattern];
     }
-
-    // Only add if not already present
-    if (!pkg.dependencies['@oxlayer/sdk-workspace']) {
-      pkg.dependencies['@oxlayer/sdk-workspace'] = 'workspace:*';
-    }
-
-    // Write back with proper formatting
-    await fs.writeFile(packageJsonPath, JSON.stringify(pkg, null, 2) + '\n', 'utf-8');
-  } catch (err) {
-    throw new Error(`Failed to update package.json: ${err instanceof Error ? err.message : 'Unknown error'}`);
   }
+
+  const yamlContent = `packages:\n${workspaceConfig.packages.map(p => `  - '${p}'`).join('\n')}\n`;
+  await fs.writeFile(workspacePath, yamlContent, 'utf-8');
 }
 
 /**
@@ -190,14 +172,14 @@ export async function install(version: string, options: InstallOptions = {}): Pr
 
     if (!config || !config.token) {
       authSpinner.fail('Authentication required');
-      error('Please run: oxlayer login');
+      error('Please run: ox login');
       process.exit(1);
     }
 
     // Check if token is expired
     if (isTokenExpired(config)) {
       authSpinner.fail('Token expired');
-      error('Your authentication token has expired. Please run: oxlayer login');
+      error('Your authentication token has expired. Please run: ox login');
       process.exit(1);
     }
 
@@ -278,10 +260,8 @@ export async function install(version: string, options: InstallOptions = {}): Pr
     // Copy all package contents to vendor directory
     await copyDirectory(extractedBase, vendorVersionDir);
 
-    // Generate package.json for the workspace
-    const packageJsonPath = join(vendorVersionDir, 'package.json');
-    const packageJsonContent = generatePackageJson(resolvedVersion, manifest);
-    await fs.writeFile(packageJsonPath, packageJsonContent, 'utf-8');
+    // Create individual package.json files for each sub-package
+    await createSubPackageJsons(vendorVersionDir, manifest);
 
     extractSpinner.succeed('Extracted SDK');
 
@@ -289,13 +269,7 @@ export async function install(version: string, options: InstallOptions = {}): Pr
     const workspaceSpinner = createSpinner('Configuring workspace...');
     workspaceSpinner.start();
 
-    await updateWorkspaceConfig(rootDir, vendorVersionDir);
-
-    // Update 'current' symlink
-    await updateCurrentSymlink(vendorBaseDir, resolvedVersion);
-
-    // Add workspace dependency to project's package.json
-    await addWorkspaceDependency(rootDir, vendorVersionDir);
+    await updateWorkspaceConfig(rootDir);
 
     workspaceSpinner.succeed('Workspace configured');
 
@@ -316,7 +290,6 @@ export async function install(version: string, options: InstallOptions = {}): Pr
   success(`SDK version ${resolvedVersion} installed successfully`);
   info(`Duration: ${formatDuration(duration)}`);
   info(`Workspace: ${VENDOR_DIR}/${resolvedVersion}/`);
-  info(`Current link: ${CAPABILITIES_DIR}/current -> ${resolvedVersion}`);
 
   // Auto-run package manager install
   const installSpinner = createSpinner('Running package manager install...');
@@ -333,10 +306,13 @@ export async function install(version: string, options: InstallOptions = {}): Pr
   // Next steps
   console.log();
   info('Next steps:');
-  console.log('  Import in your code:');
-  console.log('       import { SomeCapability } from \'@oxlayer/sdk-workspace\';');
+  console.log('  Add to your package.json:');
+  console.log('       "dependencies": {');
+  console.log('         "@oxlayer/capabilities-auth": "workspace:*"');
+  console.log('       }');
   console.log();
-  console.log(`  To switch SDK versions, update the ${CAPABILITIES_DIR}/current symlink.`);
+  console.log('  Then import in your code:');
+  console.log('       import { SomeCapability } from \'@oxlayer/capabilities-auth\';');
 }
 
 /**

@@ -5,8 +5,14 @@ export default defineConfig({
   format: ['esm'],
   target: 'node22',
   clean: true,
+  splitting: false,
+  minify: true,
+  esbuildOptions(options) {
+    options.keepNames = false;
+    return options;
+  },
   dts: false,
-  sourcemap: true,
+  sourcemap: false,
   shims: true,
   define: {
     // Replace env vars with literals for builds

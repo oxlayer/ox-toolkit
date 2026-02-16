@@ -34,7 +34,7 @@ export async function status(options: StatusOptions = {}): Promise<void> {
     }
   } else {
     error('Not authenticated');
-    info('Run "oxlayer login" to authenticate');
+    info('Run "ox login" to authenticate');
   }
 
   console.log();
@@ -72,7 +72,7 @@ export async function status(options: StatusOptions = {}): Promise<void> {
       }
     } else {
       info('No capability manifest available');
-      info('Run "oxlayer install" to fetch the latest capabilities');
+      info('Run "ox install" to fetch the latest capabilities');
     }
 
     console.log();
@@ -101,14 +101,14 @@ export async function status(options: StatusOptions = {}): Promise<void> {
   const installedVersion = await getInstalledVersion();
   if (installedVersion) {
     success(`SDK version ${installedVersion} installed`);
-    info(`Location: .capabilities-vendor/${installedVersion}/`);
+    info(`Location: .ox/${installedVersion}/`);
 
     if (options.verbose) {
       // List installed packages
       const { existsSync } = await import('fs');
       const { join } = await import('path');
 
-      const vendorDir = join(process.cwd(), '.capabilities-vendor', installedVersion);
+      const vendorDir = join(process.cwd(), '.ox', installedVersion);
 
       if (existsSync(vendorDir)) {
         const { readdir } = await import('fs/promises');
@@ -125,7 +125,7 @@ export async function status(options: StatusOptions = {}): Promise<void> {
     }
   } else {
     info('No SDK installed');
-    info('Run "oxlayer install" to install the SDK');
+    info('Run "ox install" to install the SDK');
   }
 
   console.log();

@@ -460,7 +460,7 @@ export async function migrateFromApiKey(apiKey: string): Promise<CliConfig> {
     tokenInfo: result.tokenInfo,
     organizationId: result.organizationId,
     environment: 'development',
-    vendorDir: '.capabilities-vendor',
+    vendorDir: '.ox',
     updatedAt: new Date().toISOString(),
   };
 }

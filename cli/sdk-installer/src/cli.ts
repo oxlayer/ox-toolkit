@@ -24,8 +24,8 @@ const program = new Command();
 program.addHelpText('beforeAll', getBanner());
 
 program
-  .name('oxlayer')
-  .description('OxLayer SDK Installer - Download and install private SDK packages')
+  .name('ox')
+  .description('OxLayer CLI - Install and manage OxLayer SDK packages')
   .version('0.0.1');
 
 // Login command

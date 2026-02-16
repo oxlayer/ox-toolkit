@@ -108,7 +108,7 @@ export async function resolve(options: ResolveOptions = {}): Promise<void> {
     if (err instanceof Error && err.message.includes('API key')) {
       console.log();
       info('Make sure you\'re authenticated:');
-      console.log('  oxlayer login');
+      console.log('  ox login');
     }
 
     process.exit(1);
