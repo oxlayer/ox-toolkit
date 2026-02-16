@@ -87,7 +87,7 @@ importers:
       '@oxlayer/capabilities-auth':
         specifier: workspace:*
         version: link:../../../../backend/capabilities/auth
-      '@oxlayer/cli-keycloak-bootstrap':
+      '@oxlayer/cli-keycloak':
         specifier: workspace:*
         version: link:../../../../cli/keycloak
       '@oxlayer/foundation-app-kit':

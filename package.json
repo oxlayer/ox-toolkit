@@ -11,7 +11,7 @@
   "scripts": {
     "infra": "cd ./infra_oxlayer && docker-compose up -d",
     "panel": "pnpm --filter @oxlayer/control-panel-dashboard dev",
-    "panel:api": "pnpm --filter @oxlayer/control-panel-api dev",
+    "panel:api": "bws run -- pnpm --filter @oxlayer/control-panel-api dev",
     "backend": "pnpm -r --filter \"./backend/**\" --filter \"!./backend/release/**\" run build",
     "backend:release": "cd ./backend && ./release.sh",
     "frontend": "pnpm -r --filter \"./frontend/**\" --filter \"!./frontend/release/**\" run build",

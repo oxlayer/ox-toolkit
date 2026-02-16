@@ -9,7 +9,7 @@ import { bootstrapCommand, initCommand, validateCommand } from '../src/cli/comma
 const program = new Command();
 
 program
-  .name('keycloak-bootstrap')
+  .name('keycloak')
   .description('Bootstrap Keycloak realms and clients with convention-over-configuration')
   .version('1.0.0');
 

@@ -1,68 +1,4 @@
 services:
-  # Todo App (Development)
-  # todo-app:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.dev
-  #   container_name: oxlayer-todo-app
-  #   environment:
-  #     # Server Configuration
-  #     PORT: 3001
-  #     HOST: 0.0.0.0
-  #     NODE_ENV: development
-
-  #     # Keycloak Authentication
-  #     KEYCLOAK_ENABLED: "true"
-  #     KEYCLOAK_SERVER_URL: http://keycloak:8080
-  #     KEYCLOAK_REALM: oxlayer
-  #     KEYCLOAK_CLIENT_ID: todo-app
-
-  #     # JWT Fallback
-  #     JWT_SECRET: your-secret-key-change-in-production
-
-  #     # PostgreSQL Database
-  #     POSTGRES_HOST: postgres
-  #     POSTGRES_PORT: 5432
-  #     POSTGRES_DATABASE: todo_app
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: postgres
-
-  #     # Redis Cache
-  #     REDIS_HOST: redis
-  #     REDIS_PORT: 6379
-  #     REDIS_PASSWORD:
-  #     REDIS_DB: 0
-
-  #     # RabbitMQ Event Bus
-  #     RABBITMQ_HOST: rabbitmq
-  #     RABBITMQ_PORT: 5672
-  #     RABBITMQ_USERNAME: guest
-  #     RABBITMQ_PASSWORD: guest
-  #     RABBITMQ_VHOST: /
-  #     RABBITMQ_QUEUE: todo.events
-
-  #     # Bitwarden Secrets
-  #     BITWARDEN_ENABLED: "false"
-  #     BITWARDEN_TOKEN:
-  #     BITWARDEN_URL: https://api.bitwarden.com
-  #   ports:
-  #     - "3001:3001"
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #     redis:
-  #       condition: service_healthy
-  #     rabbitmq:
-  #       condition: service_healthy
-  #     keycloak:
-  #       condition: service_healthy
-  #   volumes:
-  #     - .:/app
-  #     - /app/node_modules
-  #   networks:
-  #     - oxlayer-network
-  #   restart: unless-stopped
-
   # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
@@ -177,7 +113,15 @@ services:
       - oxlayer-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/realms/oxlayer/.well-known/openid-configuration"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8080/realms/oxlayer/.well-known/openid-configuration",
+        ]
       interval: 10s
       timeout: 5s
       retries: 3

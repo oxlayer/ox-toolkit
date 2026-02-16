@@ -5,10 +5,10 @@
  * using Keycloak Organizations for multi-tenancy.
  *
  * Usage:
- *   npx @oxlayer/cli-keycloak-bootstrap --config config.shared.ts
+ *   npx @oxlayer/cli-keycloak --config config.shared.ts
  */
 
-import { defineConfig } from '@oxlayer/cli-keycloak-bootstrap/templates';
+import { defineConfig } from '@oxlayer/cli-keycloak/templates';
 
 export default defineConfig({
   keycloak: {
