@@ -50,21 +50,25 @@ export async function status(options: StatusOptions = {}): Promise<void> {
       info(`License: ${manifest.licenseId}`);
       info(`Environment: ${manifest.environment}`);
 
-      const capabilityCount = Object.keys(manifest.capabilities).length;
-      info(`Available Capabilities: ${capabilityCount}`);
+      if (manifest.capabilities) {
+        const capabilityCount = Object.keys(manifest.capabilities).length;
+        info(`Available Capabilities: ${capabilityCount}`);
 
-      if (options.verbose) {
-        const capabilityNames = Object.keys(manifest.capabilities);
-        if (capabilityNames.length > 0) {
-          info('Capabilities:');
-          printList(capabilityNames);
+        if (options.verbose) {
+          const capabilityNames = Object.keys(manifest.capabilities);
+          if (capabilityNames.length > 0) {
+            info('Capabilities:');
+            printList(capabilityNames);
+          }
+
+          // Show manifest expiration
+          const manifestExpires = new Date(manifest.expiresAt);
+          const now = new Date();
+          const daysUntilExpiry = Math.ceil((manifestExpires.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          info(`Manifest Expires: ${manifestExpires.toLocaleString()} (${daysUntilExpiry > 0 ? `in ${daysUntilExpiry} days` : 'expired'})`);
         }
-
-        // Show manifest expiration
-        const manifestExpires = new Date(manifest.expiresAt);
-        const now = new Date();
-        const daysUntilExpiry = Math.ceil((manifestExpires.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        info(`Manifest Expires: ${manifestExpires.toLocaleString()} (${daysUntilExpiry > 0 ? `in ${daysUntilExpiry} days` : 'expired'})`);
+      } else {
+        info('No capabilities available in manifest');
       }
     } else {
       info('No capability manifest available');

@@ -362,7 +362,7 @@ export class CapabilityResolutionService {
 
     const command = new GetObjectCommand({
       Bucket: bucketName,
-      Key: key.replace("oxlayer-sdk/", "/"),
+      Key: key,
     });
 
     // Generate URL that expires in 5 minutes
