@@ -24,6 +24,7 @@
     "@oxlayer/foundation-http-kit": "workspace:*",
     "@oxlayer/capabilities-events": "workspace:*",
     "@oxlayer/capabilities-telemetry": "workspace:*",
+    "drizzle-orm": "^0.45.1",
     "zod": "^3.22.0",
     "hono": "^4.0.0"
   },
