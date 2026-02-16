@@ -3,7 +3,45 @@
 set -e
 
 VERSION="2.0.0"
-URL="https://github.com/bitwarden/sdk-sm/releases/download/bws-v${VERSION}/bws-x86_64-apple-darwin-${VERSION}.zip"
+
+# Detect OS and set appropriate download URL
+OS="$(uname -s)"
+ARCH="$(uname -m)"
+
+case "$OS" in
+  Linux)
+    case "$ARCH" in
+      x86_64)
+        URL="https://github.com/bitwarden/sdk-sm/releases/download/bws-v${VERSION}/bws-x86_64-unknown-linux-gnu-${VERSION}.zip"
+        ;;
+      aarch64)
+        URL="https://github.com/bitwarden/sdk-sm/releases/download/bws-v${VERSION}/bws-aarch64-unknown-linux-gnu-${VERSION}.zip"
+        ;;
+      *)
+        echo "Unsupported architecture: $ARCH"
+        exit 1
+        ;;
+    esac
+    ;;
+  Darwin)
+    case "$ARCH" in
+      x86_64)
+        URL="https://github.com/bitwarden/sdk-sm/releases/download/bws-v${VERSION}/bws-x86_64-apple-darwin-${VERSION}.zip"
+        ;;
+      arm64)
+        URL="https://github.com/bitwarden/sdk-sm/releases/download/bws-v${VERSION}/bws-aarch64-apple-darwin-${VERSION}.zip"
+        ;;
+      *)
+        echo "Unsupported architecture: $ARCH"
+        exit 1
+        ;;
+    esac
+    ;;
+  *)
+    echo "Unsupported OS: $OS"
+    exit 1
+    ;;
+esac
 BIN_DIR="$HOME/user/bin"
 TMP_DIR="$(mktemp -d)"
 

@@ -56,7 +56,7 @@ This document outlines the implementation of a **platform-grade, multi-realm, mu
 
 ### 1.1 Add Multi-Realm Support
 
-**File: `core/cli/keycloak-bootstrap/src/config/schema.ts`**
+**File: `core/cli/keycloak/src/config/schema.ts`**
 
 ```typescript
 // Add realm type enum
@@ -92,7 +92,7 @@ export const RealmSchema = z.object({
 
 ### 1.2 Add Protocol Mappers Configuration
 
-**File: `core/cli/keycloak-bootstrap/src/config/schema.ts`**
+**File: `core/cli/keycloak/src/config/schema.ts`**
 
 ```typescript
 export const ProtocolMapperConfigSchema = z.object({
@@ -166,7 +166,7 @@ export const MULTI_TENANT_MAPPERS = {
 
 ### 1.3 Update Blueprints for Platform and Client Realms
 
-**File: `core/cli/keycloak-bootstrap/src/config/blueprints.ts`**
+**File: `core/cli/keycloak/src/config/blueprints.ts`**
 
 ```typescript
 export const BLUEPRINTS: Record<string, BlueprintConfig> = {
@@ -226,7 +226,7 @@ export const BLUEPRINTS: Record<string, BlueprintConfig> = {
 
 ### 1.4 Add Organization and Workspace Management
 
-**File: `core/cli/keycloak-bootstrap/src/keycloak/organizations.ts`** (NEW)
+**File: `core/cli/keycloak/src/keycloak/organizations.ts`** (NEW)
 
 ```typescript
 import type { KeycloakConnectionConfig, OrganizationConfig, WorkspaceConfig } from '../types/config.js';

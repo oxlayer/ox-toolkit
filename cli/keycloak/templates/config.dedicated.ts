@@ -5,10 +5,10 @@
  * with isolated identity, custom security settings, and multiple client types.
  *
  * Usage:
- *   npx @oxlayer/cli-keycloak-bootstrap --config config.dedicated.ts
+ *   npx @oxlayer/cli-keycloak --config config.dedicated.ts
  */
 
-import { defineConfig } from '@oxlayer/cli-keycloak-bootstrap/templates';
+import { defineConfig } from '@oxlayer/cli-keycloak/templates';
 
 export default defineConfig({
   extends: 'enterprise', // Use enterprise blueprint

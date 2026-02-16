@@ -1,4 +1,4 @@
-# @oxlayer/cli-keycloak-bootstrap
+# @oxlayer/cli-keycloak
 
 Bootstrapping Keycloak realms and clients with convention-over-configuration for the OxLayer framework.
 
@@ -19,30 +19,30 @@ Bootstrapping Keycloak realms and clients with convention-over-configuration for
 
 ```bash
 # Install globally
-npm install -g @oxlayer/cli-keycloak-bootstrap
+npm install -g @oxlayer/cli-keycloak
 
 # Or use with npx (no installation needed)
-npx @oxlayer/cli-keycloak-bootstrap
+npx @oxlayer/cli-keycloak
 ```
 
 ### Generate Sample Configuration
 
 ```bash
 # Generate JSON config (recommended for npx usage)
-npx @oxlayer/cli-keycloak-bootstrap init --output keycloak.config.json
+npx @oxlayer/cli-keycloak init --output keycloak.config.json
 
 # Generate YAML config
-npx @oxlayer/cli-keycloak-bootstrap init --output keycloak.config.yaml
+npx @oxlayer/cli-keycloak init --output keycloak.config.yaml
 
 # Generate TypeScript config (requires local package installation)
-npx @oxlayer/cli-keycloak-bootstrap init --format ts --output keycloak.config.ts
+npx @oxlayer/cli-keycloak init --format ts --output keycloak.config.ts
 ```
 
 ### Bootstrap Keycloak
 
 ```bash
 # With JSON config (works with npx!)
-npx @oxlayer/cli-keycloak-bootstrap bootstrap --config keycloak.config.json --env-file .env
+npx @oxlayer/cli-keycloak bootstrap --config keycloak.config.json --env-file .env
 ```
 
 ## Configuration
@@ -149,11 +149,11 @@ roles:
 For TypeScript configs, you need to install the package locally:
 
 ```bash
-npm install --save-dev @oxlayer/cli-keycloak-bootstrap
+npm install --save-dev @oxlayer/cli-keycloak
 ```
 
 ```typescript
-import { defineConfig } from '@oxlayer/cli-keycloak-bootstrap/templates';
+import { defineConfig } from '@oxlayer/cli-keycloak/templates';
 
 export default defineConfig({
   keycloak: {
@@ -197,7 +197,7 @@ export default defineConfig({
 ### `bootstrap` - Bootstrap Keycloak
 
 ```bash
-keycloak-bootstrap bootstrap [options]
+keycloak bootstrap [options]
 
 Options:
   -c, --config <path>      Configuration file (default: keycloak.config.json)
@@ -213,7 +213,7 @@ Options:
 ### `init` - Generate Sample Configuration
 
 ```bash
-keycloak-bootstrap init [options]
+keycloak init [options]
 
 Options:
   -o, --output <path>     Output file (default: keycloak.config.json)
@@ -224,7 +224,7 @@ Options:
 ### `validate` - Validate Configuration
 
 ```bash
-keycloak-bootstrap validate [options]
+keycloak validate [options]
 
 Options:
   -c, --config <path>     Configuration file (default: keycloak.config.json)
@@ -246,14 +246,14 @@ FRONTEND_URL=http://localhost:3000
 Then run:
 
 ```bash
-keycloak-bootstrap bootstrap --config keycloak.config.json --env-file .env
+keycloak bootstrap --config keycloak.config.json --env-file .env
 ```
 
 ### Using npx (No Installation)
 
 ```bash
 # Generate config
-npx @oxlayer/cli-keycloak-bootstrap init --output keycloak.config.json
+npx @oxlayer/cli-keycloak init --output keycloak.config.json
 
 # Create .env file with your credentials
 echo "KEYCLOAK_URL=http://localhost:8080" > .env
@@ -261,19 +261,19 @@ echo "KEYCLOAK_ADMIN=admin" >> .env
 echo "KEYCLOAK_ADMIN_PASSWORD=admin" >> .env
 
 # Bootstrap Keycloak
-npx @oxlayer/cli-keycloak-bootstrap bootstrap --config keycloak.config.json --env-file .env
+npx @oxlayer/cli-keycloak bootstrap --config keycloak.config.json --env-file .env
 ```
 
 ### Dry Run (Preview Changes)
 
 ```bash
-keycloak-bootstrap bootstrap --config keycloak.config.json --dry-run
+keycloak bootstrap --config keycloak.config.json --dry-run
 ```
 
 ### Force Re-create Resources
 
 ```bash
-keycloak-bootstrap bootstrap --config keycloak.config.json --force
+keycloak bootstrap --config keycloak.config.json --force
 ```
 
 ## Client Templates
@@ -350,7 +350,7 @@ See [examples/todo-app/keycloak.config.json](../../examples/todo-app/keycloak.co
 ### Enterprise (ACME Corporation)
 
 ```bash
-npx @oxlayer/cli-keycloak-bootstrap init --type dedicated --output enterprise-acme.json
+npx @oxlayer/cli-keycloak init --type dedicated --output enterprise-acme.json
 ```
 
 ## Programmatic Usage
@@ -358,9 +358,9 @@ npx @oxlayer/cli-keycloak-bootstrap init --type dedicated --output enterprise-ac
 You can also use the CLI as a library:
 
 ```typescript
-import { loadConfig } from '@oxlayer/cli-keycloak-bootstrap';
-import { KeycloakAdminClient } from '@oxlayer/cli-keycloak-bootstrap';
-import { BootstrapEngine } from '@oxlayer/cli-keycloak-bootstrap';
+import { loadConfig } from '@oxlayer/cli-keycloak';
+import { KeycloakAdminClient } from '@oxlayer/cli-keycloak';
+import { BootstrapEngine } from '@oxlayer/cli-keycloak';
 
 const config = await loadConfig('./keycloak.config.json');
 const keycloak = new KeycloakAdminClient(config.keycloak);
@@ -386,7 +386,7 @@ services:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
 
-  keycloak-bootstrap:
+  keycloak:
     image: node:18
     working_dir: /app
     volumes:
@@ -395,7 +395,7 @@ services:
     command: >
       sh -c "
         sleep 10 &&
-        npx @oxlayer/cli-keycloak-bootstrap
+        npx @oxlayer/cli-keycloak
           --config keycloak.config.json
           --env-file .env
       "
@@ -410,7 +410,7 @@ services:
 TypeScript configs require the package to be installed locally:
 
 ```bash
-npm install --save-dev @oxlayer/cli-keycloak-bootstrap
+npm install --save-dev @oxlayer/cli-keycloak
 ```
 
 For npx usage, prefer JSON or YAML configs instead.
@@ -438,7 +438,7 @@ KEYCLOAK_ADMIN_PASSWORD=admin
 Use `--force` to overwrite existing resources:
 
 ```bash
-keycloak-bootstrap bootstrap --config keycloak.config.json --force
+keycloak bootstrap --config keycloak.config.json --force
 ```
 
 ## License

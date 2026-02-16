@@ -1,10 +1,10 @@
 {
-  "name": "@oxlayer/cli-keycloak-bootstrap",
+  "name": "@oxlayer/cli-keycloak",
   "version": "1.0.1",
   "description": "Keycloak realm and client bootstrapping CLI for OxLayer",
   "type": "module",
   "bin": {
-    "keycloak-bootstrap": "./dist/bin/index.js"
+    "keycloak": "./dist/bin/index.js"
   },
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",

@@ -158,7 +158,7 @@ export const initCommand = new Command('init')
 
       spinner.succeed(chalk.green(`Configuration file created: ${options.output}`));
       console.log(chalk.dim('\nEdit the configuration file and run:'));
-      console.log(chalk.dim(`  keycloak-bootstrap bootstrap --config ${options.output}\n`));
+      console.log(chalk.dim(`  keycloak bootstrap --config ${options.output}\n`));
       process.exit(0);
     } catch (error) {
       spinner.fail(chalk.red('Failed to create configuration file'));
@@ -205,118 +205,118 @@ async function generateSampleConfig(
 ): Promise<string> {
   const baseConfig = type === 'dedicated'
     ? {
-        extends: 'enterprise',
-        keycloak: {
-          url: '${KEYCLOAK_URL:-http://localhost:8080}',
-          admin: {
-            username: '${KEYCLOAK_ADMIN:-admin}',
-            password: '${KEYCLOAK_ADMIN_PASSWORD:-admin}',
+      extends: 'enterprise',
+      keycloak: {
+        url: '${KEYCLOAK_URL:-http://localhost:8080}',
+        admin: {
+          username: '${KEYCLOAK_ADMIN:-admin}',
+          password: '${KEYCLOAK_ADMIN_PASSWORD:-admin}',
+        },
+      },
+      realm: {
+        name: 'enterprise-acme',
+        displayName: 'ACME Corporation',
+        type: 'dedicated',
+      },
+      clients: [
+        {
+          name: 'acme-api',
+          template: 'api-client',
+          overrides: {
+            description: 'ACME Backend API',
           },
         },
-        realm: {
-          name: 'enterprise-acme',
-          displayName: 'ACME Corporation',
-          type: 'dedicated',
+        {
+          name: 'acme-web',
+          template: 'web-client',
+          overrides: {
+            description: 'ACME Web Frontend',
+            redirectUris: ['${FRONTEND_URL:-https://acme.com}/*'],
+            validPostLogoutRedirectUris: ['${FRONTEND_URL:-https://acme.com}'],
+            webOrigins: ['${FRONTEND_URL:-https://acme.com}'],
+          },
         },
-        clients: [
-          {
-            name: 'acme-api',
-            template: 'api-client',
-            overrides: {
-              description: 'ACME Backend API',
-            },
+      ],
+      protocolMappers: [
+        {
+          name: 'organization-id-mapper',
+          protocol: 'openid-connect',
+          protocolMapper: 'oidc-usermodel-attribute-mapper',
+          clients: ['acme-web', 'acme-api'],
+          config: {
+            'access.token.claim': 'true',
+            'claim.name': 'organization',
+            'jsonType.label': 'JSON',
+            'introspection.token.claim': 'true',
+            'multivalued': 'true',
+            'userinfo.token.claim': 'true',
+            'id.token.claim': 'true',
+            'addOrganizationId': 'true',
           },
-          {
-            name: 'acme-web',
-            template: 'web-client',
-            overrides: {
-              description: 'ACME Web Frontend',
-              redirectUris: ['${FRONTEND_URL:-https://acme.com}/*'],
-              validPostLogoutRedirectUris: ['${FRONTEND_URL:-https://acme.com}'],
-              webOrigins: ['${FRONTEND_URL:-https://acme.com}'],
-            },
-          },
-        ],
-        protocolMappers: [
-          {
-            name: 'organization-id-mapper',
-            protocol: 'openid-connect',
-            protocolMapper: 'oidc-usermodel-attribute-mapper',
-            clients: ['acme-web', 'acme-api'],
-            config: {
-              'access.token.claim': 'true',
-              'claim.name': 'organization',
-              'jsonType.label': 'JSON',
-              'introspection.token.claim': 'true',
-              'multivalued': 'true',
-              'userinfo.token.claim': 'true',
-              'id.token.claim': 'true',
-              'addOrganizationId': 'true',
-            },
-          },
-        ],
-      }
+        },
+      ],
+    }
     : {
-        keycloak: {
-          url: '${KEYCLOAK_URL:-http://localhost:8080}',
-          admin: {
-            username: '${KEYCLOAK_ADMIN:-admin}',
-            password: '${KEYCLOAK_ADMIN_PASSWORD:-admin}',
+      keycloak: {
+        url: '${KEYCLOAK_URL:-http://localhost:8080}',
+        admin: {
+          username: '${KEYCLOAK_ADMIN:-admin}',
+          password: '${KEYCLOAK_ADMIN_PASSWORD:-admin}',
+        },
+      },
+      realm: {
+        name: 'my-app',
+        displayName: 'My Application',
+        type: 'shared',
+      },
+      clients: [
+        {
+          name: 'my-app-api',
+          template: 'api-client',
+          overrides: {
+            description: 'My App Backend API',
           },
         },
-        realm: {
-          name: 'my-app',
-          displayName: 'My Application',
-          type: 'shared',
+        {
+          name: 'my-app-web',
+          template: 'web-client',
+          overrides: {
+            description: 'My App Web Frontend',
+            redirectUris: ['${FRONTEND_URL:-http://localhost:3000}/*'],
+            validPostLogoutRedirectUris: ['${FRONTEND_URL:-http://localhost:3000}'],
+            webOrigins: ['${FRONTEND_URL:-http://localhost:3000}'],
+          },
         },
-        clients: [
-          {
-            name: 'my-app-api',
-            template: 'api-client',
-            overrides: {
-              description: 'My App Backend API',
-            },
+      ],
+      roles: [
+        { name: 'user', description: 'Standard user' },
+        { name: 'admin', description: 'Application administrator' },
+      ],
+      protocolMappers: [
+        {
+          name: 'organization-id-mapper',
+          protocol: 'openid-connect',
+          protocolMapper: 'oidc-usermodel-attribute-mapper',
+          clients: ['my-app-web', 'my-app-api'],
+          config: {
+            'access.token.claim': 'true',
+            'claim.name': 'organization',
+            'jsonType.label': 'JSON',
+            'introspection.token.claim': 'true',
+            'multivalued': 'true',
+            'userinfo.token.claim': 'true',
+            'id.token.claim': 'true',
+            'addOrganizationId': 'true',
           },
-          {
-            name: 'my-app-web',
-            template: 'web-client',
-            overrides: {
-              description: 'My App Web Frontend',
-              redirectUris: ['${FRONTEND_URL:-http://localhost:3000}/*'],
-              validPostLogoutRedirectUris: ['${FRONTEND_URL:-http://localhost:3000}'],
-              webOrigins: ['${FRONTEND_URL:-http://localhost:3000}'],
-            },
-          },
-        ],
-        roles: [
-          { name: 'user', description: 'Standard user' },
-          { name: 'admin', description: 'Application administrator' },
-        ],
-        protocolMappers: [
-          {
-            name: 'organization-id-mapper',
-            protocol: 'openid-connect',
-            protocolMapper: 'oidc-usermodel-attribute-mapper',
-            clients: ['my-app-web', 'my-app-api'],
-            config: {
-              'access.token.claim': 'true',
-              'claim.name': 'organization',
-              'jsonType.label': 'JSON',
-              'introspection.token.claim': 'true',
-              'multivalued': 'true',
-              'userinfo.token.claim': 'true',
-              'id.token.claim': 'true',
-              'addOrganizationId': 'true',
-            },
-          },
-        ],
-      };
+        },
+      ],
+    };
 
   if (format === 'yaml') {
     // Import dump for YAML format
     const { dump } = await import('js-yaml');
     return `# Keycloak bootstrap configuration
-# Generated by: keycloak-bootstrap init
+# Generated by: keycloak init
 # Environment variables use \${VAR:-default} syntax
 
 ${dump(baseConfig, { indent: 2, lineWidth: 120, noRefs: true })}`;
@@ -324,12 +324,12 @@ ${dump(baseConfig, { indent: 2, lineWidth: 120, noRefs: true })}`;
 
   if (format === 'ts') {
     const baseImports = `// Keycloak bootstrap configuration
-// Generated by: keycloak-bootstrap init
+// Generated by: keycloak init
 `;
 
     if (type === 'dedicated') {
       return `${baseImports}
-import { defineConfig } from '@oxlayer/cli-keycloak-bootstrap/templates';
+import { defineConfig } from '@oxlayer/cli-keycloak/templates';
 
 export default defineConfig({
   extends: 'enterprise', // Use enterprise blueprint
@@ -392,7 +392,7 @@ export default defineConfig({
 
     // Default: shared TS
     return `${baseImports}
-import { defineConfig } from '@oxlayer/cli-keycloak-bootstrap/templates';
+import { defineConfig } from '@oxlayer/cli-keycloak/templates';
 
 export default defineConfig({
   keycloak: {

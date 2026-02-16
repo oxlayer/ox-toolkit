@@ -132,98 +132,50 @@ app.onError((err, c) => {
 // ============================================================================
 
 async function main() {
-  console.log(`
-╔════════════════════════════════════════════════════════════╗
-║           OxLayer Control Panel API                       ║
-╠════════════════════════════════════════════════════════════╣
-║  Environment: ${config.env.padEnd(48)}║
-║  Host:        ${config.host.padEnd(48)}║
-║  Port:        ${String(config.port).padEnd(48)}║
-║  Database:    ${config.database.host.padEnd(48)}║
-╚════════════════════════════════════════════════════════════╝
-
-  📦 SDK Distribution Control Panel
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  🏗️  Architecture: DDD + Clean Architecture
-  📁 Domains: Organizations, Developers, Licenses, API Keys
-  🔧 Controllers: HTTP layer using BaseController
-  💼 Use Cases: Business logic layer
-  💾 Repositories: Data persistence with Drizzle ORM
-  📦 Container: Dependency injection via AppContainer
-
-  API Endpoints:
-    GET    /health                          Health check
-
-    Organizations:
-      GET    /v1/organizations              List organizations
-      POST   /v1/organizations              Create organization
-      GET    /v1/organizations/:id          Get organization
-      PATCH  /v1/organizations/:id          Update organization
-      DELETE /v1/organizations/:id          Delete organization
-
-    Developers:
-      GET    /v1/developers                 List developers
-      GET    /v1/developers/:id             Get developer
-      POST   /v1/organizations/:orgId/developers  Create developer
-      PATCH  /v1/developers/:id             Update developer
-      DELETE /v1/developers/:id             Delete developer
-
-    Licenses:
-      GET    /v1/licenses                   List licenses
-      GET    /v1/licenses/:id               Get license
-      POST   /v1/organizations/:orgId/licenses  Create license
-      PATCH  /v1/licenses/:id               Update license
-      DELETE /v1/licenses/:id               Delete license
-      POST   /v1/licenses/:id/activate       Activate license
-      POST   /v1/licenses/:id/suspend       Suspend license
-      POST   /v1/licenses/:id/revoke         Revoke license
-      POST   /v1/licenses/:id/packages       Add package
-      DELETE /v1/licenses/:id/packages/:pkg Remove package
-      PUT    /v1/licenses/:id/capabilities/:cap  Update capability
-
-    API Keys:
-      GET    /v1/api-keys                    List API keys
-      GET    /v1/api-keys/:id                Get API key
-      POST   /v1/organizations/:orgId/api-keys  Create API key
-      PATCH  /v1/api-keys/:id                Update API key
-      DELETE /v1/api-keys/:id                Delete API key
-      POST   /v1/api-keys/:id/revoke         Revoke API key
-
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  🚀 Server starting...
-
-`);
   console.log('🔧 Running database migrations...');
+
   try {
     await runMigrations();
     console.log('✅ Migrations completed successfully');
   } catch (error) {
-    // If migrations fail, it's likely because schema already exists
-    // Log warning but continue starting the server
     const isAlreadyExists = error instanceof Error && (
       error.message.includes('already exists') ||
       error.message.includes('42710') ||
       error.message.includes('42P07') ||
       error.message.includes('42P06')
     );
+
     if (isAlreadyExists) {
       console.log('⚠️  Schema already exists, skipping migrations');
     } else {
       console.error('❌ Migration failed:', error);
-      // Continue starting the server anyway for development
-      console.log('⚠️  Continuing server startup despite migration error...');
     }
   }
 
+  // ✅ ACTUALLY START SERVER
+  const server = serve({
+    fetch: app.fetch,
+    hostname: config.host,
+    port: config.port,
+
+  });
+
   console.log(`✅ Server ready at http://${config.host}:${config.port}`);
-  console.log(`📚 API organized with DDD structure`);
+
+  // ✅ Graceful shutdown (VERY IMPORTANT for WSL)
+  const shutdown = () => {
+    console.log('\n🛑 Shutting down server...');
+    server.close(() => {
+      console.log('✅ Server closed cleanly');
+      process.exit(0);
+    });
+  };
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
 }
 
 main().catch((error) => {
   console.error('Failed to start server:', error);
   process.exit(1);
 });
-
-export default app;
