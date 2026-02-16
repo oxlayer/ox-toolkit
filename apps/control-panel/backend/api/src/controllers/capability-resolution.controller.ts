@@ -112,23 +112,28 @@ export class CapabilityResolutionController {
   async requestPackageDownload(request: Request): Promise<Response> {
     try {
       const body = await request.json();
+      console.log('[DEBUG] requestPackageDownload body:', JSON.stringify(body, null, 2));
 
       // Extract and verify JWT from Authorization header
       const auth: AuthContext = extractJwt(request);
+      console.log('[DEBUG] Auth context:', { organizationId: auth.organizationId });
 
       // Validate request body
       if (!body.packageType) {
         throw new HttpError(400, 'Missing required field: packageType');
       }
 
+      console.log('[DEBUG] Calling requestPackageDownloadWithJwt...');
       const result = await this.resolutionService.requestPackageDownloadWithJwt({
         organizationId: auth.organizationId,
         packageType: body.packageType,
         version: body.version,
       });
 
+      console.log('[DEBUG] Result from service:', JSON.stringify(result, null, 2));
       return Response.json({ data: result });
     } catch (error) {
+      console.log('[DEBUG] Error in requestPackageDownload:', error);
       if (error instanceof HttpError) {
         throw error;
       }

@@ -506,13 +506,13 @@ export class DeviceAuthController {
    * This method is called by the Keycloak-protected approve endpoint
    * to ensure organization_id cannot be injected via request body.
    */
-  async approveWithAuth(userCode: string, developerId: string, organizationId: string): Promise<Response> {
+  async approveWithAuth(userCode: string, developerId: string, organizationId: string, email?: string): Promise<Response> {
     try {
       if (!userCode) {
         throw new HttpError(400, 'Missing required field: userCode');
       }
 
-      await this.deviceAuthService.approveDeviceWithAuth(userCode, developerId, organizationId);
+      await this.deviceAuthService.approveDeviceWithAuth(userCode, developerId, organizationId, email);
 
       return Response.json({
         success: true,

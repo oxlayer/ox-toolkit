@@ -75,6 +75,7 @@ import {
 
 // Device Auth
 import { DeviceAuthService } from '../../services/device-auth.service.js';
+import { KeycloakSyncService } from '../../services/keycloak-sync.service.js';
 import { DeviceAuthController } from '../../controllers/device-auth.controller.js';
 
 // Capability Resolution
@@ -145,6 +146,7 @@ export class AppContainer {
   public readonly developersController: DevelopersController;
   public readonly licensesController: LicensesController;
   public readonly apiKeysController: ApiKeysController;
+  public readonly keycloakSyncService: KeycloakSyncService;
   public readonly deviceAuthService: DeviceAuthService;
   public readonly deviceAuthController: DeviceAuthController;
   public readonly capabilityResolutionService: CapabilityResolutionService;
@@ -184,8 +186,11 @@ export class AppContainer {
     this.apiKeyRepository = new PostgresApiKeyRepository(db);
     this.deviceSessionRepository = new PostgresDeviceSessionRepository(db);
 
+    // Keycloak Sync Service
+    this.keycloakSyncService = new KeycloakSyncService(this.organizationRepository, this.developerRepository);
+
     // Device Auth
-    this.deviceAuthService = new DeviceAuthService(this.deviceSessionRepository);
+    this.deviceAuthService = new DeviceAuthService(this.deviceSessionRepository, this.keycloakSyncService);
     this.deviceAuthController = new DeviceAuthController(
       this.deviceAuthService,
       (request: Request) => this.getDeveloperId(request),

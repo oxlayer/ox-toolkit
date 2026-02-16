@@ -17,7 +17,7 @@ import type { CapabilityName, Environment, CapabilityLimits } from '../domain/in
 import { UnauthorizedError, BusinessRuleViolationError } from '@oxlayer/foundation-domain-kit';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import type * as schema from '../db/schema.js';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and } from 'drizzle-orm';
 import { packageReleases } from '../db/schema.js';
 import { S3Client } from '@aws-sdk/client-s3';
 
@@ -204,7 +204,10 @@ export class CapabilityResolutionService {
     }
 
     // 4. Generate signed URL for package download
-    const version = request.version || await this.getLatestVersion(request.packageType);
+    // Resolve "latest" to actual version number
+    const version = (!request.version || request.version === 'latest')
+      ? await this.getLatestVersion(request.packageType)
+      : request.version;
     const downloadUrl = await this.generateSignedUrl(request.packageType, version);
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
@@ -232,8 +235,12 @@ export class CapabilityResolutionService {
   async requestPackageDownloadWithJwt(
     request: RequestPackageDownloadWithJwtRequest
   ): Promise<RequestPackageDownloadResponse> {
+    console.log('[DEBUG] requestPackageDownloadWithJwt called with:', JSON.stringify(request, null, 2));
+
     // 1. Validate organization and get license
     const licenses = await this.licenseRepo.findActiveByOrganization(request.organizationId);
+    console.log('[DEBUG] Found licenses:', licenses?.length || 0);
+
     if (!licenses || licenses.length === 0) {
       throw new UnauthorizedError(
         `No valid license found for organization: ${request.organizationId}`
@@ -241,6 +248,7 @@ export class CapabilityResolutionService {
     }
 
     const license = licenses[0];
+    console.log('[DEBUG] License:', { id: license.id, tier: license.tier, packages: license.packages });
 
     // 2. Check if license has access to the requested package
     if (!license.hasPackage(request.packageType as any)) {
@@ -257,16 +265,27 @@ export class CapabilityResolutionService {
     }
 
     // 4. Generate signed URL for package download
-    const version = request.version || await this.getLatestVersion(request.packageType);
+    // Resolve "latest" to actual version number
+    const version = (!request.version || request.version === 'latest')
+      ? await this.getLatestVersion(request.packageType)
+      : request.version;
+    console.log('[DEBUG] Resolved version:', version);
+    console.log('[DEBUG] Generating signed URL for packageType:', request.packageType, 'version:', version);
+
     const downloadUrl = await this.generateSignedUrl(request.packageType, version);
+    console.log('[DEBUG] Generated download URL:', downloadUrl);
+
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
-    return {
+    const response = {
       downloadUrl,
       expiresAt: expiresAt.toISOString(),
       packageType: request.packageType,
       version,
     };
+
+    console.log('[DEBUG] Returning response:', JSON.stringify(response, null, 2));
+    return response;
   }
 
   /**
@@ -308,6 +327,7 @@ export class CapabilityResolutionService {
    * Generate a signed URL for package download from R2/S3
    *
    * Uses AWS SDK v3 presigned URLs for secure, time-limited access.
+   * Retrieves the actual R2 key from the database to ensure the file exists.
    *
    * @param packageType - The type of package
    * @param version - The version of the package
@@ -318,18 +338,37 @@ export class CapabilityResolutionService {
     await importS3Client();
 
     const bucketName = process.env.R2_BUCKET_NAME!;
-    const key = `capabilities-sdk/releases/${version}/oxlayer-sdk-${version}.zip`;
+
+    // Get the actual R2 key from the database instead of hardcoding it
+    const result = await this.db
+      .select({ r2Key: packageReleases.r2Key })
+      .from(packageReleases)
+      .where(and(
+        eq(packageReleases.packageType, packageType as any),
+        eq(packageReleases.version, version)
+      ))
+      .limit(1);
+
+    if (!result[0]) {
+      throw new Error(`Package release not found: ${packageType} ${version}`);
+    }
+
+    const key = result[0].r2Key;
+
+    console.log('[DEBUG] generateSignedUrl:', { bucketName, key, packageType, version });
 
     const { getSignedUrl } = await import('@aws-sdk/s3-request-presigner');
     const { GetObjectCommand } = await import('@aws-sdk/client-s3');
 
     const command = new GetObjectCommand({
       Bucket: bucketName,
-      Key: key,
+      Key: key.replace("oxlayer-sdk/", "/"),
     });
 
     // Generate URL that expires in 5 minutes
-    return await getSignedUrl(s3Client!, command, { expiresIn: 300 });
+    const url = await getSignedUrl(s3Client!, command, { expiresIn: 300 });
+    console.log('[DEBUG] Signed URL generated (first 200 chars):', url.substring(0, 200) + '...');
+    return url;
   }
 
   /**

@@ -15,9 +15,106 @@ import jwt from 'jsonwebtoken';
 import { randomBytes } from 'crypto';
 import type { IDeviceSessionRepository } from '../repositories/index.js';
 import type { DeviceSession, Environment } from '../domain/index.js';
+import { KeycloakSyncService } from './keycloak-sync.service.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'replace-with-strong-random-secret';
-const JWT_EXPIRES_IN = '24h';
+const JWT_EXPIRES_IN = '7d';  // Device tokens are valid for 7 days
+
+/**
+ * Check if error is a foreign key constraint violation for organization
+ * Handles both DrizzleQueryError and PostgresError formats
+ */
+function isOrganizationForeignKeyError(error: unknown): boolean {
+  if (error && typeof error === 'object') {
+    const err = error as {
+      code?: string;
+      constraint?: string;
+      constraint_name?: string;
+      detail?: string;
+      table_name?: string;
+      message?: string;
+      cause?: unknown;
+    };
+
+    // Check direct properties (PostgresError)
+    const code = err.code;
+    const constraintMatch =
+      err.constraint === 'device_sessions_organization_id_organizations_id_fk' ||
+      err.constraint_name === 'device_sessions_organization_id_organizations_id_fk';
+    const detailMatch = err.detail?.includes('organizations') ?? false;
+    const orgIdMatch = err.detail?.includes('organization_id') ?? false;
+    const tableMatch = err.table_name === 'device_sessions';
+
+    if (code === '23503' && (constraintMatch || detailMatch || orgIdMatch || tableMatch)) {
+      return true;
+    }
+
+    // Check message for DrizzleQueryError (wraps PostgresError)
+    // The message format is: "Failed query: ..." followed by the actual PostgresError
+    const messageMatch = err.message?.includes('violates foreign key constraint') &&
+      err.message?.includes('device_sessions_organization_id_organizations_id_fk');
+
+    if (messageMatch) {
+      return true;
+    }
+
+    // Check nested cause (Drizzle may wrap the error)
+    if (err.cause) {
+      return isOrganizationForeignKeyError(err.cause);
+    }
+  }
+  return false;
+}
+
+/**
+ * Check if error is a foreign key constraint violation for developer
+ * Handles both DrizzleQueryError and PostgresError formats
+ */
+function isDeveloperForeignKeyError(error: unknown): boolean {
+  if (error && typeof error === 'object') {
+    const err = error as {
+      code?: string;
+      constraint?: string;
+      constraint_name?: string;
+      detail?: string;
+      table_name?: string;
+      message?: string;
+      cause?: unknown;
+    };
+
+    // Check direct properties (PostgresError)
+    const code = err.code;
+    const constraintMatch =
+      err.constraint === 'device_sessions_developer_id_developers_id_fk' ||
+      err.constraint_name === 'device_sessions_developer_id_developers_id_fk';
+    const detailMatch = err.detail?.includes('developers') ?? false;
+    const devIdMatch = err.detail?.includes('developer_id') ?? false;
+    const tableMatch = err.table_name === 'device_sessions';
+
+    if (code === '23503' && (constraintMatch || detailMatch || devIdMatch || tableMatch)) {
+      return true;
+    }
+
+    // Check message for DrizzleQueryError (wraps PostgresError)
+    // Look for various patterns that indicate a developer FK error
+    const message = err.message || '';
+    const messageMatch =
+      message.includes('violates foreign key constraint') &&
+      (message.includes('device_sessions_developer_id_developers_id_fk') ||
+       message.includes('"developers"') ||
+       (message.includes('developer_id') && message.includes('not present in table')));
+
+    if (messageMatch) {
+      return true;
+    }
+
+    // Check nested cause (Drizzle may wrap the error)
+    if (err.cause) {
+      return isDeveloperForeignKeyError(err.cause);
+    }
+  }
+  return false;
+}
 
 export interface InitiateDeviceAuthRequest {
   deviceName: string;
@@ -70,7 +167,8 @@ export interface JwtPayload {
  */
 export class DeviceAuthService {
   constructor(
-    private readonly deviceSessionRepo: IDeviceSessionRepository
+    private readonly deviceSessionRepo: IDeviceSessionRepository,
+    private readonly keycloakSyncService?: KeycloakSyncService
   ) { }
 
   /**
@@ -196,8 +294,10 @@ export class DeviceAuthService {
    *
    * This method is called by the Keycloak-protected approve endpoint
    * to ensure organization_id cannot be injected via request body.
+   *
+   * If the organization or developer doesn't exist locally, sync it from Keycloak.
    */
-  async approveDeviceWithAuth(userCode: string, developerId: string, organizationId: string): Promise<void> {
+  async approveDeviceWithAuth(userCode: string, developerId: string, organizationId: string, email?: string): Promise<void> {
     const session = await this.deviceSessionRepo.findByUserCodeForUpdate(userCode);
 
     if (!session) {
@@ -210,8 +310,46 @@ export class DeviceAuthService {
 
     if (session.isPending()) {
       session.approve(developerId, organizationId);
-      await this.deviceSessionRepo.save(session);
-      return;
+
+      // Try to save, and if we get a foreign key error for organization or developer,
+      // sync from Keycloak and retry.
+      try {
+        await this.deviceSessionRepo.save(session);
+        return;
+      } catch (error) {
+        if (!this.keycloakSyncService) {
+          throw error;
+        }
+
+        // Check if it's a foreign key constraint violation using helper functions
+        if (
+          isDeveloperForeignKeyError(error) ||
+          isOrganizationForeignKeyError(error)
+        ) {
+          // It's a FK error - sync both organization and developer, then retry
+          console.log('[SYNC] Detected FK constraint violation, syncing organization and developer...');
+
+          // Sync organization first
+          const orgSyncResult = await this.keycloakSyncService.syncOrganization(organizationId);
+          if (orgSyncResult.error) {
+            throw new Error(`Organization sync failed: ${orgSyncResult.error}`);
+          }
+
+          // Then sync developer
+          const devSyncResult = await this.keycloakSyncService.syncDeveloper(developerId, organizationId, email);
+          if (devSyncResult.error) {
+            throw new Error(`Developer sync failed: ${devSyncResult.error}`);
+          }
+
+          // Both synced successfully, retry save
+          console.log('[SYNC] Both org and developer synced, retrying save...');
+          await this.deviceSessionRepo.save(session);
+          return;
+        }
+
+        // Not a FK error we can handle, throw original error
+        throw error;
+      }
     }
 
     throw new Error('Session is not in pending state');

@@ -73,6 +73,7 @@ const container = getContainer();
 
 // Configure Keycloak auth middleware for device approval endpoint
 // Only use auth middleware if Keycloak is explicitly enabled
+// Note: enableJwt must be true to support device tokens (HS256 with local secret)
 const deviceAuthMiddleware = process.env.ENABLE_KEYCLOAK === 'true'
   ? authMiddleware({
     enableKeycloak: true,
@@ -80,7 +81,7 @@ const deviceAuthMiddleware = process.env.ENABLE_KEYCLOAK === 'true'
       url: process.env.KEYCLOAK_URL || '',
       realm: process.env.KEYCLOAK_REALM || 'oxlayer',
     },
-    enableJwt: false,
+    enableJwt: true,  // Enable to support both Keycloak tokens and device tokens
   })
   : undefined;
 

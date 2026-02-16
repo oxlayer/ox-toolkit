@@ -42,6 +42,7 @@ export function setupDeviceAuthRoutes(
       const authPayload = c.get('authPayload') as any;
       const userId = authPayload?.userId || authPayload?.sub;
       const organizationId = authPayload?.organizationId;
+      const email = authPayload?.email || authPayload?.preferred_username;
 
       if (!authPayload || !userId) {
         return c.json({
@@ -68,7 +69,7 @@ export function setupDeviceAuthRoutes(
       }
 
       // Call approve with auth-derived IDs (org comes from Keycloak token, NOT from body)
-      await controller.approveWithAuth(body.userCode, userId, organizationId);
+      await controller.approveWithAuth(body.userCode, userId, organizationId, email);
 
       return c.json({
         success: true,
