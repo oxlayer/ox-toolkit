@@ -16,6 +16,15 @@ import { doctor } from './commands/doctor.command.js';
 import { diff, showLatest } from './commands/diff.command.js';
 import { telemetryEnable, telemetryDisable, telemetryStatus } from './commands/telemetry.command.js';
 import { update, check } from './commands/update.command.js';
+import {
+  infraStart,
+  infraStop,
+  infraRestart,
+  infraLogs,
+  infraList,
+  infraInit,
+  infraProject,
+} from './commands/infra.command.js';
 import { trackCommand, trackError } from './services/telemetry.service.js';
 
 const program = new Command();
@@ -152,6 +161,114 @@ telemetryCmd
   .description('Show telemetry status')
   .action(async () => {
     await telemetryStatus();
+  });
+
+// Infrastructure commands
+const infraCmd = program.command('infra').description('Manage OxLayer infrastructure');
+
+// Development environment
+infraCmd
+  .command('dev')
+  .description('Start development environment')
+  .option('-s, --services <services...>', 'Specific services to start')
+  .action(async (options) => {
+    trackCommand('infra.dev');
+    await infraStart('dev');
+  });
+
+// Staging environment
+infraCmd
+  .command('stg')
+  .description('Start staging environment')
+  .option('-s, --services <services...>', 'Specific services to start')
+  .action(async (options) => {
+    trackCommand('infra.stg');
+    await infraStart('stg');
+  });
+
+// Production environment
+infraCmd
+  .command('prd')
+  .description('Start production environment')
+  .option('-s, --services <services...>', 'Specific services to start')
+  .action(async (options) => {
+    trackCommand('infra.prd');
+    await infraStart('prd');
+  });
+
+// Start command
+infraCmd
+  .command('start [environment]')
+  .description('Start infrastructure (default: dev)')
+  .option('-s, --services <services...>', 'Specific services to start')
+  .action(async (environment = 'dev', options) => {
+    trackCommand('infra.start', { environment });
+    await infraStart(environment as any);
+  });
+
+// Stop command
+infraCmd
+  .command('stop [environment]')
+  .description('Stop infrastructure (default: dev)')
+  .action(async (environment = 'dev', options) => {
+    trackCommand('infra.stop', { environment });
+    await infraStop(environment as any);
+  });
+
+// Restart command
+infraCmd
+  .command('restart [environment]')
+  .description('Restart infrastructure (default: dev)')
+  .action(async (environment = 'dev', options) => {
+    trackCommand('infra.restart', { environment });
+    await infraRestart(environment as any);
+  });
+
+// Status command
+infraCmd
+  .command('status [environment]')
+  .description('Show infrastructure status (default: dev)')
+  .action(async (environment = 'dev') => {
+    trackCommand('infra.status', { environment });
+    const { showStatus } = await import('./commands/infra.command.js');
+    await showStatus(environment as any);
+  });
+
+// Logs command
+infraCmd
+  .command('logs <service>')
+  .description('Show logs for a service')
+  .option('-f, --follow', 'Follow log output')
+  .action(async (service, options) => {
+    trackCommand('infra.logs', { service });
+    await infraLogs(service, options.follow || false);
+  });
+
+// List command
+infraCmd
+  .command('list')
+  .description('List all available services')
+  .action(async () => {
+    trackCommand('infra.list');
+    await infraList();
+  });
+
+// Init command
+infraCmd
+  .command('init')
+  .description('Initialize project infrastructure folder')
+  .action(async () => {
+    trackCommand('infra.init');
+    await infraInit();
+  });
+
+// Project command
+infraCmd
+  .command('project')
+  .description('Show project infrastructure status')
+  .action(async () => {
+    trackCommand('infra.project');
+    await infraProject();
   });
 
 // Parse arguments
