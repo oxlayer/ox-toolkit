@@ -79,8 +79,8 @@ export const SERVICE_DEFINITIONS: Record<string, ServiceDefinition> = {
     displayName: 'Keycloak',
     description: 'Identity and access management server',
     category: 'auth',
-    ports: ['8180:8080', '8181:8081'],
-    volumes: ['keycloak_data', 'keycloak_postgres_data'],
+    ports: [],  // Internal only - accessed via keycloak-proxy
+    volumes: ['keycloak_data'],
     dependsOn: ['keycloak-postgres'],
     enabledByDefault: true,
     requiresAuth: true,
@@ -112,6 +112,12 @@ export const SERVICE_DEFINITIONS: Record<string, ServiceDefinition> = {
     dependsOn: ['keycloak'],
     enabledByDefault: true,
     requiresAuth: false,
+    healthCheck: {
+      command: 'curl -f http://localhost:8080/ || exit 1',
+      interval: '10s',
+      timeout: '5s',
+      retries: 5,
+    },
   },
   influxdb: {
     name: 'influxdb',

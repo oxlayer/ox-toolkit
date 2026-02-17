@@ -5,7 +5,6 @@
  */
 
 import { writeFileSync } from 'fs';
-import { join } from 'path';
 import { SERVICE_DEFINITIONS } from './infra.service.js';
 import type { Environment } from '../types/infra.js';
 
@@ -53,7 +52,13 @@ export class DockerComposeGenerator {
       if (serviceDef.volumes.length > 0) {
         lines.push('    volumes:');
         for (const volume of serviceDef.volumes) {
-          lines.push(`      - ${volume}:${this.getVolumeMountPath(serviceName)}`);
+          const mountPath = this.getVolumeMountPath(serviceName);
+          // Host path (starts with . or /) - use as-is
+          // Otherwise use global oxlayer data directory (~/.oxlayer/data)
+          const volumeSource = volume.startsWith('./') || volume.startsWith('/')
+            ? volume
+            : `~/.oxlayer/data/${volume}:${mountPath}`;
+          lines.push(`      - ${volumeSource}`);
         }
       }
 
@@ -69,7 +74,8 @@ export class DockerComposeGenerator {
       // Add health check
       if (serviceDef.healthCheck) {
         lines.push('    healthcheck:');
-        lines.push(`      test: ${JSON.stringify(['CMD', ...serviceDef.healthCheck.command.split(' ')])}`);
+        const testCmd = serviceDef.healthCheck.command.split(' ').filter(Boolean);
+        lines.push(`      test: ${JSON.stringify(['CMD', ...testCmd])}`);
         lines.push(`      interval: ${serviceDef.healthCheck.interval}`);
         lines.push(`      timeout: ${serviceDef.healthCheck.timeout}`);
         lines.push(`      retries: ${serviceDef.healthCheck.retries}`);
@@ -82,21 +88,9 @@ export class DockerComposeGenerator {
       lines.push('');
     }
 
-    // Add volumes section (deduplicated)
-    lines.push('volumes:');
-    const allVolumes = new Set<string>();
-    for (const [serviceName, serviceDef] of Object.entries(SERVICE_DEFINITIONS)) {
-      for (const volume of serviceDef.volumes) {
-        allVolumes.add(volume);
-      }
-    }
-
-    for (const volume of Array.from(allVolumes).sort()) {
-      lines.push(`  ${volume}:`);
-      lines.push('    driver: local');
-    }
-
-    lines.push('');
+    // Add volumes section (only for bind mounts - no named volumes needed on macOS)
+    // Using bind mounts (./data/*) avoids permission issues with macOS Docker Desktop
+    lines.push('volumes: {}');
 
     // Add networks section
     lines.push('networks:');
@@ -140,6 +134,7 @@ export class DockerComposeGenerator {
   private getCommandForService(serviceName: string): string | null {
     const commands: Record<string, string> = {
       'keycloak': 'start-dev',
+      'keycloak-proxy': '["sh","-c","echo \\"server { listen 8080; location / { proxy_pass http://keycloak:8080; } }\\" > /etc/nginx/conf.d/default.conf && nginx -g daemon off;"]',
       'minio': 'server /data --console-address ":9001"',
       'quickwit': '["run"]',
     };
@@ -150,7 +145,7 @@ export class DockerComposeGenerator {
   /**
    * Get environment variables for a service
    */
-  private getEnvVarsForService(serviceName: string, environment: Environment): [string, string][] {
+  private getEnvVarsForService(serviceName: string, _environment: Environment): [string, string][] {
     const envVars: Record<string, Record<string, string>> = {
       'postgres': {
         'POSTGRES_USER': 'postgres',
@@ -162,6 +157,8 @@ export class DockerComposeGenerator {
         'RABBITMQ_DEFAULT_USER': 'guest',
         'RABBITMQ_DEFAULT_PASS': 'guest',
         'RABBITMQ_DEFAULT_VHOST': '/',
+        'RABBITMQ_LOGS': '/var/log/rabbitmq',
+        'RABBITMQ_MNESIA_BASE': '/var/lib/rabbitmq/mnesia',
       },
       'keycloak': {
         'KEYCLOAK_ADMIN': 'admin',
@@ -250,7 +247,6 @@ export class DockerComposeGenerator {
       'rabbitmq': '/var/lib/rabbitmq',
       'keycloak': '/opt/keycloak/data',
       'keycloak-postgres': '/var/lib/postgresql/data',
-      'keycloak-proxy': '/etc/nginx/conf.d',
       'influxdb': '/var/lib/influxdb2',
       'grafana': '/var/lib/grafana',
       'prometheus': '/prometheus',

@@ -6,6 +6,8 @@
  */
 
 import { Command } from 'commander';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { getBanner } from './utils/cli.js';
 import { login } from './commands/login.command.js';
 import { status } from './commands/status.command.js';
@@ -29,13 +31,26 @@ import { trackCommand, trackError } from './services/telemetry.service.js';
 
 const program = new Command();
 
+// Read version from package.json
+const packageJson = JSON.parse(readFileSync(join(import.meta.dirname, '../package.json'), 'utf-8'));
+const CLI_VERSION = packageJson.version;
+
 // Show banner on help/version
 program.addHelpText('beforeAll', getBanner());
 
 program
   .name('ox')
   .description('OxLayer CLI - Install and manage OxLayer SDK packages')
-  .version('0.0.1');
+  .version(CLI_VERSION);
+
+// Show version before every command (except help/version)
+program.hook('preAction', (thisCommand) => {
+  // Don't show version for help or version commands
+  const commandName = thisCommand.name();
+  if (commandName !== 'help' && commandName !== 'version') {
+    console.log(`OxLayer CLI v${CLI_VERSION}\n`);
+  }
+});
 
 // Login command
 program
