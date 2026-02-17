@@ -1,0 +1,36 @@
+{
+  "name": "@oxlayer/tower",
+  "version": "1.0.0",
+  "description": "OxLayer Tower - Local infrastructure manager",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "tsc",
+    "build:frontend": "cd frontend && vite build",
+    "dev": "tsc && vite build --mode development --watch frontend & electron .",
+    "dev:frontend": "vite",
+    "watch": "tsc --watch"
+  },
+  "author": "OxLayer",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "autoprefixer": "^10.4.0",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.0.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0",
+    "vite-plugin-electron": "^0.28.0"
+  },
+  "dependencies": {
+    "@oxlayer/cli": "workspace:*",
+    "lucide-react": "^0.344.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

@@ -286,6 +286,103 @@ infraCmd
     await infraProject();
   });
 
+// Register command (new global infra)
+infraCmd
+  .command('register')
+  .description('Register project to global infrastructure')
+  .action(async () => {
+    trackCommand('infra.register');
+    const { infraRegister } = await import('./commands/infra.command.js');
+    await infraRegister();
+  });
+
+// Unregister command (new global infra)
+infraCmd
+  .command('unregister')
+  .description('Unregister project from global infrastructure')
+  .action(async () => {
+    trackCommand('infra.unregister');
+    const { infraUnregister } = await import('./commands/infra.command.js');
+    await infraUnregister();
+  });
+
+// Env command (new global infra)
+infraCmd
+  .command('env')
+  .description('Generate .env file for project')
+  .action(async () => {
+    trackCommand('infra.env');
+    const { infraEnv } = await import('./commands/infra.command.js');
+    await infraEnv();
+  });
+
+// Reset command (new global infra)
+infraCmd
+  .command('reset <project>')
+  .description('Reset project - delete all resources (DANGEROUS)')
+  .option('--confirm', 'Confirm deletion (required)')
+  .action(async (project, options) => {
+    trackCommand('infra.reset', { project, confirmed: !!options.confirm });
+    const { infraReset } = await import('./commands/infra.command.js');
+    await infraReset(project, options.confirm || false);
+  });
+
+// ═══════════════════════════════════════════════════════════════
+// GLOBAL INFRASTRUCTURE COMMANDS
+// ═══════════════════════════════════════════════════════════════
+
+const globalCmd = program.command('global').description('Manage global OxLayer infrastructure');
+
+// Global init command
+globalCmd
+  .command('init')
+  .description('Initialize global OxLayer infrastructure')
+  .action(async () => {
+    trackCommand('global.init');
+    const { globalInit } = await import('./commands/infra.command.js');
+    await globalInit();
+  });
+
+// Global start command
+globalCmd
+  .command('start')
+  .description('Start global OxLayer infrastructure')
+  .action(async () => {
+    trackCommand('global.start');
+    const { globalStart } = await import('./commands/infra.command.js');
+    await globalStart();
+  });
+
+// Global stop command
+globalCmd
+  .command('stop')
+  .description('Stop global OxLayer infrastructure')
+  .action(async () => {
+    trackCommand('global.stop');
+    const { globalStop } = await import('./commands/infra.command.js');
+    await globalStop();
+  });
+
+// Global status command
+globalCmd
+  .command('status')
+  .description('Show global OxLayer infrastructure status')
+  .action(async () => {
+    trackCommand('global.status');
+    const { globalStatus } = await import('./commands/infra.command.js');
+    await globalStatus();
+  });
+
+// Global doctor command
+globalCmd
+  .command('doctor')
+  .description('Run health check and diagnostics')
+  .action(async () => {
+    trackCommand('global.doctor');
+    const { globalDoctor } = await import('./commands/infra.command.js');
+    await globalDoctor();
+  });
+
 // Parse arguments
 program.parseAsync(process.argv).catch((err) => {
   console.error(err);

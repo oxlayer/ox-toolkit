@@ -1,559 +1,432 @@
 /**
  * Infrastructure Command
  *
- * Manage OxLayer infrastructure using Docker Compose
+ * Project-level commands for global OxLayer infrastructure
  */
 
-import prompts from 'prompts';
-import chalk from 'chalk';
-import { InfraService, SERVICE_DEFINITIONS, ENVIRONMENT_CONFIGS } from '../services/infra.service.js';
-import { InfraConfigService } from '../services/infra-config.service.js';
-import { info, success, warning, error, header, createSpinner } from '../utils/cli.js';
-import type { Environment, ServiceDefinition } from '../types/infra.js';
+import { GlobalInfraService } from '../services/global-infra.service.js';
+import { info, success, warning, error, header } from '../utils/cli.js';
+import { basename } from 'path';
+import { readFileSync } from 'fs';
 
-const infraService = new InfraService();
-const configService = new InfraConfigService();
+const globalService = new GlobalInfraService();
 
 /**
- * Select services interactively
+ * Get project name from package.json or directory name
  */
-async function selectServices(environment: Environment): Promise<string[]> {
-  const defaultServices = ENVIRONMENT_CONFIGS[environment].defaultServices;
-  const services = Object.entries(SERVICE_DEFINITIONS).sort(([, a], [, b]) =>
-    a.category.localeCompare(b.category)
-  );
-
-  header('Select Services to Run');
-
-  // Group services by category for display
-  const servicesByCategory: Record<string, typeof services> = {};
-  for (const [name, service] of services) {
-    if (!servicesByCategory[service.category]) {
-      servicesByCategory[service.category] = [];
-    }
-    servicesByCategory[service.category].push([name, service]);
+function getProjectName(): string {
+  try {
+    const packagePath = process.cwd() + '/package.json';
+    const pkg = JSON.parse(readFileSync(packagePath, 'utf-8'));
+    return pkg.name || basename(process.cwd());
+  } catch {
+    return basename(process.cwd());
   }
-
-  // Show services grouped by category
-  for (const [category, categoryServices] of Object.entries(servicesByCategory)) {
-    console.log();
-    console.log(chalk.bold.white(category.toUpperCase()));
-    for (const [name, service] of categoryServices) {
-      const isDefault = defaultServices.includes(name);
-      const defaultIndicator = isDefault ? chalk.green('✓') : chalk.gray('○');
-      console.log(
-        `  ${defaultIndicator} ${chalk.white(service.displayName)} ${chalk.gray(`(${service.ports.join(', ')})`)}`
-      );
-      console.log(`    ${chalk.gray(service.description)}`);
-    }
-  }
-
-  console.log();
-  info(`Run ${chalk.green('ox infra list')} to see all available services with details`);
-  console.log();
-
-  const { choice } = await prompts({
-    type: 'select',
-    name: 'choice',
-    message: 'Select service set:',
-    choices: [
-      { title: 'Core Services (recommended for development)', value: 'core' },
-      { title: 'Core + Monitoring', value: 'monitoring' },
-      { title: 'All Services', value: 'all' },
-      { title: 'Custom selection', value: 'custom' },
-    ],
-    initial: 0,
-  });
-
-  let selectedServices: string[] = [];
-
-  switch (choice) {
-    case 'core':
-      selectedServices = defaultServices;
-      break;
-    case 'monitoring':
-      selectedServices = [
-        ...defaultServices,
-        'prometheus',
-        'grafana',
-      ];
-      break;
-    case 'all':
-      selectedServices = Object.keys(SERVICE_DEFINITIONS);
-      break;
-    case 'custom':
-      // Create a simple select for each service
-      console.log();
-      console.log(chalk.bold.white('Custom Service Selection'));
-      console.log(chalk.gray('Select services one by one (press Enter to select, Esc to finish)'));
-      console.log();
-
-      const customChoices = services.map(([name, service]) => ({
-        title: `${service.displayName} ${chalk.gray(`(${service.category})`)}`,
-        value: name,
-        selected: defaultServices.includes(name),
-      }));
-
-      const { services: customServices } = await prompts({
-        type: 'multiselect',
-        name: 'services',
-        message: 'Select services:',
-        instructions: false,
-        choices: customChoices,
-      });
-
-      if (!customServices || customServices.length === 0) {
-        warning('No services selected. Using default services.');
-        return defaultServices;
-      }
-
-      selectedServices = customServices;
-      break;
-    default:
-      selectedServices = defaultServices;
-  }
-
-  return selectedServices;
 }
 
+// ═══════════════════════════════════════════════════════════════
+// GLOBAL INFRASTRUCTURE COMMANDS
+// ═══════════════════════════════════════════════════════════════
+
 /**
- * Show service status
+ * Initialize global infrastructure (Layer 1: Static Physical Infra)
  */
-export async function showStatus(environment: Environment): Promise<void> {
-  const spinner = createSpinner('Fetching service status...');
-  spinner.start();
+export async function globalInit(): Promise<void> {
+  header('Initialize Global OxLayer Infrastructure');
 
   try {
-    const services = await infraService.getServiceStatus();
-    spinner.stop();
-
-    header(`Service Status - ${ENVIRONMENT_CONFIGS[environment].displayName}`);
-
-    if (services.length === 0) {
-      info('No services are currently running');
-      return;
-    }
-
-    // Group by category
-    const servicesByCategory: Record<string, typeof services> = {};
-    for (const service of services) {
-      const definition = SERVICE_DEFINITIONS[service.name];
-      if (definition) {
-        if (!servicesByCategory[definition.category]) {
-          servicesByCategory[definition.category] = [];
-        }
-        servicesByCategory[definition.category].push(service);
-      }
-    }
-
-    for (const [category, categoryServices] of Object.entries(servicesByCategory)) {
-      console.log();
-      console.log(chalk.bold.white(category.toUpperCase()));
-
-      for (const service of categoryServices) {
-        const definition = SERVICE_DEFINITIONS[service.name];
-        const statusColor =
-          service.status === 'running' ? chalk.green : service.status === 'stopped' ? chalk.yellow : chalk.red;
-
-        console.log(
-          `  ${statusColor('●')} ${chalk.white(definition?.displayName || service.name)} ${chalk.gray(`(${service.status})`)}`
-        );
-
-        if (service.ports.length > 0) {
-          console.log(`    ${chalk.gray('Ports:')} ${service.ports.join(', ')}`);
-        }
-
-        if (service.health) {
-          const healthColor = service.health === 'healthy' ? chalk.green : chalk.yellow;
-          console.log(`    ${chalk.gray('Health:')} ${healthColor(service.health)}`);
-        }
-      }
-    }
-
-    console.log();
-    success(`Total: ${services.length} services`);
-  } catch (err: any) {
-    spinner.stop();
-    error(`Failed to fetch service status: ${err.message}`);
-  }
-}
-
-/**
- * Start services
- */
-export async function infraStart(environment: Environment): Promise<void> {
-  // Check if infra exists
-  if (!infraService.checkInfraExists(environment)) {
-    error(
-      `Infrastructure files not found for ${environment}. Make sure you're in the correct directory.`
-    );
-    process.exit(1);
-  }
-
-  header(`Start Infrastructure - ${ENVIRONMENT_CONFIGS[environment].displayName}`);
-
-  info('Environment configuration:');
-  console.log(`  ${chalk.gray('•')} Environment: ${chalk.white(environment)}`);
-  console.log(`  ${chalk.gray('•')} Docker Compose: ${chalk.white(ENVIRONMENT_CONFIGS[environment].dockerComposeFile)}`);
-  console.log();
-
-  // Select services
-  const services = await selectServices(environment);
-
-  info(`Selected ${services.length} services:`);
-  for (const service of services) {
-    const definition = SERVICE_DEFINITIONS[service];
-    console.log(`  ${chalk.gray('•')} ${chalk.white(definition?.displayName || service)}`);
-  }
-  console.log();
-
-  const { confirm: confirmed } = await prompts({
-    type: 'confirm',
-    name: 'confirm',
-    message: 'Start these services?',
-    initial: true,
-  });
-
-  if (!confirmed) {
-    warning('Aborted');
-    return;
-  }
-
-  const spinner = createSpinner('Starting services...');
-  spinner.start();
-
-  try {
-    await infraService.startServices(services, environment);
-    spinner.stop();
-    success(`Started ${services.length} services successfully`);
-    console.log();
-
-    info('Service URLs:');
-    for (const service of services) {
-      const definition = SERVICE_DEFINITIONS[service];
-      if (definition && definition.ports.length > 0) {
-        for (const port of definition.ports) {
-          const [containerPort, hostPort] = port.split(':');
-          if (containerPort === hostPort) {
-            // Show common service URLs
-            if (service === 'keycloak' || service === 'keycloak-proxy') {
-              if (containerPort === '8080') {
-                console.log(`  ${chalk.gray('•')} ${chalk.white(definition.displayName)}: ${chalk.cyan(`http://localhost:${hostPort}`)}`);
-              } else if (containerPort === '8081') {
-                console.log(`  ${chalk.gray('•')} ${chalk.white(`${definition.displayName} (Alt)`)}: ${chalk.cyan(`http://localhost:${hostPort}`)}`);
-              }
-            } else if (service === 'rabbitmq' && containerPort === '15672') {
-              console.log(`  ${chalk.gray('•')} ${chalk.white(`${definition.displayName} Management UI`)}: ${chalk.cyan(`http://localhost:${hostPort}`)}`);
-            } else if (service === 'grafana') {
-              console.log(`  ${chalk.gray('•')} ${chalk.white(definition.displayName)}: ${chalk.cyan(`http://localhost:${hostPort}`)}`);
-            } else if (service === 'prometheus') {
-              console.log(`  ${chalk.gray('•')} ${chalk.white(definition.displayName)}: ${chalk.cyan(`http://localhost:${hostPort}`)}`);
-            }
-          }
-        }
-      }
-    }
-    console.log();
-
-    info('Use "ox infra status" to check service health');
-  } catch (err: any) {
-    spinner.stop();
-    error(`Failed to start services: ${err.message}`);
-    process.exit(1);
-  }
-}
-
-/**
- * Stop services
- */
-export async function infraStop(environment: Environment): Promise<void> {
-  if (!infraService.checkInfraExists(environment)) {
-    error(`Infrastructure files not found for ${environment}.`);
-    process.exit(1);
-  }
-
-  header(`Stop Infrastructure - ${ENVIRONMENT_CONFIGS[environment].displayName}`);
-
-  const spinner = createSpinner('Fetching service status...');
-  spinner.start();
-
-  try {
-    const services = await infraService.getServiceStatus();
-    spinner.stop();
-
-    if (services.length === 0) {
-      info('No services are currently running');
-      return;
-    }
-
-    info(`Found ${services.length} running services`);
-
-    const { all } = await prompts({
-      type: 'confirm',
-      name: 'all',
-      message: 'Stop all services? (Select "No" to choose specific services)',
-      initial: true,
-    });
-
-    let servicesToStop: string[] = [];
-
-    if (all) {
-      servicesToStop = services.map((s) => s.name);
-    } else {
-      const { selectedServices } = await prompts({
-        type: 'multiselect',
-        name: 'selectedServices',
-        message: 'Select services to stop:',
-        choices: services.map((s) => ({
-          title: `${SERVICE_DEFINITIONS[s.name]?.displayName || s.name} ${chalk.gray(`(${s.status})`)}`,
-          value: s.name,
-        })),
-      });
-
-      if (!selectedServices || selectedServices.length === 0) {
-        warning('No services selected');
-        return;
-      }
-
-      servicesToStop = selectedServices;
-    }
-
-    const stopSpinner = createSpinner('Stopping services...');
-    stopSpinner.start();
-
-    await infraService.stopServices(servicesToStop, environment);
-
-    stopSpinner.stop();
-    success(`Stopped ${servicesToStop.length} services`);
-  } catch (err: any) {
-    spinner.stop();
-    error(`Failed to stop services: ${err.message}`);
-    process.exit(1);
-  }
-}
-
-/**
- * Restart services
- */
-export async function infraRestart(environment: Environment): Promise<void> {
-  if (!infraService.checkInfraExists(environment)) {
-    error(`Infrastructure files not found for ${environment}.`);
-    process.exit(1);
-  }
-
-  header(`Restart Infrastructure - ${ENVIRONMENT_CONFIGS[environment].displayName}`);
-
-  const spinner = createSpinner('Fetching service status...');
-  spinner.start();
-
-  try {
-    const services = await infraService.getServiceStatus();
-    spinner.stop();
-
-    const runningServices = services.filter((s) => s.status === 'running');
-
-    if (runningServices.length === 0) {
-      info('No services are currently running');
-      return;
-    }
-
-    info(`Found ${runningServices.length} running services`);
-
-    const { selectedServices } = await prompts({
-      type: 'multiselect',
-      name: 'selectedServices',
-      message: 'Select services to restart:',
-      instructions: false,
-      choices: runningServices.map((s) => ({
-        title: SERVICE_DEFINITIONS[s.name]?.displayName || s.name,
-        value: s.name,
-        selected: true,
-      })),
-    });
-
-    if (!selectedServices || selectedServices.length === 0) {
-      warning('No services selected');
-      return;
-    }
-
-    const restartSpinner = createSpinner('Restarting services...');
-    restartSpinner.start();
-
-    await infraService.restartServices(selectedServices, environment);
-
-    restartSpinner.stop();
-    success(`Restarted ${selectedServices.length} services`);
-  } catch (err: any) {
-    spinner.stop();
-    error(`Failed to restart services: ${err.message}`);
-    process.exit(1);
-  }
-}
-
-/**
- * Show logs
- */
-export async function infraLogs(serviceName: string, follow: boolean): Promise<void> {
-  const spinner = createSpinner('Fetching logs...');
-  spinner.start();
-
-  try {
-    spinner.stop();
-    await infraService.getServiceLogs(serviceName, 100, follow);
-  } catch (err: any) {
-    spinner.stop();
-    error(`Failed to fetch logs: ${err.message}`);
-    process.exit(1);
-  }
-}
-
-/**
- * List available services
- */
-export async function infraList(): Promise<void> {
-  header('Available Services');
-
-  const servicesByCategory: Record<string, ServiceDefinition[]> = {};
-  for (const service of Object.values(SERVICE_DEFINITIONS)) {
-    if (!servicesByCategory[service.category]) {
-      servicesByCategory[service.category] = [];
-    }
-    servicesByCategory[service.category].push(service);
-  }
-
-  for (const [category, categoryServices] of Object.entries(servicesByCategory)) {
-    console.log();
-    console.log(chalk.bold.white(category.toUpperCase()));
-
-    for (const service of categoryServices) {
-      console.log(`  ${chalk.cyan('•')} ${chalk.white(service.displayName)} ${chalk.gray(`(${service.name})`)}`);
-      console.log(`    ${chalk.gray(service.description)}`);
-
-      if (service.ports.length > 0) {
-        console.log(`    ${chalk.gray('Ports:')} ${chalk.yellow(service.ports.join(', '))}`);
-      }
-
-      if (service.dependsOn.length > 0) {
-        console.log(`    ${chalk.gray('Depends on:')} ${service.dependsOn.join(', ')}`);
-      }
-
-      if (service.enabledByDefault) {
-        console.log(`    ${chalk.green('Enabled by default in dev environment')}`);
-      }
-    }
-  }
-
-  console.log();
-  success(`Total: ${Object.values(SERVICE_DEFINITIONS).length} services available`);
-}
-
-/**
- * Initialize project infrastructure
- */
-export async function infraInit(): Promise<void> {
-  header('Initialize Project Infrastructure');
-
-  const projectName = configService.getProjectName();
-  info(`Project: ${chalk.white(projectName)}`);
-  console.log();
-
-  if (configService.hasProjectInfra()) {
-    warning('Project infrastructure folder already exists');
-    const { overwrite } = await prompts({
-      type: 'confirm',
-      name: 'overwrite',
-      message: 'Reinitialize infrastructure folder?',
-      initial: false,
-    });
-
-    if (!overwrite) {
-      info('Using existing infrastructure configuration');
-      return;
-    }
-  }
-
-  const spinner = createSpinner('Creating infrastructure folders...');
-  spinner.start();
-
-  try {
-    configService.initializeProjectInfra();
-    spinner.stop();
-
-    success('Project infrastructure initialized');
-
-    console.log();
-    header('Created Folders');
-
-    const folders = [
-      { name: 'collectors', description: 'Custom OpenTelemetry collector configurations' },
-      { name: 'nginx', description: 'Custom nginx configurations' },
-      { name: 'grafana/provisioning', description: 'Grafana dashboards and datasources' },
-      { name: 'prometheus', description: 'Prometheus configuration' },
-      { name: 'volumes', description: 'Project-specific data volumes' },
-    ];
-
-    for (const folder of folders) {
-      console.log(`  ${chalk.cyan('✓')} ${chalk.white(folder.name)}`);
-      console.log(`    ${chalk.gray(folder.description)}`);
-    }
-
-    console.log();
-    success('Infrastructure folder structure created at .ox/infra/');
+    await globalService.initialize();
+    success('Global infrastructure initialized');
     console.log();
     info('Next steps:');
-    console.log(`  ${chalk.gray('1.')} Add custom configurations to folders in ${chalk.cyan('.ox/infra/')}`);
-    console.log(`  ${chalk.gray('2.')} Run ${chalk.cyan('ox infra dev')} to start development environment`);
-    console.log(`  ${chalk.gray('3.')} Custom configs will be automatically mounted to services`);
+    console.log('  1. Start global infra: ox global start');
+    console.log('  2. Register projects: ox infra register');
   } catch (err: any) {
-    spinner.stop();
-    error(`Failed to initialize: ${err.message}`);
+    error(err.message);
     process.exit(1);
   }
 }
 
 /**
- * Show project infrastructure status
+ * Start global infrastructure
  */
-export async function infraProject(): Promise<void> {
-  header('Project Infrastructure Status');
+export async function globalStart(): Promise<void> {
+  header('Start Global OxLayer Infrastructure');
 
-  const projectName = configService.getProjectName();
-  info(`Project: ${chalk.white(projectName)}`);
+  try {
+    await globalService.start();
+
+    const projects = globalService.listProjects();
+    if (projects.length > 0) {
+      console.log();
+      info('Registered projects:', projects.map((p) => p.name).join(', '));
+    }
+  } catch (err: any) {
+    error(err.message);
+    process.exit(1);
+  }
+}
+
+/**
+ * Stop global infrastructure
+ */
+export async function globalStop(): Promise<void> {
+  header('Stop Global OxLayer Infrastructure');
+
+  try {
+    await globalService.stop();
+  } catch (err: any) {
+    error(err.message);
+    process.exit(1);
+  }
+}
+
+/**
+ * Show global infrastructure status
+ */
+export async function globalStatus(): Promise<void> {
+  header('Global OxLayer Infrastructure Status');
+
+  try {
+    const status = await globalService.getStatus();
+    console.log('Status:', status);
+    console.log();
+
+    const projects = globalService.listProjects();
+    if (projects.length > 0) {
+      info(`Registered Projects (${projects.length}):`);
+      for (const project of projects) {
+        console.log(`  • ${project.name} (${project.path})`);
+      }
+    } else {
+      info('No projects registered yet');
+      console.log('  Register a project with: ox infra register');
+    }
+  } catch (err: any) {
+    error(err.message);
+    process.exit(1);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PROJECT COMMANDS
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Register current project (Layer 2: Runtime Provisioning)
+ */
+export async function infraRegister(): Promise<void> {
+  header('Register Project to Global Infrastructure');
+
+  const projectName = getProjectName();
+  const projectPath = process.cwd();
+
+  info(`Project: ${projectName}`);
+  info(`Path: ${projectPath}`);
   console.log();
 
-  if (!configService.hasProjectInfra()) {
-    warning('No project infrastructure folder found');
-    console.log();
-    info('Run "ox infra init" to initialize project infrastructure');
+  // Check if already registered
+  const existing = globalService.getProject(projectName);
+  if (existing) {
+    warning(`Project '${projectName}' is already registered`);
+    await showProjectStatus(projectName);
     return;
   }
 
-  success('Project infrastructure folder exists');
-  console.log();
-
-  // Check for custom configurations
-  const { existsSync } = await import('fs');
-  const { join } = await import('path');
-
-  const infraPath = join(process.cwd(), '.ox', 'infra');
-
-  const checks = [
-    { name: 'Custom Collectors', path: join(infraPath, 'collectors') },
-    { name: 'Custom Nginx', path: join(infraPath, 'nginx') },
-    { name: 'Grafana Provisioning', path: join(infraPath, 'grafana', 'provisioning') },
-    { name: 'Prometheus Config', path: join(infraPath, 'prometheus') },
-    { name: 'Project Volumes', path: join(infraPath, 'volumes') },
-  ];
-
-  console.log(chalk.bold.white('Custom Configurations:'));
-
-  for (const check of checks) {
-    const hasFiles = existsSync(check.path);
-    const status = hasFiles ? chalk.green('✓') : chalk.gray('○');
-    const statusText = hasFiles ? chalk.green('Configured') : chalk.gray('Not configured');
-    console.log(`  ${status} ${chalk.white(check.name)} - ${statusText}`);
+  // Check if global infra is running
+  const isRunning = await globalService.isRunning();
+  if (!isRunning) {
+    warning('Global OxLayer infrastructure is not running');
+    console.log();
+    info('Starting global infrastructure...');
+    await globalService.start();
+    console.log();
   }
 
+  try {
+    // Register the project (runtime provisioning)
+    await globalService.registerProject(projectName, projectPath);
+
+    console.log();
+    success('Project registered successfully');
+    console.log();
+
+    await showProjectStatus(projectName);
+  } catch (err: any) {
+    error(err.message);
+    process.exit(1);
+  }
+}
+
+/**
+ * Unregister current project
+ */
+export async function infraUnregister(): Promise<void> {
+  header('Unregister Project from Global Infrastructure');
+
+  const projectName = getProjectName();
+
+  const existing = globalService.getProject(projectName);
+  if (!existing) {
+    warning(`Project '${projectName}' is not registered`);
+    return;
+  }
+
+  info(`Project: ${projectName}`);
+  console.log();
+
+  try {
+    await globalService.unregisterProject(projectName);
+    success('Project unregistered');
+    console.log();
+    info('Note: Resources (databases, vhosts) have been preserved');
+  } catch (err: any) {
+    error(err.message);
+    process.exit(1);
+  }
+}
+
+/**
+ * Show project status and connection URLs
+ */
+export async function infraStatus(): Promise<void> {
+  header('Project Infrastructure Status');
+
+  const projectName = getProjectName();
+  await showProjectStatus(projectName);
+}
+
+/**
+ * Show project status (internal)
+ */
+async function showProjectStatus(projectName: string): Promise<void> {
+  const project = globalService.getProject(projectName);
+
+  if (!project) {
+    error(`Project '${projectName}' is not registered`);
+    console.log();
+    info('Register the project first:');
+    console.log('  ox infra register');
+    process.exit(1);
+  }
+
+  success(`Project: ${projectName}`);
+  info(`Path: ${project.path}`);
+  info(`Registered: ${new Date(project.createdAt).toLocaleString()}`);
+  console.log();
+
+  // Check if global infra is running
+  const isRunning = await globalService.isRunning();
+  if (isRunning) {
+    success('Global infrastructure: Running');
+  } else {
+    warning('Global infrastructure: Not running');
+  }
+  console.log();
+
+  header('Connection URLs');
+  const strings = globalService.getConnectionStrings(projectName);
+
+  console.log(`  DATABASE_URL:        ${strings.DATABASE_URL}`);
+  console.log(`  REDIS_URL:           ${strings.REDIS_URL}`);
+  console.log(`  REDIS_DB:            ${strings.REDIS_DB}`);
+  console.log(`  RABBITMQ_URL:        ${strings.RABBITMQ_URL}`);
+  console.log(`  KEYCLOAK_URL:        ${strings.KEYCLOAK_URL}`);
   console.log();
 }
 
+/**
+ * Generate .env file for current project
+ */
+export async function infraEnv(): Promise<void> {
+  header('Generate Environment File');
+
+  const projectName = getProjectName();
+  const project = globalService.getProject(projectName);
+
+  if (!project) {
+    error(`Project '${projectName}' is not registered`);
+    console.log();
+    info('Register the project first:');
+    console.log('  ox infra register');
+    process.exit(1);
+  }
+
+  const defaultPath = process.cwd() + '/.env.local';
+
+  try {
+    await globalService.generateEnvFile(projectName, defaultPath);
+    success('Environment file generated');
+    console.log();
+    info(`File: ${defaultPath}`);
+    console.log();
+    info('Load this file in your application:');
+    console.log('  Node.js: require("dotenv").config({ path: ".env.local" })');
+    console.log('  Shell:   source .env.local');
+  } catch (err: any) {
+    error(err.message);
+    process.exit(1);
+  }
+}
+
+/**
+ * Quick start (register if needed)
+ */
+export async function infraDev(): Promise<void> {
+  header('OxLayer Infrastructure - Development Mode');
+
+  const projectName = getProjectName();
+  const project = globalService.getProject(projectName);
+
+  if (!project) {
+    // Project not registered, register it now
+    info('Project not registered. Registering now...');
+    console.log();
+    await infraRegister();
+  } else {
+    // Project already registered, show status
+    success(`Project '${projectName}' is already registered`);
+    console.log();
+
+    // Check if global infra is running
+    const isRunning = await globalService.isRunning();
+    if (!isRunning) {
+      warning('Global infrastructure is not running');
+      console.log();
+      info('Starting global infrastructure...');
+      await globalService.start();
+      console.log();
+    }
+
+    await showProjectStatus(projectName);
+  }
+}
+
+/**
+ * List all registered projects
+ */
+export async function infraList(): Promise<void> {
+  header('Registered Projects');
+
+  const projects = globalService.listProjects();
+
+  if (projects.length === 0) {
+    info('No projects registered');
+    console.log();
+    info('Register a project with: ox infra register');
+    return;
+  }
+
+  console.log();
+  for (const project of projects) {
+    console.log(`• ${project.name}`);
+    console.log(`  Path: ${project.path}`);
+    console.log(`  Resources:`);
+    console.log(`    PostgreSQL: ${project.resources.postgres.database}`);
+    console.log(`    Redis:      DB ${project.resources.redis.db}`);
+    console.log(`    RabbitMQ:   ${project.resources.rabbitmq.vhost}`);
+    console.log(`    Keycloak:   ${project.resources.keycloak.realm}`);
+    console.log();
+  }
+
+  success(`Total: ${projects.length} projects`);
+}
+
+/**
+ * Stop current project (alias for compatibility)
+ */
+export async function infraStop(): Promise<void> {
+  header('Stop Project Services');
+
+  warning('Note: In global infrastructure mode, services are shared');
+  console.log();
+
+  const projectName = getProjectName();
+  const project = globalService.getProject(projectName);
+
+  if (!project) {
+    error(`Project '${projectName}' is not registered`);
+    return;
+  }
+
+  info('To stop all infrastructure, use:');
+  console.log('  ox global stop');
+  console.log();
+  info('To unregister this project, use:');
+  console.log('  ox infra unregister');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BACKWARD COMPATIBILITY ALIASES
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * @deprecated Use globalInit instead
+ */
+export async function infraInit(): Promise<void> {
+  await globalInit();
+}
+
+/**
+ * @deprecated Use infraRegister instead
+ */
+export async function infraStart(): Promise<void> {
+  await infraRegister();
+}
+
+/**
+ * @deprecated Not applicable in global infra mode
+ */
+export async function infraRestart(): Promise<void> {
+  warning('Note: In global infrastructure mode, services are always running');
+  console.log();
+  info('To restart global infrastructure, use:');
+  console.log('  ox global stop && ox global start');
+}
+
+/**
+ * @deprecated Use globalStatus instead
+ */
+export async function infraProject(): Promise<void> {
+  await globalStatus();
+}
+
+/**
+ * @deprecated Use ox global logs (not implemented yet)
+ */
+export async function infraLogs(service: string, follow: boolean): Promise<void> {
+  warning('Note: In global infrastructure mode, logs are managed globally');
+  console.log();
+  info('To view logs, use:');
+  console.log('  cd ~/.oxlayer/infra');
+  console.log('  docker-compose logs ' + (follow ? '-f ' : '') + service);
+  console.log();
+  console.log('Or directly:');
+  console.log('  docker logs ox-' + service + (follow ? ' -f' : ''));
+}
+
+/**
+ * @deprecated Use infraStatus instead
+ */
+export async function showStatus(environment?: string): Promise<void> {
+  await infraStatus();
+}
+
+/**
+ * Run global infrastructure health check
+ */
+export async function globalDoctor(): Promise<void> {
+  await globalService.runDoctor();
+}
+
+/**
+ * Reset project resources
+ */
+export async function infraReset(projectName: string, confirm: boolean): Promise<void> {
+  try {
+    await globalService.resetProject(projectName, confirm);
+  } catch (err: any) {
+    error(err.message);
+    process.exit(1);
+  }
+}
