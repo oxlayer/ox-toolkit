@@ -103,10 +103,10 @@ function ServiceRow({ service, onToggleService, onViewLogs }: ServiceRowProps) {
             {/* Logs Button */}
             <button
               onClick={() => onViewLogs(service.name)}
-              className="p-1.5 hover:bg-white/10 rounded-lg transition opacity-0 group-hover:opacity-100"
+              className="p-1.5 hover:bg-white/10 rounded-lg transition text-white/40 hover:text-white/80"
               title="View Logs"
             >
-              <Terminal className="w-4 h-4 text-white/50 hover:text-white/80" />
+              <Terminal className="w-4 h-4" />
             </button>
 
             {/* Open in Browser/Tab */}
@@ -115,28 +115,30 @@ function ServiceRow({ service, onToggleService, onViewLogs }: ServiceRowProps) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={handleUrlClick}
-              className="p-1.5 hover:bg-white/10 rounded-lg transition opacity-0 group-hover:opacity-100"
+              className="p-1.5 hover:bg-white/10 rounded-lg transition text-white/40 hover:text-white/80"
               title={
                 service.ports && service.ports.length > 1
                   ? `Click to select port (multiple available)`
                   : `Click to open in tab, Ctrl+Click to open in external browser - http://${service.url}`
               }
             >
-              <ExternalLink className="w-4 h-4 text-white/50 hover:text-white/80" />
+              <ExternalLink className="w-4 h-4" />
             </a>
 
             {/* Restart/Stop Button */}
             <button
               onClick={() => onToggleService(service.name)}
-              className={`p-1.5 hover:bg-white/10 rounded-lg transition opacity-0 group-hover:opacity-100 ${
-                service.status === 'running' ? 'hover:bg-red-500/10' : 'hover:bg-emerald-500/10'
+              className={`p-1.5 hover:bg-white/10 rounded-lg transition ${
+                service.status === 'running'
+                  ? 'text-white/40 hover:text-red-400 hover:bg-red-500/10'
+                  : 'text-white/40 hover:text-emerald-400 hover:bg-emerald-500/10'
               }`}
               title={service.status === 'running' ? 'Stop Service' : 'Start Service'}
             >
               {service.status === 'running' ? (
-                <Square className="w-4 h-4 text-white/50 hover:text-red-400" />
+                <Square className="w-4 h-4" />
               ) : (
-                <Play className="w-4 h-4 text-white/50 hover:text-emerald-400" />
+                <Play className="w-4 h-4" />
               )}
             </button>
 

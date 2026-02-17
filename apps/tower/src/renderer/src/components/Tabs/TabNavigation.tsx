@@ -53,14 +53,17 @@ export function TabNavigation({ tabs, activeTabId, onTabClick, onTabClose }: Tab
           {tab.closable && (
             <button
               onClick={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 onTabClose(tab.id);
               }}
-              className={`p-0.5 rounded transition opacity-0 group-hover:opacity-100 ${
+              className={`p-0.5 rounded transition ${
                 activeTabId === tab.id
-                  ? 'hover:bg-white/10 text-white/60'
-                  : 'hover:bg-white/10 text-white/40'
+                  ? 'opacity-100 hover:bg-white/10 text-white/60 hover:text-white/80'
+                  : 'opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-white/10 text-white/40 hover:text-white/60'
               }`}
+              aria-label={`Close ${tab.title}`}
+              title={`Close ${tab.title}`}
             >
               <X className="w-3 h-3" />
             </button>

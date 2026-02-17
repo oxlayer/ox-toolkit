@@ -87,7 +87,6 @@ function createBrowserViewTab(id: string, name: string, url: string): BrowserVie
   });
 
   const bounds = getContentBounds();
-  view.setBounds(bounds);
 
   const tab: BrowserViewTab = {
     id,
@@ -98,7 +97,12 @@ function createBrowserViewTab(id: string, name: string, url: string): BrowserVie
   };
 
   browserViewTabs.set(id, tab);
+
+  // Preload the URL but don't add to window yet
+  // The BrowserView will be added when we switch to this tab
   view.webContents.loadURL(`http://${url}`);
+
+  console.log(`[BrowserView] Created tab ${id} for ${url} (not attached to window yet)`);
 
   return tab;
 }
@@ -108,17 +112,26 @@ function showBrowserViewTab(tabId: string) {
   const tab = browserViewTabs.get(tabId);
   if (!tab || !mainWindow) return;
 
+  console.log(`[BrowserView] Showing tab ${tabId}`);
+
   // Hide current view if any
   if (activeTabId && activeTabId !== tabId) {
     const currentTab = browserViewTabs.get(activeTabId);
     if (currentTab) {
+      console.log(`[BrowserView] Removing current tab ${activeTabId}`);
       mainWindow.removeBrowserView(currentTab.browserView);
     }
   }
 
+  // Update bounds before showing
+  const bounds = getContentBounds();
+  tab.browserView.setBounds(bounds);
+
   // Show new view
   mainWindow.setBrowserView(tab.browserView);
   activeTabId = tabId;
+
+  console.log(`[BrowserView] Active tab is now ${tabId}`);
 
   // Send event to renderer
   mainWindow.webContents.send('browser-view-activated', { id: tabId, name: tab.name, url: tab.url });
@@ -691,6 +704,18 @@ ipcMain.handle('oxlayer:browserview-open', async (_, tabId: string, name: string
 // Switch to a specific BrowserView tab
 ipcMain.handle('oxlayer:browserview-switch', async (_, tabId: string) => {
   try {
+    // Special case: if switching to 'overview', remove any active BrowserView
+    if (tabId === 'overview' && mainWindow && activeTabId) {
+      const currentTab = browserViewTabs.get(activeTabId);
+      if (currentTab) {
+        console.log(`[BrowserView] Switching to overview, removing BrowserView ${activeTabId}`);
+        mainWindow.removeBrowserView(currentTab.browserView);
+        activeTabId = null;
+      }
+      return { success: true };
+    }
+
+    // Otherwise, show the requested BrowserView tab
     showBrowserViewTab(tabId);
     return { success: true };
   } catch (error: any) {

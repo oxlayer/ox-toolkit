@@ -3,6 +3,8 @@
  * Manages application tabs state using Electron's BrowserView API
  */
 
+import React from 'react';
+
 export interface Tab {
   id: string;
   title: string;
@@ -13,10 +15,7 @@ export interface Tab {
   content?: React.ReactNode;
   // For service tabs with BrowserView
   browserViewId?: string;
-} catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+}
 
 export class TabsService {
   private tabs: Tab[] = [];
@@ -37,29 +36,39 @@ export class TabsService {
 
     this.activeTabId = 'overview';
 
-    // Listen for BrowserView events from main process
-    if (window.oxlayer && window.oxlayer.browserView) {
-      window.oxlayer.browserView.onActivated((tab) => {
-        console.log('BrowserView activated:', tab);
-        this.activeTabId = tab.id;
-        this.notify();
-      });
+    // Debug: Check if we're in Electron
+    console.log('[TabsService] Environment check:', {
+      hasWindow: typeof window !== 'undefined',
+      hasOxlayer: !!(window as any).oxlayer,
+      hasBrowserView: !!(window as any).oxlayer?.browserView,
+      userAgent: navigator.userAgent,
+    });
 
-      window.oxlayer.browserView.onClosed((tab) => {
-        console.log('BrowserView closed:', tab);
-        // Remove from our local state
-        this.tabs = this.tabs.filter(t => t.id !== tab.id);
-        this.browserViewTabs.delete(tab.id);
-        this.notify();
-      });
+    // Listen for BrowserView events from main process
+    try {
+      if (window.oxlayer && window.oxlayer.browserView) {
+        console.log('[TabsService] BrowserView API available, setting up listeners');
+
+        window.oxlayer.browserView.onActivated((tab) => {
+          console.log('[TabsService] BrowserView activated:', tab);
+          this.activeTabId = tab.id;
+          this.notify();
+        });
+
+        window.oxlayer.browserView.onClosed((tab) => {
+          console.log('[TabsService] BrowserView closed:', tab);
+          // Remove from our local state
+          this.tabs = this.tabs.filter(t => t.id !== tab.id);
+          this.browserViewTabs.delete(tab.id);
+          this.notify();
+        });
+      } else {
+        console.warn('[TabsService] BrowserView API not available - running in browser mode or API not exposed');
+      }
     } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
-  } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+      console.error('[TabsService] Failed to setup BrowserView listeners:', error);
+    }
+  }
 
   /**
    * Subscribe to tab changes
@@ -71,50 +80,35 @@ export class TabsService {
     return () => {
       this.listeners.delete(listener);
     };
-  } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+  }
 
   /**
    * Notify all listeners of tab changes
    */
   private notify() {
     this.listeners.forEach(listener => listener(this.tabs, this.activeTabId));
-  } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+  }
 
   /**
    * Get all tabs
    */
   getTabs(): Tab[] {
     return [...this.tabs];
-  } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+  }
 
   /**
    * Get active tab
    */
   getActiveTab(): Tab {
     return this.tabs.find(tab => tab.id === this.activeTabId) || this.tabs[0];
-  } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+  }
 
   /**
    * Get active tab ID
    */
   getActiveTabId(): string {
     return this.activeTabId;
-  } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+  }
 
   /**
    * Open a new tab
@@ -143,38 +137,23 @@ export class TabsService {
             console.error('Failed to create BrowserView:', result.error);
             // Fall back to regular tab without BrowserView
             delete newTab.browserViewId;
-          } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+          }
         } catch (error) {
           console.error('BrowserView API error:', error);
           // Fall back to regular tab without BrowserView
           delete newTab.browserViewId;
-        } catch (error) {
-          console.error('Failed to close BrowserView:', error);
         }
-      }
       } else {
         console.warn('BrowserView API not available, opening tab without embedded view');
         // BrowserView not available - tab will still work but won't have embedded view
-      } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
       }
-    } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+    }
 
     this.activeTabId = id;
     this.notify();
 
     return id;
-  } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+  }
 
   /**
    * Open a service tab with BrowserView
@@ -187,10 +166,7 @@ export class TabsService {
       iconName: 'server',
       closable: true,
     });
-  } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+  }
 
   /**
    * Open a project tab
@@ -202,10 +178,7 @@ export class TabsService {
       content,
       closable: true,
     });
-  } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+  }
 
   /**
    * Open a logs tab
@@ -218,10 +191,7 @@ export class TabsService {
       iconName: 'terminal',
       closable: true,
     });
-  } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+  }
 
   /**
    * Close a tab
@@ -237,14 +207,8 @@ export class TabsService {
         this.browserViewTabs.delete(tab.browserViewId);
       } catch (error) {
         console.error('Failed to close BrowserView:', error);
-      } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
       }
-    } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+    }
 
     const index = this.tabs.findIndex(t => t.id === tabId);
     this.tabs = this.tabs.filter(t => t.id !== tabId);
@@ -261,24 +225,12 @@ export class TabsService {
           await window.oxlayer.browserView.switch(newTab.browserViewId);
         } catch (error) {
           console.error('Failed to switch BrowserView:', error);
-        } catch (error) {
-          console.error('Failed to close BrowserView:', error);
         }
       }
-      } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
-    } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+    }
 
     this.notify();
-  } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+  }
 
   /**
    * Switch to a tab
@@ -293,21 +245,12 @@ export class TabsService {
         await window.oxlayer.browserView.switch(tab.browserViewId);
       } catch (error) {
         console.error('Failed to switch BrowserView:', error);
-      } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
       }
-    } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+    }
 
     this.activeTabId = tabId;
     this.notify();
-  } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+  }
 
   /**
    * Close all tabs except dashboard
@@ -318,25 +261,20 @@ export class TabsService {
     for (const tab of tabsToClose) {
       if (tab.browserViewId && window.oxlayer && window.oxlayer.browserView) {
         try {
-      if (tab.browserViewId) {
-        await window.oxlayer.browserView.close(tab.browserViewId);
-        this.browserViewTabs.delete(tab.browserViewId);
-      } catch (error) {
+          if (tab.browserViewId) {
+            await window.oxlayer.browserView.close(tab.browserViewId);
+            this.browserViewTabs.delete(tab.browserViewId);
+          }
+        } catch (error) {
           console.error('Failed to close BrowserView:', error);
         }
       }
-    } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+    }
 
     this.tabs = this.tabs.filter(t => !t.closable);
     this.activeTabId = 'overview';
     this.notify();
-  } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+  }
 
   /**
    * Close other tabs except the specified one
@@ -347,29 +285,21 @@ export class TabsService {
     for (const tab of tabsToClose) {
       if (tab.browserViewId && window.oxlayer && window.oxlayer.browserView) {
         try {
-      if (tab.browserViewId) {
-        await window.oxlayer.browserView.close(tab.browserViewId);
-        this.browserViewTabs.delete(tab.browserViewId);
-      } catch (error) {
+          if (tab.browserViewId) {
+            await window.oxlayer.browserView.close(tab.browserViewId);
+            this.browserViewTabs.delete(tab.browserViewId);
+          }
+        } catch (error) {
           console.error('Failed to close BrowserView:', error);
         }
       }
-    } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+    }
 
     this.tabs = this.tabs.filter(t => t.id === tabId || !t.closable);
     this.activeTabId = tabId;
     this.notify();
-  } catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
-} catch (error) {
-          console.error('Failed to close BrowserView:', error);
-        }
-      }
+  }
+}
 
 // Export singleton instance
 export const tabsService = new TabsService();

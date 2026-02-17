@@ -262,13 +262,6 @@ function App() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <Header
-          currentEnv={currentEnv}
-          currentOrg={currentOrg}
-          projectCount={projects.length}
-          onNewProject={() => showNotification('warning', 'Coming soon')}
-        />
 
         {/* Tab Navigation */}
         <TabNavigation
