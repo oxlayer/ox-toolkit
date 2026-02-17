@@ -1,3 +1,5 @@
+.ox/infra
+
 node_modules
 
 # SDK Release
