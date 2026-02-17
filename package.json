@@ -87,7 +87,11 @@
       }
     },
     "ignoredBuiltDependencies": [
-      "esbuild"
+      "electron",
+      "es5-ext",
+      "esbuild",
+      "msgpackr-extract",
+      "protobufjs"
     ]
   }
 }
