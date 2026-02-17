@@ -18,6 +18,7 @@ const nodeAliases = {
 // ESM-only packages that need to be bundled (not externalized)
 const esmPackagesToBundle = [
   "electron-store", // ESM-only package, must be bundled
+  "@oxlayer/cli" // ESM-only package with top-level await
 ] as const;
 
 // Packages that must be bundled for main process (not externalized)
@@ -56,13 +57,17 @@ export default defineConfig({
       ...sharedMainPreloadBuildConfig,
       commonjsOptions: {
         ignoreDynamicRequires: true,
+        // Handle top-level await by transforming it
+        transformMixedEsModules: true,
       },
       rollupOptions: {
         input: {
           index: resolve(__dirname, "src/main/index.ts"),
         },
         output: {
-          format: "cjs" as const,
+          format: "es" as const,
+          entryFileNames: "[name].js",
+          chunkFileNames: "chunks/[name]-[hash].js",
         },
       },
     },

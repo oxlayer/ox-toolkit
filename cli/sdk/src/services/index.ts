@@ -9,3 +9,4 @@ export * from './download.service.js';
 export * from './package.service.js';
 export * from './hooks.service.js';
 export * from './telemetry.service.js';
+export * from './global-infra.service.js';

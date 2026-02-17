@@ -8,6 +8,7 @@ import { resolveCapabilities } from '../services/index.js';
 import { detectProjectType } from '../utils/env.js';
 import { header, success, error, info, printCapabilities } from '../utils/cli.js';
 import type { CapabilityName, Environment } from '../types/index.js';
+import chalk from 'chalk';
 
 export interface ResolveOptions {
   environment?: Environment;
@@ -114,5 +115,3 @@ export async function resolve(options: ResolveOptions = {}): Promise<void> {
     process.exit(1);
   }
 }
-
-const chalk = (await import('chalk')).default;

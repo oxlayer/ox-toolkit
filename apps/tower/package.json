@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "packageManager": "pnpm@10.26.1",
   "description": "OxLayer Tower - Local infrastructure manager",
+  "type": "module",
   "main": "./out/main/index.js",
   "author": "OxLayer",
   "homepage": "https://oxlayer.dev",
