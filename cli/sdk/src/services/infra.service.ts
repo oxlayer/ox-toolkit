@@ -79,7 +79,7 @@ export const SERVICE_DEFINITIONS: Record<string, ServiceDefinition> = {
     displayName: 'Keycloak',
     description: 'Identity and access management server',
     category: 'auth',
-    ports: ['8080:8080', '8081:8081'],
+    ports: ['8180:8080', '8181:8081'],
     volumes: ['keycloak_data', 'keycloak_postgres_data'],
     dependsOn: ['keycloak-postgres'],
     enabledByDefault: true,
@@ -341,23 +341,30 @@ export class InfraService {
         cwd: infraPath,
       });
 
-      const services = JSON.parse(stdout || '[]');
+      const services = stdout
+        .trim()
+        .split('\n')
+        .filter(Boolean)
+        .map(line => JSON.parse(line));
 
-      if (serviceName) {
-        return services.filter((s: any) => s.Name === serviceName).map((s: any) => ({
-          name: s.Name,
+      const mapService = (s: any) => {
+        // Strip container prefix (oxlayer-) if present to match service name
+        const name = s.Name.replace(/^oxlayer-/, '');
+        return {
+          name,
           status: s.State === 'running' ? 'running' : s.State === 'exited' ? 'stopped' : 'unknown',
           ports: s.Ports ? s.Ports.split(',').map((p: string) => p.trim().split('->')[0]) : [],
           health: s.Health,
-        }));
+        };
+      };
+
+      if (serviceName) {
+        return services
+          .map(mapService)
+          .filter((s: any) => s.name === serviceName);
       }
 
-      return services.map((s: any) => ({
-        name: s.Name,
-        status: s.State === 'running' ? 'running' : s.State === 'exited' ? 'stopped' : 'unknown',
-        ports: s.Ports ? s.Ports.split(',').map((p: string) => p.trim().split('->')[0]) : [],
-        health: s.Health,
-      }));
+      return services.map(mapService);
     } catch (error) {
       return [];
     }

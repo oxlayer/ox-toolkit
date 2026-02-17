@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["pg_isready","-U","postgres"]
+      test: ["CMD","pg_isready","-U","postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,7 +27,7 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["redis-cli","ping"]
+      test: ["CMD","redis-cli","ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -47,7 +47,7 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
-      test: ["rabbitmq-diagnostics","ping"]
+      test: ["CMD","rabbitmq-diagnostics","ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -73,8 +73,8 @@ services:
       KC_SPI_OPTIONS_COOKIE_DEFAULT_SECURE: false
       KC_SPI_OPTIONS_COOKIE_DEFAULT_SAME_SITE: lax
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "8180:8080"
+      - "8181:8081"
     volumes:
       - keycloak_data:/opt/keycloak/data
       - keycloak_postgres_data:/opt/keycloak/data
@@ -82,7 +82,7 @@ services:
       keycloak-postgres:
         condition: service_started
     healthcheck:
-      test: ["wget","--quiet","--tries=1","--spider","http://localhost:8080/health/ready"]
+      test: ["CMD","wget","--quiet","--tries=1","--spider","http://localhost:8080/health/ready"]
       interval: 10s
       timeout: 5s
       retries: 20
@@ -299,43 +299,41 @@ services:
       - oxlayer-network
 
 volumes:
-  postgres_data:
+  clickhouse_data:
     driver: local
-  redis_data:
+  clickhouse_logs:
     driver: local
-  rabbitmq_data:
+  emqx_data:
+    driver: local
+  emqx_log:
+    driver: local
+  grafana_data:
+    driver: local
+  influxdb_config:
+    driver: local
+  influxdb_data:
     driver: local
   keycloak_data:
     driver: local
   keycloak_postgres_data:
     driver: local
-  keycloak_postgres_data:
-    driver: local
-  influxdb_data:
-    driver: local
-  influxdb_config:
-    driver: local
-  grafana_data:
-    driver: local
-  prometheus_data:
-    driver: local
-  quickwit_data:
-    driver: local
-  clickhouse_data:
-    driver: local
-  clickhouse_logs:
-    driver: local
   minio_data:
-    driver: local
-  qdrant_data:
-    driver: local
-  mongodb_data:
     driver: local
   mongodb_config:
     driver: local
-  emqx_data:
+  mongodb_data:
     driver: local
-  emqx_log:
+  postgres_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  qdrant_data:
+    driver: local
+  quickwit_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+  redis_data:
     driver: local
 
 networks:

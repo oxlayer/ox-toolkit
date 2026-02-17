@@ -74,92 +74,10 @@ export class InfraConfigService {
     }
 
     // Create service-specific volume folders
-    this.createVolumeFolders(infraPath);
+    // this.createVolumeFolders(infraPath); // Removed to use named volumes
 
     // Create README files
     this.createReadmes();
-  }
-
-  /**
-   * Create service-specific volume folders
-   */
-  private createVolumeFolders(infraPath: string): void {
-    const { SERVICE_DEFINITIONS } = require('./infra.service.js');
-
-    const volumeServices = [
-      'postgres',
-      'redis',
-      'rabbitmq',
-      'keycloak',
-      'keycloak-postgres',
-      'influxdb',
-      'grafana',
-      'prometheus',
-      'clickhouse',
-      'minio',
-      'mongodb',
-      'emqx',
-    ];
-
-    for (const serviceName of volumeServices) {
-      const volumePath = join(infraPath, 'volumes', serviceName);
-      if (!existsSync(volumePath)) {
-        mkdirSync(volumePath, { recursive: true });
-      }
-
-      // Create README in each volume folder
-      const readmePath = join(volumePath, 'README.md');
-      if (!existsSync(readmePath)) {
-        const serviceDef = SERVICE_DEFINITIONS[serviceName];
-        const displayName = serviceDef ? serviceDef.displayName : serviceName;
-
-        writeFileSync(
-          readmePath,
-          `# ${displayName} Data Volume
-
-This folder contains persistent data for the ${displayName} service.
-
-## Purpose
-
-Data stored in this volume persists across container restarts.
-
-## Data Location
-
-- Host: \`.ox/infra/volumes/${serviceName}/\`
-- Container: See service definition
-
-## ⚠️  WARNING
-
-**Do not delete this folder unless you want to lose all ${displayName} data!**
-
-## Backup
-
-To backup this data:
-\`\`\`bash
-# Create a backup
-tar -czf ${serviceName}-backup-$(date +%Y%m%d).tar.gz .
-
-# Restore from backup
-tar -xzf ${serviceName}-backup-YYYYMMDD.tar.gz
-\`\`\`
-
-## Reset
-
-To reset ${displayName} to a clean state:
-\`\`\`bash
-# Stop services first
-ox infra stop
-
-# Remove data
-rm -rf .ox/infra/volumes/${serviceName}/*
-
-# Restart
-ox infra dev
-\`\`\`
-`
-        );
-      }
-    }
   }
 
   /**
@@ -330,72 +248,52 @@ These volumes will be automatically mounted when services start.
   /**
    * Get project-specific volume mounts
    */
-  getProjectVolumes(serviceName: string): { hostPath: string; containerPath: string }[] {
+  getProjectVolumes(serviceName: string): { hostPath: string; containerPath: string; readOnly?: boolean }[] {
     const infraPath = this.getInfraPath();
-    const volumes: { hostPath: string; containerPath: string }[] = [];
+    const volumes: { hostPath: string; containerPath: string; readOnly?: boolean }[] = [];
 
     // Service-specific configurations
-    const serviceMappings: Record<string, { hostPath: string; containerPath: string }[]> = {
+    const serviceMappings: Record<string, { hostPath: string; containerPath: string; readOnly?: boolean }[]> = {
       'otel-collector-observability': [
         {
           hostPath: join(infraPath, 'collectors'),
           containerPath: '/etc/collector-custom',
+          readOnly: true,
         },
       ],
       'otel-collector-domain': [
         {
           hostPath: join(infraPath, 'collectors'),
           containerPath: '/etc/collector-custom',
+          readOnly: true,
         },
       ],
       'keycloak-proxy': [
         {
           hostPath: join(infraPath, 'nginx'),
           containerPath: '/etc/nginx/conf.d/custom',
+          readOnly: true,
         },
       ],
       grafana: [
         {
           hostPath: join(infraPath, 'grafana', 'provisioning'),
           containerPath: '/etc/grafana/provisioning',
+          readOnly: true,
         },
       ],
       prometheus: [
         {
           hostPath: join(infraPath, 'prometheus'),
           containerPath: '/etc/prometheus',
+          readOnly: true,
         },
       ],
-    };
-
-    // Service-specific data volumes
-    const dataVolumeMappings: Record<string, { containerPath: string }> = {
-      postgres: '/var/lib/postgresql/data',
-      redis: '/data',
-      rabbitmq: '/var/lib/rabbitmq',
-      keycloak: '/opt/keycloak/data',
-      influxdb: '/var/lib/influxdb2',
-      grafana: '/var/lib/grafana',
-      prometheus: '/prometheus',
-      clickhouse: '/var/lib/clickhouse',
-      minio: '/data',
-      mongodb: '/data/db',
     };
 
     // Add configuration volumes
     if (serviceMappings[serviceName]) {
       volumes.push(...serviceMappings[serviceName]);
-    }
-
-    // Add data volumes if they exist
-    if (dataVolumeMappings[serviceName]) {
-      const volumePath = join(infraPath, 'volumes', serviceName);
-      if (existsSync(volumePath)) {
-        volumes.push({
-          hostPath: volumePath,
-          containerPath: dataVolumeMappings[serviceName],
-        });
-      }
     }
 
     return volumes;
@@ -453,7 +351,8 @@ These volumes will be automatically mounted when services start.
       if (volumes.length > 0) {
         overrides.push('    volumes:');
         for (const volume of volumes) {
-          overrides.push(`      - ${volume.hostPath}:${volume.containerPath}:ro`);
+          const suffix = volume.readOnly ? ':ro' : '';
+          overrides.push(`      - ${volume.hostPath}:${volume.containerPath}${suffix}`);
         }
       }
 

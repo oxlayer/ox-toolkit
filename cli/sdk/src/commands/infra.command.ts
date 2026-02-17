@@ -119,7 +119,7 @@ async function selectServices(environment: Environment): Promise<string[]> {
 /**
  * Show service status
  */
-async function showStatus(environment: Environment): Promise<void> {
+export async function showStatus(environment: Environment): Promise<void> {
   const spinner = createSpinner('Fetching service status...');
   spinner.start();
 

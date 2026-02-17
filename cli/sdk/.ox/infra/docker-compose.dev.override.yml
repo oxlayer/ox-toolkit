@@ -5,19 +5,19 @@
 services:
   postgres:
     volumes:
-      - ./cli/sdk/.ox/infra/volumes/postgres:/var/lib/postgresql/data:ro
+      - ./cli/sdk/.ox/infra/volumes/postgres:/var/lib/postgresql/data
 
   redis:
     volumes:
-      - ./cli/sdk/.ox/infra/volumes/redis:/data:ro
+      - ./cli/sdk/.ox/infra/volumes/redis:/data
 
   rabbitmq:
     volumes:
-      - ./cli/sdk/.ox/infra/volumes/rabbitmq:/var/lib/rabbitmq:ro
+      - ./cli/sdk/.ox/infra/volumes/rabbitmq:/var/lib/rabbitmq
 
   keycloak:
     volumes:
-      - ./cli/sdk/.ox/infra/volumes/keycloak:/opt/keycloak/data:ro
+      - ./cli/sdk/.ox/infra/volumes/keycloak:/opt/keycloak/data
 
   keycloak-proxy:
     volumes:

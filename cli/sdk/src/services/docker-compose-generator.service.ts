@@ -69,7 +69,7 @@ export class DockerComposeGenerator {
       // Add health check
       if (serviceDef.healthCheck) {
         lines.push('    healthcheck:');
-        lines.push(`      test: ${JSON.stringify(serviceDef.healthCheck.command.split(' '))}`);
+        lines.push(`      test: ${JSON.stringify(['CMD', ...serviceDef.healthCheck.command.split(' ')])}`);
         lines.push(`      interval: ${serviceDef.healthCheck.interval}`);
         lines.push(`      timeout: ${serviceDef.healthCheck.timeout}`);
         lines.push(`      retries: ${serviceDef.healthCheck.retries}`);
