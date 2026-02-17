@@ -62,7 +62,14 @@ packageExtensionsChecksum: sha256-9OcKT5ivvkCBBt4k7TUQ032eCXPPvOiFtAEtbhntfHY=
 importers:
 
   .:
+    dependencies:
+      js-yaml:
+        specifier: ^4.1.1
+        version: 4.1.1
     devDependencies:
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
       '@types/node':
         specifier: ^25.0.10
         version: 25.0.10
