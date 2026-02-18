@@ -54,7 +54,7 @@ export async function globalStart(): Promise<void> {
     console.log('  • PostgreSQL: postgresql://postgres:postgres@localhost:5432');
     console.log('  • Redis: redis://localhost:6379');
     console.log('  • RabbitMQ Management: http://localhost:15672');
-    console.log('  • Keycloak: http://localhost:8080');
+    console.log('  • Keycloak: http://keycloak.localhost:8080');
   } catch (err: any) {
     error(err.message);
     process.exit(1);

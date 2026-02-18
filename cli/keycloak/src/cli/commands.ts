@@ -207,7 +207,7 @@ async function generateSampleConfig(
     ? {
       extends: 'enterprise',
       keycloak: {
-        url: '${KEYCLOAK_URL:-http://localhost:8080}',
+        url: '${KEYCLOAK_URL:-http://keycloak.localhost:8080}',
         admin: {
           username: '${KEYCLOAK_ADMIN:-admin}',
           password: '${KEYCLOAK_ADMIN_PASSWORD:-admin}',
@@ -258,7 +258,7 @@ async function generateSampleConfig(
     }
     : {
       keycloak: {
-        url: '${KEYCLOAK_URL:-http://localhost:8080}',
+        url: '${KEYCLOAK_URL:-http://keycloak.localhost:8080}',
         admin: {
           username: '${KEYCLOAK_ADMIN:-admin}',
           password: '${KEYCLOAK_ADMIN_PASSWORD:-admin}',
@@ -335,7 +335,7 @@ export default defineConfig({
   extends: 'enterprise', // Use enterprise blueprint
 
   keycloak: {
-    url: process.env.KEYCLOAK_URL || 'http://localhost:8080',
+    url: process.env.KEYCLOAK_URL || 'http://keycloak.localhost:8080',
     admin: {
       username: process.env.KEYCLOAK_ADMIN || 'admin',
       password: process.env.KEYCLOAK_ADMIN_PASSWORD || 'admin',
@@ -396,7 +396,7 @@ import { defineConfig } from '@oxlayer/cli-keycloak/templates';
 
 export default defineConfig({
   keycloak: {
-    url: process.env.KEYCLOAK_URL || 'http://localhost:8080',
+    url: process.env.KEYCLOAK_URL || 'http://keycloak.localhost:8080',
     admin: {
       username: process.env.KEYCLOAK_ADMIN || 'admin',
       password: process.env.KEYCLOAK_ADMIN_PASSWORD || 'admin',

@@ -42,7 +42,7 @@ app.use('*', cors({
   origin: (origin) => {
     const allowedOrigins = [
       'http://localhost:5173',
-      'http://localhost:8080',
+      'http://keycloak.localhost:8080',
       'http://localhost:5174'
     ].filter(Boolean);
     return allowedOrigins.includes(origin) ? origin : allowedOrigins[0];

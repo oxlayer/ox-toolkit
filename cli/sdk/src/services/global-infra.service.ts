@@ -61,14 +61,7 @@ const SERVICE_DEFINITIONS: ServiceDefinition[] = [
     description: 'Identity and access management',
     category: 'core',
     ports: ['8080'],
-    dependsOn: ['keycloak-postgres'],
-  },
-  {
-    id: 'keycloak-postgres',
-    name: 'Keycloak PostgreSQL',
-    description: 'Database for Keycloak',
-    category: 'core',
-    ports: [],
+    dependsOn: ['postgres'],
   },
 
   // Monitoring services
@@ -98,7 +91,7 @@ const SERVICE_DEFINITIONS: ServiceDefinition[] = [
   },
 ];
 
-const CORE_SERVICES = ['postgres', 'redis', 'rabbitmq', 'keycloak', 'keycloak-postgres'];
+const CORE_SERVICES = ['postgres', 'redis', 'rabbitmq', 'keycloak'];
 const ALL_SERVICES = SERVICE_DEFINITIONS.map(s => s.id);
 
 export interface ProjectResources {
@@ -677,7 +670,7 @@ export class GlobalInfraService {
       RABBITMQ_USER: rabbitmq.user,
       RABBITMQ_PASSWORD: rabbitmq.password,
 
-      KEYCLOAK_URL: `http://localhost:8080/realms/${keycloak.realm}`,
+      KEYCLOAK_URL: `http://keycloak.localhost:8080/realms/${keycloak.realm}`,
       KEYCLOAK_REALM: keycloak.realm,
       KEYCLOAK_CLIENT_ID: keycloak.clientId,
       KEYCLOAK_CLIENT_SECRET: keycloak.clientSecret,
@@ -1132,6 +1125,7 @@ networks:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: keycloak
     ports:
       - "5432:5432"
     volumes:
@@ -1192,20 +1186,22 @@ networks:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://ox-keycloak-postgres:5432/keycloak
-      KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: keycloak
-      KC_HOSTNAME: localhost
-      KC_HOSTNAME_PORT: 8080
+      KC_DB_URL: jdbc:postgresql://ox-postgres:5432/keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KC_HOSTNAME: keycloak.localhost
+      KC_HOSTNAME_PORT: 80
       KC_HOSTNAME_STRICT: false
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HTTP_ENABLED: true
+      KC_PROXY: edge
+      KC_PROXY_HEADERS: "xforwarded"
       KC_SPI_OPTIONS_COOKIE_DEFAULT_SECURE: "false"
       KC_SPI_OPTIONS_COOKIE_DEFAULT_SAME_SITE: "lax"
     ports:
       - "8080:8080"
     depends_on:
-      ox-keycloak-postgres:
+      ox-postgres:
         condition: service_healthy
     volumes:
       - ox_keycloak_data:/opt/keycloak/data
@@ -1215,28 +1211,19 @@ networks:
       timeout: 5s
       retries: 20
       start_period: 30s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.keycloak.rule=Host(\`keycloak.localhost\`)"
+      - "traefik.http.routers.keycloak.entrypoints=web"
+      - "traefik.http.routers.keycloak.middlewares=keycloak-headers"
+      - "traefik.http.middlewares.keycloak-headers.headers.customrequestheaders.X-Forwarded-Proto=http"
+      - "traefik.http.middlewares.keycloak-headers.headers.customrequestheaders.X-Forwarded-Host=keycloak.localhost"
+      - "traefik.http.middlewares.keycloak-headers.headers.sslredirect=false"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
     networks:
       - ox_net
     restart: unless-stopped`,
 
-      'keycloak-postgres': `  # Keycloak Database
-  ox-keycloak-postgres:
-    image: postgres:16-alpine
-    container_name: ox-keycloak-postgres
-    environment:
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: keycloak
-      POSTGRES_DB: keycloak
-    volumes:
-      - ox_keycloak_postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U keycloak"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - ox_net
-    restart: unless-stopped`,
 
       'prometheus': `  # Prometheus (metrics collection)
   prometheus:
@@ -1282,6 +1269,8 @@ networks:
       - "--providers.docker=true"
       - "--entryPoints.web.address=:80"
       - "--entryPoints.websecure.address=:443"
+      - "--entrypoints.web.http.middlewares=ssl-redirect@file"
+      - "--serversTransport.insecureSkipVerify=true"
     ports:
       - "80:80"
       - "443:443"
@@ -1347,7 +1336,7 @@ RABBITMQ_VHOST=${config.resources.rabbitmq.vhost}
 RABBITMQ_USER=${config.resources.rabbitmq.user}
 
 # Keycloak
-KEYCLOAK_URL=http://localhost:8080/realms/${config.resources.keycloak.realm}
+KEYCLOAK_URL=http://keycloak.localhost:8080/realms/${config.resources.keycloak.realm}
 KEYCLOAK_REALM=${config.resources.keycloak.realm}
 KEYCLOAK_CLIENT_ID=${config.resources.keycloak.clientId}
 `;
@@ -1709,7 +1698,7 @@ service:
    * - Prometheus/OTEL: File-based (scrape.d/*.yml, collectors.d/*.yaml)
    * - Grafana: API-based (create org, user, datasources, dashboards)
    */
-  async syncMonitoringConfig(projectName: string, oxlayerDir: string): Promise<void> {
+  async syncMonitoringConfig(projectName: string, oxDir: string): Promise<void> {
     console.log(`🔄 Syncing monitoring configuration for '${projectName}'...`);
 
     const project = this.getProject(projectName);
@@ -1719,12 +1708,12 @@ service:
 
     // Define monitoring config paths in project
     const monitoringPaths = {
-      prometheus: oxlayerDir + '/prometheus/prometheus.yml',
-      grafanaDatasources: oxlayerDir + '/grafana/provisioning/datasources/datasources.yml',
-      grafanaDashboards: oxlayerDir + '/grafana/provisioning/dashboards/dashboards.yml',
-      grafanaDashboardDir: oxlayerDir + '/grafana/provisioning/dashboards/',
-      collectorObservability: oxlayerDir + '/collector-observability.yaml',
-      collectorDomain: oxlayerDir + '/collector-domain.yaml',
+      prometheus: oxDir + '/prometheus/prometheus.yml',
+      grafanaDatasources: oxDir + '/grafana/provisioning/datasources/datasources.yml',
+      grafanaDashboards: oxDir + '/grafana/provisioning/dashboards/dashboards.yml',
+      grafanaDashboardDir: oxDir + '/grafana/provisioning/dashboards/',
+      collectorObservability: oxDir + '/collector-observability.yaml',
+      collectorDomain: oxDir + '/collector-domain.yaml',
     };
 
     // Define global infra paths (split config approach)
@@ -1769,7 +1758,7 @@ service:
     if (existsSync(monitoringPaths.grafanaDatasources) || existsSync(monitoringPaths.grafanaDashboards)) {
       try {
         console.log('  📈 Syncing Grafana configuration (API-based)...');
-        await this.syncGrafanaApiBased(projectName, oxlayerDir, monitoringPaths);
+        await this.syncGrafanaApiBased(projectName, oxDir, monitoringPaths);
       } catch (error: any) {
         console.warn('  ⚠ Could not sync Grafana:', error.message);
       }
@@ -1876,27 +1865,29 @@ scrape_config_files:
     const orgId = await this.createGrafanaOrganization(grafanaUrl, grafanaUser, grafanaPassword, projectName);
     console.log(`    ✓ Created Grafana organization: ${projectName} (ID: ${orgId})`);
 
-    // Step 2: Create API key for this org
-    const apiKey = await this.createGrafanaApiKey(grafanaUrl, grafanaUser, grafanaPassword, orgId);
-    console.log(`    ✓ Created API key for organization`);
+    // Step 2: Create user for this project
+    const projectUser = await this.createGrafanaUser(grafanaUrl, grafanaUser, grafanaPassword, projectName, orgId);
+    console.log(`    ✓ Created Grafana user: ${projectUser}`);
 
-    // Step 3: Create datasources in the project's organization
+    // Step 3: Create datasources using admin credentials (simpler than API keys in Grafana 12.x)
     if (existsSync(monitoringPaths.grafanaDatasources)) {
-      await this.createGrafanaDatasources(grafanaUrl, apiKey, monitoringPaths.grafanaDatasources);
+      await this.createGrafanaDatasourcesWithCreds(grafanaUrl, grafanaUser, grafanaPassword, orgId, monitoringPaths.grafanaDatasources);
       console.log('    ✓ Created datasources');
     }
 
-    // Step 4: Create dashboards in the project's organization
+    // Step 4: Create dashboards using admin credentials
     if (existsSync(monitoringPaths.grafanaDashboards)) {
-      await this.createGrafanaDashboards(grafanaUrl, apiKey, projectName, monitoringPaths.grafanaDashboardDir);
+      await this.createGrafanaDashboardsWithCreds(grafanaUrl, grafanaUser, grafanaPassword, orgId, projectName, monitoringPaths.grafanaDashboardDir);
       console.log('    ✓ Created dashboards');
     }
   }
 
   /**
    * Create Grafana organization via API
+   * If organization already exists, return its ID
    */
   private async createGrafanaOrganization(grafanaUrl: string, user: string, password: string, orgName: string): Promise<number> {
+    // First, try to create the organization
     const response = await execAsync(
       `curl -s -X POST "${grafanaUrl}/api/orgs" \
        -u "${user}:${password}" \
@@ -1905,29 +1896,73 @@ scrape_config_files:
     );
 
     const result = JSON.parse(response.stdout);
-    return result.orgId || result.id;
+
+    // If organization was created successfully
+    if (result.orgId) {
+      return result.orgId;
+    }
+
+    // If organization already exists, look up its ID
+    if (result.message && result.message.includes('name taken')) {
+      const listResponse = await execAsync(
+        `curl -s -X GET "${grafanaUrl}/api/orgs" \
+         -u "${user}:${password}"`
+      );
+
+      const orgs = JSON.parse(listResponse.stdout);
+      const existingOrg = orgs.find((o: any) => o.name === orgName);
+
+      if (existingOrg && existingOrg.id) {
+        return existingOrg.id;
+      }
+    }
+
+    throw new Error(`Failed to create or find organization: ${JSON.stringify(result)}`);
   }
 
   /**
-   * Create Grafana API key for organization
+   * Create Grafana user for project organization
+   * Note: Grafana 12.x has changed the API for adding users to organizations
+   * We create the user globally; the org assignment is handled separately via the API key
    */
-  private async createGrafanaApiKey(grafanaUrl: string, user: string, password: string, orgId: number): Promise<string> {
-    const response = await execAsync(
-      `curl -s -X POST "${grafanaUrl}/api/auth/keys" \
-       -u "${user}:${password}" \
+  private async createGrafanaUser(grafanaUrl: string, adminUser: string, adminPassword: string, projectName: string, _orgId: number): Promise<string> {
+    // Generate a secure password for the project user
+    const password = this.generatePassword(16);
+    const username = `${projectName}-user`;
+
+    // Step 1: Create user in global context using admin API
+    const createResponse = await execAsync(
+      `curl -s -X POST "${grafanaUrl}/api/admin/users" \
+       -u "${adminUser}:${adminPassword}" \
        -H "Content-Type: application/json" \
-       -H "X-Grafana-Org-Id: ${orgId}" \
-       -d '{"name":"oxlayer-auto","role":"Admin","secondsToLive":0}'`
+       -d '{
+         "name":"${projectName}",
+         "email":"${projectName}@oxlayer.local",
+         "login":"${username}",
+         "password":"${password}"
+       }'`
     );
 
-    const result = JSON.parse(response.stdout);
-    return result.key;
+    let createResult = JSON.parse(createResponse.stdout);
+
+    // Check if user was created or already exists
+    if (createResult.id) {
+      console.log(`      → Created user: ${username} (ID: ${createResult.id})`);
+    } else if (createResult.message && createResult.message.includes('already exists')) {
+      console.log(`      ℹ User ${username} already exists`);
+    } else {
+      throw new Error(`Failed to create user: ${JSON.stringify(createResult)}`);
+    }
+
+    console.log(`      ℹ User created globally (org membership requires manual setup or will use API key)`);
+
+    return username;
   }
 
   /**
-   * Create Grafana datasources via API
+   * Create Grafana datasources via API using admin credentials
    */
-  private async createGrafanaDatasources(grafanaUrl: string, apiKey: string, datasourcesPath: string): Promise<void> {
+  private async createGrafanaDatasourcesWithCreds(grafanaUrl: string, user: string, password: string, orgId: number, datasourcesPath: string): Promise<void> {
     const yaml = await import('js-yaml');
     const configContent = readFileSync(datasourcesPath, 'utf-8');
     const config = yaml.load(configContent) as any;
@@ -1935,26 +1970,33 @@ scrape_config_files:
     if (!config.datasources) return;
 
     for (const ds of config.datasources) {
-      const response = await execAsync(
-        `curl -s -X POST "${grafanaUrl}/api/datasources" \
-         -H "Authorization: Bearer ${apiKey}" \
-         -H "Content-Type: application/json" \
-         -d '${JSON.stringify(ds)}'`
-      );
+      try {
+        const response = await execAsync(
+          `curl -s -X POST "${grafanaUrl}/api/datasources" \
+           -u "${user}:${password}" \
+           -H "Content-Type: application/json" \
+           -H "X-Grafana-Org-Id: ${orgId}" \
+           -d '${JSON.stringify(ds)}'`
+        );
 
-      const result = JSON.parse(response.stdout);
-      if (result.message === 'Datasource added') {
-        console.log(`      + Added datasource: ${ds.name}`);
-      } else if (result.message && result.message.includes('already exists')) {
-        console.log(`      ℹ Datasource exists: ${ds.name}`);
+        const result = JSON.parse(response.stdout);
+        if (result.message === 'Datasource added') {
+          console.log(`      + Added datasource: ${ds.name}`);
+        } else if (result.message && result.message.includes('already exists')) {
+          console.log(`      ℹ Datasource exists: ${ds.name}`);
+        } else {
+          console.log(`      ⚠ Datasource ${ds.name}: ${JSON.stringify(result)}`);
+        }
+      } catch (error: any) {
+        console.log(`      ✗ Failed to add datasource ${ds.name}: ${error.message}`);
       }
     }
   }
 
   /**
-   * Create Grafana dashboards via API
+   * Create Grafana dashboards via API using admin credentials
    */
-  private async createGrafanaDashboards(grafanaUrl: string, apiKey: string, projectName: string, dashboardDir: string): Promise<void> {
+  private async createGrafanaDashboardsWithCreds(grafanaUrl: string, user: string, password: string, orgId: number, projectName: string, dashboardDir: string): Promise<void> {
     if (!existsSync(dashboardDir)) return;
 
     const dashboardFiles = require('fs').readdirSync(dashboardDir)
@@ -1968,20 +2010,30 @@ scrape_config_files:
       // Wrap in Grafana API format
       const payload = {
         dashboard: dashboard,
-        overwrite: true,
-        message: `Synced from ${projectName}`,
+        folderId: 0,
+        message: `Added by OxLayer for ${projectName}`,
+        overwrite: true
       };
 
-      const response = await execAsync(
-        `curl -s -X POST "${grafanaUrl}/api/dashboards/db" \
-         -H "Authorization: Bearer ${apiKey}" \
-         -H "Content-Type: application/json" \
-         -d '${JSON.stringify(payload)}'`
-      );
+      try {
+        const response = await execAsync(
+          `curl -s -X POST "${grafanaUrl}/api/dashboards/db" \
+           -u "${user}:${password}" \
+           -H "Content-Type: application/json" \
+           -H "X-Grafana-Org-Id: ${orgId}" \
+           -d '${JSON.stringify(payload)}'`
+        );
 
-      const result = JSON.parse(response.stdout);
-      if (result.status === 'success') {
-        console.log(`      + Added dashboard: ${dashboard.title || file}`);
+        const result = JSON.parse(response.stdout);
+        if (result.status === 'success') {
+          console.log(`      + Added dashboard: ${dashboard.title || file}`);
+        } else if (result.message && result.message.includes('already exists')) {
+          console.log(`      ℹ Dashboard exists: ${dashboard.title || file}`);
+        } else {
+          console.log(`      ⚠ Dashboard ${dashboard.title || file}: ${JSON.stringify(result)}`);
+        }
+      } catch (error: any) {
+        console.log(`      ✗ Failed to add dashboard ${dashboard.title || file}: ${error.message}`);
       }
     }
   }

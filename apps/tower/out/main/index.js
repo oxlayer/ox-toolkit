@@ -423,7 +423,7 @@ for (const model of usedModels) {
   styles$1[model] = {
     get() {
       const { level } = this;
-      return function(...arguments_) {
+      return function (...arguments_) {
         const styler = createStyler(getModelAnsi(model, levelMapping[level], "color", ...arguments_), ansiStyles$1.color.close, this[STYLER]);
         return createBuilder(this, styler, this[IS_EMPTY]);
       };
@@ -433,7 +433,7 @@ for (const model of usedModels) {
   styles$1[bgModel] = {
     get() {
       const { level } = this;
-      return function(...arguments_) {
+      return function (...arguments_) {
         const styler = createStyler(getModelAnsi(model, levelMapping[level], "bgColor", ...arguments_), ansiStyles$1.bgColor.close, this[STYLER]);
         return createBuilder(this, styler, this[IS_EMPTY]);
       };
@@ -569,21 +569,21 @@ function requireIsFullwidthCodePoint() {
       return false;
     }
     if (codePoint >= 4352 && (codePoint <= 4447 || // Hangul Jamo
-    codePoint === 9001 || // LEFT-POINTING ANGLE BRACKET
-    codePoint === 9002 || // RIGHT-POINTING ANGLE BRACKET
-    // CJK Radicals Supplement .. Enclosed CJK Letters and Months
-    11904 <= codePoint && codePoint <= 12871 && codePoint !== 12351 || // Enclosed CJK Letters and Months .. CJK Unified Ideographs Extension A
-    12880 <= codePoint && codePoint <= 19903 || // CJK Unified Ideographs .. Yi Radicals
-    19968 <= codePoint && codePoint <= 42182 || // Hangul Jamo Extended-A
-    43360 <= codePoint && codePoint <= 43388 || // Hangul Syllables
-    44032 <= codePoint && codePoint <= 55203 || // CJK Compatibility Ideographs
-    63744 <= codePoint && codePoint <= 64255 || // Vertical Forms
-    65040 <= codePoint && codePoint <= 65049 || // CJK Compatibility Forms .. Small Form Variants
-    65072 <= codePoint && codePoint <= 65131 || // Halfwidth and Fullwidth Forms
-    65281 <= codePoint && codePoint <= 65376 || 65504 <= codePoint && codePoint <= 65510 || // Kana Supplement
-    110592 <= codePoint && codePoint <= 110593 || // Enclosed Ideographic Supplement
-    127488 <= codePoint && codePoint <= 127569 || // CJK Unified Ideographs Extension B .. Tertiary Ideographic Plane
-    131072 <= codePoint && codePoint <= 262141)) {
+      codePoint === 9001 || // LEFT-POINTING ANGLE BRACKET
+      codePoint === 9002 || // RIGHT-POINTING ANGLE BRACKET
+      // CJK Radicals Supplement .. Enclosed CJK Letters and Months
+      11904 <= codePoint && codePoint <= 12871 && codePoint !== 12351 || // Enclosed CJK Letters and Months .. CJK Unified Ideographs Extension A
+      12880 <= codePoint && codePoint <= 19903 || // CJK Unified Ideographs .. Yi Radicals
+      19968 <= codePoint && codePoint <= 42182 || // Hangul Jamo Extended-A
+      43360 <= codePoint && codePoint <= 43388 || // Hangul Syllables
+      44032 <= codePoint && codePoint <= 55203 || // CJK Compatibility Ideographs
+      63744 <= codePoint && codePoint <= 64255 || // Vertical Forms
+      65040 <= codePoint && codePoint <= 65049 || // CJK Compatibility Forms .. Small Form Variants
+      65072 <= codePoint && codePoint <= 65131 || // Halfwidth and Fullwidth Forms
+      65281 <= codePoint && codePoint <= 65376 || 65504 <= codePoint && codePoint <= 65510 || // Kana Supplement
+      110592 <= codePoint && codePoint <= 110593 || // Enclosed Ideographic Supplement
+      127488 <= codePoint && codePoint <= 127569 || // CJK Unified Ideographs Extension B .. Tertiary Ideographic Plane
+      131072 <= codePoint && codePoint <= 262141)) {
       return true;
     }
     return false;
@@ -597,7 +597,7 @@ var hasRequiredEmojiRegex;
 function requireEmojiRegex() {
   if (hasRequiredEmojiRegex) return emojiRegex;
   hasRequiredEmojiRegex = 1;
-  emojiRegex = function() {
+  emojiRegex = function () {
     return /\uD83C\uDFF4\uDB40\uDC67\uDB40\uDC62(?:\uDB40\uDC65\uDB40\uDC6E\uDB40\uDC67|\uDB40\uDC73\uDB40\uDC63\uDB40\uDC74|\uDB40\uDC77\uDB40\uDC6C\uDB40\uDC73)\uDB40\uDC7F|\uD83D\uDC68(?:\uD83C\uDFFC\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFF\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFE])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFE\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFD])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFD\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFC])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D)?\uD83D\uDC68|(?:\uD83D[\uDC68\uDC69])\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67]))|\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|(?:\uD83D[\uDC68\uDC69])\u200D(?:\uD83D[\uDC66\uDC67])|[\u2695\u2696\u2708]\uFE0F|\uD83D[\uDC66\uDC67]|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|(?:\uD83C\uDFFB\u200D[\u2695\u2696\u2708]|\uD83C\uDFFF\u200D[\u2695\u2696\u2708]|\uD83C\uDFFE\u200D[\u2695\u2696\u2708]|\uD83C\uDFFD\u200D[\u2695\u2696\u2708]|\uD83C\uDFFC\u200D[\u2695\u2696\u2708])\uFE0F|\uD83C\uDFFB\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C[\uDFFB-\uDFFF])|(?:\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)\uD83C\uDFFB|\uD83E\uDDD1(?:\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1(?:\uD83C[\uDFFB-\uDFFF])|\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1)|(?:\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D(?:\uD83D[\uDC68\uDC69]))(?:\uD83C[\uDFFB-\uDFFE])|(?:\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)(?:\uD83C[\uDFFB\uDFFC])|\uD83D\uDC69(?:\uD83C\uDFFE\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFD\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFC\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFD-\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFB\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFC-\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFD\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFC\uDFFE\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D(?:\uD83D[\uDC68\uDC69])|\uD83D[\uDC68\uDC69])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFF\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD]))|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67]))|(?:\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)(?:\uD83C[\uDFFB-\uDFFD])|\uD83D\uDC69\u200D\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D[\uDC66\uDC67])|(?:\uD83D\uDC41\uFE0F\u200D\uD83D\uDDE8|\uD83D\uDC69(?:\uD83C\uDFFF\u200D[\u2695\u2696\u2708]|\uD83C\uDFFE\u200D[\u2695\u2696\u2708]|\uD83C\uDFFC\u200D[\u2695\u2696\u2708]|\uD83C\uDFFB\u200D[\u2695\u2696\u2708]|\uD83C\uDFFD\u200D[\u2695\u2696\u2708]|\u200D[\u2695\u2696\u2708])|(?:(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)\uFE0F|\uD83D\uDC6F|\uD83E[\uDD3C\uDDDE\uDDDF])\u200D[\u2640\u2642]|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDB8\uDDB9\uDDCD-\uDDCF\uDDD6-\uDDDD])(?:(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]|\u200D[\u2640\u2642])|\uD83C\uDFF4\u200D\u2620)\uFE0F|\uD83D\uDC69\u200D\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|\uD83C\uDFF3\uFE0F\u200D\uD83C\uDF08|\uD83D\uDC15\u200D\uD83E\uDDBA|\uD83D\uDC69\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83D\uDC67|\uD83C\uDDFD\uD83C\uDDF0|\uD83C\uDDF4\uD83C\uDDF2|\uD83C\uDDF6\uD83C\uDDE6|[#\*0-9]\uFE0F\u20E3|\uD83C\uDDE7(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEF\uDDF1-\uDDF4\uDDF6-\uDDF9\uDDFB\uDDFC\uDDFE\uDDFF])|\uD83C\uDDF9(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDED\uDDEF-\uDDF4\uDDF7\uDDF9\uDDFB\uDDFC\uDDFF])|\uD83C\uDDEA(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDED\uDDF7-\uDDFA])|\uD83E\uDDD1(?:\uD83C[\uDFFB-\uDFFF])|\uD83C\uDDF7(?:\uD83C[\uDDEA\uDDF4\uDDF8\uDDFA\uDDFC])|\uD83D\uDC69(?:\uD83C[\uDFFB-\uDFFF])|\uD83C\uDDF2(?:\uD83C[\uDDE6\uDDE8-\uDDED\uDDF0-\uDDFF])|\uD83C\uDDE6(?:\uD83C[\uDDE8-\uDDEC\uDDEE\uDDF1\uDDF2\uDDF4\uDDF6-\uDDFA\uDDFC\uDDFD\uDDFF])|\uD83C\uDDF0(?:\uD83C[\uDDEA\uDDEC-\uDDEE\uDDF2\uDDF3\uDDF5\uDDF7\uDDFC\uDDFE\uDDFF])|\uD83C\uDDED(?:\uD83C[\uDDF0\uDDF2\uDDF3\uDDF7\uDDF9\uDDFA])|\uD83C\uDDE9(?:\uD83C[\uDDEA\uDDEC\uDDEF\uDDF0\uDDF2\uDDF4\uDDFF])|\uD83C\uDDFE(?:\uD83C[\uDDEA\uDDF9])|\uD83C\uDDEC(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEE\uDDF1-\uDDF3\uDDF5-\uDDFA\uDDFC\uDDFE])|\uD83C\uDDF8(?:\uD83C[\uDDE6-\uDDEA\uDDEC-\uDDF4\uDDF7-\uDDF9\uDDFB\uDDFD-\uDDFF])|\uD83C\uDDEB(?:\uD83C[\uDDEE-\uDDF0\uDDF2\uDDF4\uDDF7])|\uD83C\uDDF5(?:\uD83C[\uDDE6\uDDEA-\uDDED\uDDF0-\uDDF3\uDDF7-\uDDF9\uDDFC\uDDFE])|\uD83C\uDDFB(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDEE\uDDF3\uDDFA])|\uD83C\uDDF3(?:\uD83C[\uDDE6\uDDE8\uDDEA-\uDDEC\uDDEE\uDDF1\uDDF4\uDDF5\uDDF7\uDDFA\uDDFF])|\uD83C\uDDE8(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDEE\uDDF0-\uDDF5\uDDF7\uDDFA-\uDDFF])|\uD83C\uDDF1(?:\uD83C[\uDDE6-\uDDE8\uDDEE\uDDF0\uDDF7-\uDDFB\uDDFE])|\uD83C\uDDFF(?:\uD83C[\uDDE6\uDDF2\uDDFC])|\uD83C\uDDFC(?:\uD83C[\uDDEB\uDDF8])|\uD83C\uDDFA(?:\uD83C[\uDDE6\uDDEC\uDDF2\uDDF3\uDDF8\uDDFE\uDDFF])|\uD83C\uDDEE(?:\uD83C[\uDDE8-\uDDEA\uDDF1-\uDDF4\uDDF6-\uDDF9])|\uD83C\uDDEF(?:\uD83C[\uDDEA\uDDF2\uDDF4\uDDF5])|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDB8\uDDB9\uDDCD-\uDDCF\uDDD6-\uDDDD])(?:\uD83C[\uDFFB-\uDFFF])|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u261D\u270A-\u270D]|\uD83C[\uDF85\uDFC2\uDFC7]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66\uDC67\uDC6B-\uDC6D\uDC70\uDC72\uDC74-\uDC76\uDC78\uDC7C\uDC83\uDC85\uDCAA\uDD74\uDD7A\uDD90\uDD95\uDD96\uDE4C\uDE4F\uDEC0\uDECC]|\uD83E[\uDD0F\uDD18-\uDD1C\uDD1E\uDD1F\uDD30-\uDD36\uDDB5\uDDB6\uDDBB\uDDD2-\uDDD5])(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u231A\u231B\u23E9-\u23EC\u23F0\u23F3\u25FD\u25FE\u2614\u2615\u2648-\u2653\u267F\u2693\u26A1\u26AA\u26AB\u26BD\u26BE\u26C4\u26C5\u26CE\u26D4\u26EA\u26F2\u26F3\u26F5\u26FA\u26FD\u2705\u270A\u270B\u2728\u274C\u274E\u2753-\u2755\u2757\u2795-\u2797\u27B0\u27BF\u2B1B\u2B1C\u2B50\u2B55]|\uD83C[\uDC04\uDCCF\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE1A\uDE2F\uDE32-\uDE36\uDE38-\uDE3A\uDE50\uDE51\uDF00-\uDF20\uDF2D-\uDF35\uDF37-\uDF7C\uDF7E-\uDF93\uDFA0-\uDFCA\uDFCF-\uDFD3\uDFE0-\uDFF0\uDFF4\uDFF8-\uDFFF]|\uD83D[\uDC00-\uDC3E\uDC40\uDC42-\uDCFC\uDCFF-\uDD3D\uDD4B-\uDD4E\uDD50-\uDD67\uDD7A\uDD95\uDD96\uDDA4\uDDFB-\uDE4F\uDE80-\uDEC5\uDECC\uDED0-\uDED2\uDED5\uDEEB\uDEEC\uDEF4-\uDEFA\uDFE0-\uDFEB]|\uD83E[\uDD0D-\uDD3A\uDD3C-\uDD45\uDD47-\uDD71\uDD73-\uDD76\uDD7A-\uDDA2\uDDA5-\uDDAA\uDDAE-\uDDCA\uDDCD-\uDDFF\uDE70-\uDE73\uDE78-\uDE7A\uDE80-\uDE82\uDE90-\uDE95])|(?:[#\*0-9\xA9\xAE\u203C\u2049\u2122\u2139\u2194-\u2199\u21A9\u21AA\u231A\u231B\u2328\u23CF\u23E9-\u23F3\u23F8-\u23FA\u24C2\u25AA\u25AB\u25B6\u25C0\u25FB-\u25FE\u2600-\u2604\u260E\u2611\u2614\u2615\u2618\u261D\u2620\u2622\u2623\u2626\u262A\u262E\u262F\u2638-\u263A\u2640\u2642\u2648-\u2653\u265F\u2660\u2663\u2665\u2666\u2668\u267B\u267E\u267F\u2692-\u2697\u2699\u269B\u269C\u26A0\u26A1\u26AA\u26AB\u26B0\u26B1\u26BD\u26BE\u26C4\u26C5\u26C8\u26CE\u26CF\u26D1\u26D3\u26D4\u26E9\u26EA\u26F0-\u26F5\u26F7-\u26FA\u26FD\u2702\u2705\u2708-\u270D\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753-\u2755\u2757\u2763\u2764\u2795-\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05-\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]|\uD83C[\uDC04\uDCCF\uDD70\uDD71\uDD7E\uDD7F\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE02\uDE1A\uDE2F\uDE32-\uDE3A\uDE50\uDE51\uDF00-\uDF21\uDF24-\uDF93\uDF96\uDF97\uDF99-\uDF9B\uDF9E-\uDFF0\uDFF3-\uDFF5\uDFF7-\uDFFF]|\uD83D[\uDC00-\uDCFD\uDCFF-\uDD3D\uDD49-\uDD4E\uDD50-\uDD67\uDD6F\uDD70\uDD73-\uDD7A\uDD87\uDD8A-\uDD8D\uDD90\uDD95\uDD96\uDDA4\uDDA5\uDDA8\uDDB1\uDDB2\uDDBC\uDDC2-\uDDC4\uDDD1-\uDDD3\uDDDC-\uDDDE\uDDE1\uDDE3\uDDE8\uDDEF\uDDF3\uDDFA-\uDE4F\uDE80-\uDEC5\uDECB-\uDED2\uDED5\uDEE0-\uDEE5\uDEE9\uDEEB\uDEEC\uDEF0\uDEF3-\uDEFA\uDFE0-\uDFEB]|\uD83E[\uDD0D-\uDD3A\uDD3C-\uDD45\uDD47-\uDD71\uDD73-\uDD76\uDD7A-\uDDA2\uDDA5-\uDDAA\uDDAE-\uDDCA\uDDCD-\uDDFF\uDE70-\uDE73\uDE78-\uDE7A\uDE80-\uDE82\uDE90-\uDE95])\uFE0F|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85\uDFC2-\uDFC4\uDFC7\uDFCA-\uDFCC]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66-\uDC78\uDC7C\uDC81-\uDC83\uDC85-\uDC87\uDC8F\uDC91\uDCAA\uDD74\uDD75\uDD7A\uDD90\uDD95\uDD96\uDE45-\uDE47\uDE4B-\uDE4F\uDEA3\uDEB4-\uDEB6\uDEC0\uDECC]|\uD83E[\uDD0F\uDD18-\uDD1F\uDD26\uDD30-\uDD39\uDD3C-\uDD3E\uDDB5\uDDB6\uDDB8\uDDB9\uDDBB\uDDCD-\uDDCF\uDDD1-\uDDDD])/g;
   };
   return emojiRegex;
@@ -651,7 +651,7 @@ function requireUtils() {
     let code = codeRegex();
     let stripped = ("" + str2).replace(code, "");
     let split = stripped.split("\n");
-    return split.reduce(function(memo, s) {
+    return split.reduce(function (memo, s) {
       return stringWidth2(s) > memo ? stringWidth2(s) : memo;
     }, 0);
   }
@@ -732,7 +732,7 @@ function requireUtils() {
     let lastForegroundAdded = state2.lastForegroundAdded;
     delete state2.lastBackgroundAdded;
     delete state2.lastForegroundAdded;
-    Object.keys(state2).forEach(function(key) {
+    Object.keys(state2).forEach(function (key) {
       if (state2[key]) {
         ret += codeCache[key].off;
       }
@@ -750,7 +750,7 @@ function requireUtils() {
     let lastForegroundAdded = state2.lastForegroundAdded;
     delete state2.lastBackgroundAdded;
     delete state2.lastForegroundAdded;
-    Object.keys(state2).forEach(function(key) {
+    Object.keys(state2).forEach(function (key) {
       if (state2[key]) {
         ret = codeCache[key].on + ret;
       }
@@ -950,7 +950,7 @@ var hasRequiredStyles;
 function requireStyles() {
   if (hasRequiredStyles) return styles.exports;
   hasRequiredStyles = 1;
-  (function(module) {
+  (function (module) {
     var styles2 = {};
     module["exports"] = styles2;
     var codes = {
@@ -1006,7 +1006,7 @@ function requireStyles() {
       cyanBG: [46, 49],
       whiteBG: [47, 49]
     };
-    Object.keys(codes).forEach(function(key) {
+    Object.keys(codes).forEach(function (key) {
       var val = codes[key];
       var style = styles2[key] = [];
       style.open = "\x1B[" + val[0] + "m";
@@ -1020,7 +1020,7 @@ var hasRequiredHasFlag$1;
 function requireHasFlag$1() {
   if (hasRequiredHasFlag$1) return hasFlag$1;
   hasRequiredHasFlag$1 = 1;
-  hasFlag$1 = function(flag, argv) {
+  hasFlag$1 = function (flag, argv) {
     argv = argv || process.argv;
     var terminatorPos = argv.indexOf("--");
     var prefix = /^-{1,2}/.test(flag) ? "" : "--";
@@ -1079,7 +1079,7 @@ function requireSupportsColors() {
       return 1;
     }
     if ("CI" in env2) {
-      if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI"].some(function(sign) {
+      if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI"].some(function (sign) {
         return sign in env2;
       }) || env2.CI_NAME === "codeship") {
         return 1;
@@ -1130,7 +1130,7 @@ var hasRequiredTrap;
 function requireTrap() {
   if (hasRequiredTrap) return trap.exports;
   hasRequiredTrap = 1;
-  (function(module) {
+  (function (module) {
     module["exports"] = function runTheTrap(text, options) {
       var result = "";
       text = text || "Run the trap, drop the bass";
@@ -1182,7 +1182,7 @@ function requireTrap() {
         y: ["¥", "Ұ", "Ӌ"],
         z: ["Ƶ", "ɀ"]
       };
-      text.forEach(function(c2) {
+      text.forEach(function (c2) {
         c2 = c2.toLowerCase();
         var chars = trap2[c2] || [" "];
         var rand = Math.floor(Math.random() * chars.length);
@@ -1202,7 +1202,7 @@ var hasRequiredZalgo;
 function requireZalgo() {
   if (hasRequiredZalgo) return zalgo.exports;
   hasRequiredZalgo = 1;
-  (function(module) {
+  (function (module) {
     module["exports"] = function zalgo2(text, options) {
       text = text || "   he is here   ";
       var soul = {
@@ -1332,7 +1332,7 @@ function requireZalgo() {
       }
       function isChar(character) {
         var bool2 = false;
-        all.filter(function(i) {
+        all.filter(function (i) {
           bool2 = i === character;
         });
         return bool2;
@@ -1392,9 +1392,9 @@ var hasRequiredAmerica;
 function requireAmerica() {
   if (hasRequiredAmerica) return america.exports;
   hasRequiredAmerica = 1;
-  (function(module) {
-    module["exports"] = function(colors2) {
-      return function(letter, i, exploded) {
+  (function (module) {
+    module["exports"] = function (colors2) {
+      return function (letter, i, exploded) {
         if (letter === " ") return letter;
         switch (i % 3) {
           case 0:
@@ -1414,9 +1414,9 @@ var hasRequiredZebra;
 function requireZebra() {
   if (hasRequiredZebra) return zebra.exports;
   hasRequiredZebra = 1;
-  (function(module) {
-    module["exports"] = function(colors2) {
-      return function(letter, i, exploded) {
+  (function (module) {
+    module["exports"] = function (colors2) {
+      return function (letter, i, exploded) {
         return i % 2 === 0 ? letter : colors2.inverse(letter);
       };
     };
@@ -1428,10 +1428,10 @@ var hasRequiredRainbow;
 function requireRainbow() {
   if (hasRequiredRainbow) return rainbow.exports;
   hasRequiredRainbow = 1;
-  (function(module) {
-    module["exports"] = function(colors2) {
+  (function (module) {
+    module["exports"] = function (colors2) {
       var rainbowColors = ["red", "yellow", "green", "blue", "magenta"];
-      return function(letter, i, exploded) {
+      return function (letter, i, exploded) {
         if (letter === " ") {
           return letter;
         } else {
@@ -1447,8 +1447,8 @@ var hasRequiredRandom;
 function requireRandom() {
   if (hasRequiredRandom) return random.exports;
   hasRequiredRandom = 1;
-  (function(module) {
-    module["exports"] = function(colors2) {
+  (function (module) {
+    module["exports"] = function (colors2) {
       var available = [
         "underline",
         "inverse",
@@ -1468,7 +1468,7 @@ function requireRandom() {
         "brightCyan",
         "brightMagenta"
       ];
-      return function(letter, i, exploded) {
+      return function (letter, i, exploded) {
         return letter === " " ? letter : colors2[available[Math.round(Math.random() * (available.length - 2))]](letter);
       };
     };
@@ -1479,7 +1479,7 @@ var hasRequiredColors;
 function requireColors() {
   if (hasRequiredColors) return colors.exports;
   hasRequiredColors = 1;
-  (function(module) {
+  (function (module) {
     var colors2 = {};
     module["exports"] = colors2;
     colors2.themes = {};
@@ -1491,13 +1491,13 @@ function requireColors() {
     if (typeof colors2.enabled === "undefined") {
       colors2.enabled = colors2.supportsColor() !== false;
     }
-    colors2.enable = function() {
+    colors2.enable = function () {
       colors2.enabled = true;
     };
-    colors2.disable = function() {
+    colors2.disable = function () {
       colors2.enabled = false;
     };
-    colors2.stripColors = colors2.strip = function(str2) {
+    colors2.stripColors = colors2.strip = function (str2) {
       return ("" + str2).replace(/\x1B\[\d+m/g, "");
     };
     colors2.stylize = function stylize(str2, style) {
@@ -1511,7 +1511,7 @@ function requireColors() {
       return styleMap.open + str2 + styleMap.close;
     };
     var matchOperatorsRe = /[|\\{}()[\]^$+*?.]/g;
-    var escapeStringRegexp = function(str2) {
+    var escapeStringRegexp = function (str2) {
       if (typeof str2 !== "string") {
         throw new TypeError("Expected a string");
       }
@@ -1525,13 +1525,13 @@ function requireColors() {
       builder.__proto__ = proto2;
       return builder;
     }
-    var styles2 = (function() {
+    var styles2 = (function () {
       var ret = {};
       ansiStyles2.grey = ansiStyles2.gray;
-      Object.keys(ansiStyles2).forEach(function(key) {
+      Object.keys(ansiStyles2).forEach(function (key) {
         ansiStyles2[key].closeRe = new RegExp(escapeStringRegexp(ansiStyles2[key].close), "g");
         ret[key] = {
-          get: function() {
+          get: function () {
             return build(this._styles.concat(key));
           }
         };
@@ -1542,7 +1542,7 @@ function requireColors() {
     }, styles2);
     function applyStyle2() {
       var args = Array.prototype.slice.call(arguments);
-      var str2 = args.map(function(arg) {
+      var str2 = args.map(function (arg) {
         if (arg != null && arg.constructor === String) {
           return arg;
         } else {
@@ -1559,21 +1559,21 @@ function requireColors() {
         var code = ansiStyles2[nestedStyles[i]];
         str2 = code.open + str2.replace(code.closeRe, code.open) + code.close;
         if (newLinesPresent) {
-          str2 = str2.replace(newLineRegex, function(match) {
+          str2 = str2.replace(newLineRegex, function (match) {
             return code.close + match + code.open;
           });
         }
       }
       return str2;
     }
-    colors2.setTheme = function(theme) {
+    colors2.setTheme = function (theme) {
       if (typeof theme === "string") {
         console.log("colors.setTheme now only accepts an object, not a string.  If you are trying to set a theme from a file, it is now your (the caller's) responsibility to require the file.  The old syntax looked like colors.setTheme(__dirname + '/../themes/generic-logging.js'); The new syntax looks like colors.setTheme(require(__dirname + '/../themes/generic-logging.js'));");
         return;
       }
       for (var style in theme) {
-        (function(style2) {
-          colors2[style2] = function(str2) {
+        (function (style2) {
+          colors2[style2] = function (str2) {
             if (typeof theme[style2] === "object") {
               var out = str2;
               for (var i in theme[style2]) {
@@ -1588,9 +1588,9 @@ function requireColors() {
     };
     function init() {
       var ret = {};
-      Object.keys(styles2).forEach(function(name) {
+      Object.keys(styles2).forEach(function (name) {
         ret[name] = {
-          get: function() {
+          get: function () {
             return build([name]);
           }
         };
@@ -1610,8 +1610,8 @@ function requireColors() {
     colors2.maps.rainbow = requireRainbow()(colors2);
     colors2.maps.random = requireRandom()(colors2);
     for (var map2 in colors2.maps) {
-      (function(map3) {
-        colors2[map3] = function(str2) {
+      (function (map3) {
+        colors2[map3] = function (str2) {
           return sequencer(colors2.maps[map3], str2);
         };
       })(map2);
@@ -1624,7 +1624,7 @@ var hasRequiredSafe;
 function requireSafe() {
   if (hasRequiredSafe) return safe.exports;
   hasRequiredSafe = 1;
-  (function(module) {
+  (function (module) {
     var colors2 = requireColors();
     module["exports"] = colors2;
   })(safe);
@@ -1678,7 +1678,7 @@ function requireCell() {
       let optionsChars = this.options.chars || {};
       let tableChars = tableOptions.chars;
       let chars = this.chars = {};
-      CHAR_NAMES.forEach(function(name) {
+      CHAR_NAMES.forEach(function (name) {
         setOption(optionsChars, tableChars, name, chars);
       });
       this.truncate = this.options.truncate || tableOptions.truncate;
@@ -1779,7 +1779,7 @@ function requireCell() {
     drawTop(drawRight) {
       let content = [];
       if (this.cells) {
-        this.widths.forEach(function(width, index) {
+        this.widths.forEach(function (width, index) {
           content.push(this._topLeftChar(index));
           content.push(utils2.repeat(this.chars[this.y == 0 ? "top" : "mid"], width));
         }, this);
@@ -2010,7 +2010,7 @@ function requireLayoutManager() {
   const { warn, debug } = requireDebug();
   const Cell = requireCell();
   const { ColSpanCell, RowSpanCell } = Cell;
-  (function() {
+  (function () {
     function next(alloc, col) {
       if (alloc[col] > 0) {
         return next(alloc, col + 1);
@@ -2019,9 +2019,9 @@ function requireLayoutManager() {
     }
     function layoutTable(table2) {
       let alloc = {};
-      table2.forEach(function(row, rowIndex) {
+      table2.forEach(function (row, rowIndex) {
         let col = 0;
-        row.forEach(function(cell2) {
+        row.forEach(function (cell2) {
           cell2.y = rowIndex;
           cell2.x = rowIndex ? next(alloc, col) : col;
           const rowSpan = cell2.rowSpan || 1;
@@ -2041,8 +2041,8 @@ function requireLayoutManager() {
     }
     function maxWidth(table2) {
       let mw = 0;
-      table2.forEach(function(row) {
-        row.forEach(function(cell2) {
+      table2.forEach(function (row) {
+        row.forEach(function (cell2) {
           mw = Math.max(mw, cell2.x + (cell2.colSpan || 1));
         });
       });
@@ -2086,8 +2086,8 @@ function requireLayoutManager() {
       return true;
     }
     function addRowSpanCells(table2) {
-      table2.forEach(function(row, rowIndex) {
-        row.forEach(function(cell2) {
+      table2.forEach(function (row, rowIndex) {
+        row.forEach(function (cell2) {
           for (let i = 1; i < cell2.rowSpan; i++) {
             let rowSpanCell = new RowSpanCell(cell2);
             rowSpanCell.x = cell2.x;
@@ -2147,7 +2147,7 @@ function requireLayoutManager() {
       }
     }
     function generateCells(rows) {
-      return rows.map(function(row) {
+      return rows.map(function (row) {
         if (!Array.isArray(row)) {
           let key = Object.keys(row)[0];
           row = row[key];
@@ -2158,7 +2158,7 @@ function requireLayoutManager() {
             row = [key, row];
           }
         }
-        return row.map(function(cell2) {
+        return row.map(function (cell2) {
           return new Cell(cell2);
         });
       });
@@ -2182,12 +2182,12 @@ function requireLayoutManager() {
     };
   })();
   function makeComputeWidths(colSpan, desiredWidth, x2, forcedMin) {
-    return function(vals, table2) {
+    return function (vals, table2) {
       let result = [];
       let spanners = [];
       let auto = {};
-      table2.forEach(function(row) {
-        row.forEach(function(cell2) {
+      table2.forEach(function (row) {
+        row.forEach(function (cell2) {
           if ((cell2[colSpan] || 1) > 1) {
             spanners.push(cell2);
           } else {
@@ -2195,7 +2195,7 @@ function requireLayoutManager() {
           }
         });
       });
-      vals.forEach(function(val, index) {
+      vals.forEach(function (val, index) {
         if (typeof val === "number") {
           result[index] = val;
         }
@@ -2290,15 +2290,15 @@ function requireTable() {
         this.options.style.head = [];
       }
       let cells = tableLayout.makeTableLayout(array);
-      cells.forEach(function(row) {
-        row.forEach(function(cell2) {
+      cells.forEach(function (row) {
+        row.forEach(function (cell2) {
           cell2.mergeTableOptions(this.options, cells);
         }, this);
       }, this);
       tableLayout.computeWidths(this.options.colWidths, cells);
       tableLayout.computeHeights(this.options.rowHeights, cells);
-      cells.forEach(function(row) {
-        row.forEach(function(cell2) {
+      cells.forEach(function (row) {
+        row.forEach(function (cell2) {
           cell2.init(this.options);
         }, this);
       }, this);
@@ -2326,7 +2326,7 @@ function requireTable() {
   Table.reset = () => debug.reset();
   function doDraw(row, lineNum, result) {
     let line3 = [];
-    row.forEach(function(cell2) {
+    row.forEach(function (cell2) {
       line3.push(cell2.draw(lineNum));
     });
     let str2 = line3.join("");
@@ -2548,7 +2548,7 @@ function requireConversions() {
     Object.defineProperty(convert[model], "channels", { value: channels });
     Object.defineProperty(convert[model], "labels", { value: labels });
   }
-  convert.rgb.hsl = function(rgb) {
+  convert.rgb.hsl = function (rgb) {
     const r = rgb[0] / 255;
     const g = rgb[1] / 255;
     const b = rgb[2] / 255;
@@ -2580,7 +2580,7 @@ function requireConversions() {
     }
     return [h, s * 100, l * 100];
   };
-  convert.rgb.hsv = function(rgb) {
+  convert.rgb.hsv = function (rgb) {
     let rdif;
     let gdif;
     let bdif;
@@ -2591,7 +2591,7 @@ function requireConversions() {
     const b = rgb[2] / 255;
     const v2 = Math.max(r, g, b);
     const diff = v2 - Math.min(r, g, b);
-    const diffc = function(c2) {
+    const diffc = function (c2) {
       return (v2 - c2) / 6 / diff + 1 / 2;
     };
     if (diff === 0) {
@@ -2621,7 +2621,7 @@ function requireConversions() {
       v2 * 100
     ];
   };
-  convert.rgb.hwb = function(rgb) {
+  convert.rgb.hwb = function (rgb) {
     const r = rgb[0];
     const g = rgb[1];
     let b = rgb[2];
@@ -2630,7 +2630,7 @@ function requireConversions() {
     b = 1 - 1 / 255 * Math.max(r, Math.max(g, b));
     return [h, w2 * 100, b * 100];
   };
-  convert.rgb.cmyk = function(rgb) {
+  convert.rgb.cmyk = function (rgb) {
     const r = rgb[0] / 255;
     const g = rgb[1] / 255;
     const b = rgb[2] / 255;
@@ -2643,7 +2643,7 @@ function requireConversions() {
   function comparativeDistance(x2, y2) {
     return (x2[0] - y2[0]) ** 2 + (x2[1] - y2[1]) ** 2 + (x2[2] - y2[2]) ** 2;
   }
-  convert.rgb.keyword = function(rgb) {
+  convert.rgb.keyword = function (rgb) {
     const reversed = reverseKeywords[rgb];
     if (reversed) {
       return reversed;
@@ -2660,10 +2660,10 @@ function requireConversions() {
     }
     return currentClosestKeyword;
   };
-  convert.keyword.rgb = function(keyword) {
+  convert.keyword.rgb = function (keyword) {
     return cssKeywords[keyword];
   };
-  convert.rgb.xyz = function(rgb) {
+  convert.rgb.xyz = function (rgb) {
     let r = rgb[0] / 255;
     let g = rgb[1] / 255;
     let b = rgb[2] / 255;
@@ -2675,7 +2675,7 @@ function requireConversions() {
     const z = r * 0.0193 + g * 0.1192 + b * 0.9505;
     return [x2 * 100, y2 * 100, z * 100];
   };
-  convert.rgb.lab = function(rgb) {
+  convert.rgb.lab = function (rgb) {
     const xyz = convert.rgb.xyz(rgb);
     let x2 = xyz[0];
     let y2 = xyz[1];
@@ -2691,7 +2691,7 @@ function requireConversions() {
     const b = 200 * (y2 - z);
     return [l, a, b];
   };
-  convert.hsl.rgb = function(hsl) {
+  convert.hsl.rgb = function (hsl) {
     const h = hsl[0] / 360;
     const s = hsl[1] / 100;
     const l = hsl[2] / 100;
@@ -2730,7 +2730,7 @@ function requireConversions() {
     }
     return rgb;
   };
-  convert.hsl.hsv = function(hsl) {
+  convert.hsl.hsv = function (hsl) {
     const h = hsl[0];
     let s = hsl[1] / 100;
     let l = hsl[2] / 100;
@@ -2743,7 +2743,7 @@ function requireConversions() {
     const sv = l === 0 ? 2 * smin / (lmin + smin) : 2 * s / (l + s);
     return [h, sv * 100, v2 * 100];
   };
-  convert.hsv.rgb = function(hsv) {
+  convert.hsv.rgb = function (hsv) {
     const h = hsv[0] / 60;
     const s = hsv[1] / 100;
     let v2 = hsv[2] / 100;
@@ -2768,7 +2768,7 @@ function requireConversions() {
         return [v2, p2, q2];
     }
   };
-  convert.hsv.hsl = function(hsv) {
+  convert.hsv.hsl = function (hsv) {
     const h = hsv[0];
     const s = hsv[1] / 100;
     const v2 = hsv[2] / 100;
@@ -2783,7 +2783,7 @@ function requireConversions() {
     l /= 2;
     return [h, sl * 100, l * 100];
   };
-  convert.hwb.rgb = function(hwb) {
+  convert.hwb.rgb = function (hwb) {
     const h = hwb[0] / 360;
     let wh = hwb[1] / 100;
     let bl2 = hwb[2] / 100;
@@ -2839,7 +2839,7 @@ function requireConversions() {
     }
     return [r * 255, g * 255, b * 255];
   };
-  convert.cmyk.rgb = function(cmyk) {
+  convert.cmyk.rgb = function (cmyk) {
     const c2 = cmyk[0] / 100;
     const m = cmyk[1] / 100;
     const y2 = cmyk[2] / 100;
@@ -2849,7 +2849,7 @@ function requireConversions() {
     const b = 1 - Math.min(1, y2 * (1 - k) + k);
     return [r * 255, g * 255, b * 255];
   };
-  convert.xyz.rgb = function(xyz) {
+  convert.xyz.rgb = function (xyz) {
     const x2 = xyz[0] / 100;
     const y2 = xyz[1] / 100;
     const z = xyz[2] / 100;
@@ -2867,7 +2867,7 @@ function requireConversions() {
     b = Math.min(Math.max(0, b), 1);
     return [r * 255, g * 255, b * 255];
   };
-  convert.xyz.lab = function(xyz) {
+  convert.xyz.lab = function (xyz) {
     let x2 = xyz[0];
     let y2 = xyz[1];
     let z = xyz[2];
@@ -2882,7 +2882,7 @@ function requireConversions() {
     const b = 200 * (y2 - z);
     return [l, a, b];
   };
-  convert.lab.xyz = function(lab) {
+  convert.lab.xyz = function (lab) {
     const l = lab[0];
     const a = lab[1];
     const b = lab[2];
@@ -2903,7 +2903,7 @@ function requireConversions() {
     z *= 108.883;
     return [x2, y2, z];
   };
-  convert.lab.lch = function(lab) {
+  convert.lab.lch = function (lab) {
     const l = lab[0];
     const a = lab[1];
     const b = lab[2];
@@ -2916,7 +2916,7 @@ function requireConversions() {
     const c2 = Math.sqrt(a * a + b * b);
     return [l, c2, h];
   };
-  convert.lch.lab = function(lch) {
+  convert.lch.lab = function (lch) {
     const l = lch[0];
     const c2 = lch[1];
     const h = lch[2];
@@ -2925,7 +2925,7 @@ function requireConversions() {
     const b = c2 * Math.sin(hr);
     return [l, a, b];
   };
-  convert.rgb.ansi16 = function(args, saturation = null) {
+  convert.rgb.ansi16 = function (args, saturation = null) {
     const [r, g, b] = args;
     let value = saturation === null ? convert.rgb.hsv(args)[2] : saturation;
     value = Math.round(value / 50);
@@ -2938,10 +2938,10 @@ function requireConversions() {
     }
     return ansi;
   };
-  convert.hsv.ansi16 = function(args) {
+  convert.hsv.ansi16 = function (args) {
     return convert.rgb.ansi16(convert.hsv.rgb(args), args[2]);
   };
-  convert.rgb.ansi256 = function(args) {
+  convert.rgb.ansi256 = function (args) {
     const r = args[0];
     const g = args[1];
     const b = args[2];
@@ -2957,7 +2957,7 @@ function requireConversions() {
     const ansi = 16 + 36 * Math.round(r / 255 * 5) + 6 * Math.round(g / 255 * 5) + Math.round(b / 255 * 5);
     return ansi;
   };
-  convert.ansi16.rgb = function(args) {
+  convert.ansi16.rgb = function (args) {
     let color = args % 10;
     if (color === 0 || color === 7) {
       if (args > 50) {
@@ -2972,7 +2972,7 @@ function requireConversions() {
     const b = (color >> 2 & 1) * mult * 255;
     return [r, g, b];
   };
-  convert.ansi256.rgb = function(args) {
+  convert.ansi256.rgb = function (args) {
     if (args >= 232) {
       const c2 = (args - 232) * 10 + 8;
       return [c2, c2, c2];
@@ -2984,12 +2984,12 @@ function requireConversions() {
     const b = rem % 6 / 5 * 255;
     return [r, g, b];
   };
-  convert.rgb.hex = function(args) {
+  convert.rgb.hex = function (args) {
     const integer = ((Math.round(args[0]) & 255) << 16) + ((Math.round(args[1]) & 255) << 8) + (Math.round(args[2]) & 255);
     const string = integer.toString(16).toUpperCase();
     return "000000".substring(string.length) + string;
   };
-  convert.hex.rgb = function(args) {
+  convert.hex.rgb = function (args) {
     const match = args.toString(16).match(/[a-f0-9]{6}|[a-f0-9]{3}/i);
     if (!match) {
       return [0, 0, 0];
@@ -3006,7 +3006,7 @@ function requireConversions() {
     const b = integer & 255;
     return [r, g, b];
   };
-  convert.rgb.hcg = function(rgb) {
+  convert.rgb.hcg = function (rgb) {
     const r = rgb[0] / 255;
     const g = rgb[1] / 255;
     const b = rgb[2] / 255;
@@ -3033,7 +3033,7 @@ function requireConversions() {
     hue %= 1;
     return [hue * 360, chroma * 100, grayscale * 100];
   };
-  convert.hsl.hcg = function(hsl) {
+  convert.hsl.hcg = function (hsl) {
     const s = hsl[1] / 100;
     const l = hsl[2] / 100;
     const c2 = l < 0.5 ? 2 * s * l : 2 * s * (1 - l);
@@ -3043,7 +3043,7 @@ function requireConversions() {
     }
     return [hsl[0], c2 * 100, f * 100];
   };
-  convert.hsv.hcg = function(hsv) {
+  convert.hsv.hcg = function (hsv) {
     const s = hsv[1] / 100;
     const v2 = hsv[2] / 100;
     const c2 = s * v2;
@@ -3053,7 +3053,7 @@ function requireConversions() {
     }
     return [hsv[0], c2 * 100, f * 100];
   };
-  convert.hcg.rgb = function(hcg) {
+  convert.hcg.rgb = function (hcg) {
     const h = hcg[0] / 360;
     const c2 = hcg[1] / 100;
     const g = hcg[2] / 100;
@@ -3103,7 +3103,7 @@ function requireConversions() {
       (c2 * pure[2] + mg) * 255
     ];
   };
-  convert.hcg.hsv = function(hcg) {
+  convert.hcg.hsv = function (hcg) {
     const c2 = hcg[1] / 100;
     const g = hcg[2] / 100;
     const v2 = c2 + g * (1 - c2);
@@ -3113,7 +3113,7 @@ function requireConversions() {
     }
     return [hcg[0], f * 100, v2 * 100];
   };
-  convert.hcg.hsl = function(hcg) {
+  convert.hcg.hsl = function (hcg) {
     const c2 = hcg[1] / 100;
     const g = hcg[2] / 100;
     const l = g * (1 - c2) + 0.5 * c2;
@@ -3125,13 +3125,13 @@ function requireConversions() {
     }
     return [hcg[0], s * 100, l * 100];
   };
-  convert.hcg.hwb = function(hcg) {
+  convert.hcg.hwb = function (hcg) {
     const c2 = hcg[1] / 100;
     const g = hcg[2] / 100;
     const v2 = c2 + g * (1 - c2);
     return [hcg[0], (v2 - c2) * 100, (1 - v2) * 100];
   };
-  convert.hwb.hcg = function(hwb) {
+  convert.hwb.hcg = function (hwb) {
     const w2 = hwb[1] / 100;
     const b = hwb[2] / 100;
     const v2 = 1 - b;
@@ -3142,35 +3142,35 @@ function requireConversions() {
     }
     return [hwb[0], c2 * 100, g * 100];
   };
-  convert.apple.rgb = function(apple) {
+  convert.apple.rgb = function (apple) {
     return [apple[0] / 65535 * 255, apple[1] / 65535 * 255, apple[2] / 65535 * 255];
   };
-  convert.rgb.apple = function(rgb) {
+  convert.rgb.apple = function (rgb) {
     return [rgb[0] / 255 * 65535, rgb[1] / 255 * 65535, rgb[2] / 255 * 65535];
   };
-  convert.gray.rgb = function(args) {
+  convert.gray.rgb = function (args) {
     return [args[0] / 100 * 255, args[0] / 100 * 255, args[0] / 100 * 255];
   };
-  convert.gray.hsl = function(args) {
+  convert.gray.hsl = function (args) {
     return [0, 0, args[0]];
   };
   convert.gray.hsv = convert.gray.hsl;
-  convert.gray.hwb = function(gray) {
+  convert.gray.hwb = function (gray) {
     return [0, 100, gray[0]];
   };
-  convert.gray.cmyk = function(gray) {
+  convert.gray.cmyk = function (gray) {
     return [0, 0, 0, gray[0]];
   };
-  convert.gray.lab = function(gray) {
+  convert.gray.lab = function (gray) {
     return [gray[0], 0, 0];
   };
-  convert.gray.hex = function(gray) {
+  convert.gray.hex = function (gray) {
     const val = Math.round(gray[0] / 100 * 255) & 255;
     const integer = (val << 16) + (val << 8) + val;
     const string = integer.toString(16).toUpperCase();
     return "000000".substring(string.length) + string;
   };
-  convert.rgb.gray = function(rgb) {
+  convert.rgb.gray = function (rgb) {
     const val = (rgb[0] + rgb[1] + rgb[2]) / 3;
     return [val / 255 * 100];
   };
@@ -3215,7 +3215,7 @@ function requireRoute() {
     return graph;
   }
   function link(from, to2) {
-    return function(args) {
+    return function (args) {
       return to2(from(args));
     };
   }
@@ -3231,7 +3231,7 @@ function requireRoute() {
     fn.conversion = path2;
     return fn;
   }
-  route = function(fromModel) {
+  route = function (fromModel) {
     const graph = deriveBFS(fromModel);
     const conversion = {};
     const models = Object.keys(graph);
@@ -3257,7 +3257,7 @@ function requireColorConvert() {
   const convert = {};
   const models = Object.keys(conversions2);
   function wrapRaw(fn) {
-    const wrappedFn = function(...args) {
+    const wrappedFn = function (...args) {
       const arg0 = args[0];
       if (arg0 === void 0 || arg0 === null) {
         return arg0;
@@ -3273,7 +3273,7 @@ function requireColorConvert() {
     return wrappedFn;
   }
   function wrapRounded(fn) {
-    const wrappedFn = function(...args) {
+    const wrappedFn = function (...args) {
       const arg0 = args[0];
       if (arg0 === void 0 || arg0 === null) {
         return arg0;
@@ -3314,7 +3314,7 @@ var hasRequiredAnsiStyles;
 function requireAnsiStyles() {
   if (hasRequiredAnsiStyles) return ansiStyles.exports;
   hasRequiredAnsiStyles = 1;
-  (function(module) {
+  (function (module) {
     const wrapAnsi162 = (fn, offset) => (...args) => {
       const code = fn(...args);
       return `\x1B[${code + offset}m`;
@@ -3788,7 +3788,7 @@ function requireSource() {
     styles2[model] = {
       get() {
         const { level } = this;
-        return function(...arguments_) {
+        return function (...arguments_) {
           const styler = createStyler2(ansiStyles2.color[levelMapping2[level]][model](...arguments_), ansiStyles2.color.close, this._styler);
           return createBuilder2(this, styler, this._isEmpty);
         };
@@ -3800,7 +3800,7 @@ function requireSource() {
     styles2[bgModel] = {
       get() {
         const { level } = this;
-        return function(...arguments_) {
+        return function (...arguments_) {
           const styler = createStyler2(ansiStyles2.bgColor[levelMapping2[level]][model](...arguments_), ansiStyles2.bgColor.close, this._styler);
           return createBuilder2(this, styler, this._isEmpty);
         };
@@ -3929,7 +3929,7 @@ function requireOnetime() {
     let returnValue;
     let callCount = 0;
     const functionName = function_.displayName || function_.name || "<anonymous>";
-    const onetime2 = function(...arguments_) {
+    const onetime2 = function (...arguments_) {
       calledFunctions.set(onetime2, ++callCount);
       if (callCount === 1) {
         returnValue = function_.apply(this, arguments_);
@@ -3959,7 +3959,7 @@ var hasRequiredSignals;
 function requireSignals() {
   if (hasRequiredSignals) return signals.exports;
   hasRequiredSignals = 1;
-  (function(module) {
+  (function (module) {
     module.exports = [
       "SIGABRT",
       "SIGALRM",
@@ -3999,12 +3999,12 @@ function requireSignalExit() {
   if (hasRequiredSignalExit) return signalExit.exports;
   hasRequiredSignalExit = 1;
   var process2 = commonjsGlobal.process;
-  const processOk = function(process3) {
+  const processOk = function (process3) {
     return process3 && typeof process3 === "object" && typeof process3.removeListener === "function" && typeof process3.emit === "function" && typeof process3.reallyExit === "function" && typeof process3.listeners === "function" && typeof process3.kill === "function" && typeof process3.pid === "number" && typeof process3.on === "function";
   };
   if (!processOk(process2)) {
-    signalExit.exports = function() {
-      return function() {
+    signalExit.exports = function () {
+      return function () {
       };
     };
   } else {
@@ -4027,9 +4027,9 @@ function requireSignalExit() {
       emitter.setMaxListeners(Infinity);
       emitter.infinite = true;
     }
-    signalExit.exports = function(cb, opts) {
+    signalExit.exports = function (cb, opts) {
       if (!processOk(commonjsGlobal.process)) {
-        return function() {
+        return function () {
         };
       }
       assert.equal(typeof cb, "function", "a callback must be provided for exit handler");
@@ -4040,7 +4040,7 @@ function requireSignalExit() {
       if (opts && opts.alwaysLast) {
         ev = "afterexit";
       }
-      var remove = function() {
+      var remove = function () {
         emitter.removeListener(ev, cb);
         if (emitter.listeners("exit").length === 0 && emitter.listeners("afterexit").length === 0) {
           unload();
@@ -4054,7 +4054,7 @@ function requireSignalExit() {
         return;
       }
       loaded = false;
-      signals2.forEach(function(sig) {
+      signals2.forEach(function (sig) {
         try {
           process2.removeListener(sig, sigListeners[sig]);
         } catch (er) {
@@ -4073,7 +4073,7 @@ function requireSignalExit() {
       emitter.emit(event, code, signal);
     };
     var sigListeners = {};
-    signals2.forEach(function(sig) {
+    signals2.forEach(function (sig) {
       sigListeners[sig] = function listener() {
         if (!processOk(commonjsGlobal.process)) {
           return;
@@ -4090,7 +4090,7 @@ function requireSignalExit() {
         }
       };
     });
-    signalExit.exports.signals = function() {
+    signalExit.exports.signals = function () {
       return signals2;
     };
     var loaded = false;
@@ -4100,7 +4100,7 @@ function requireSignalExit() {
       }
       loaded = true;
       emitter.count += 1;
-      signals2 = signals2.filter(function(sig) {
+      signals2 = signals2.filter(function (sig) {
         try {
           process2.on(sig, sigListeners[sig]);
           return true;
@@ -4118,7 +4118,7 @@ function requireSignalExit() {
         return;
       }
       process2.exitCode = code || /* istanbul ignore next */
-      0;
+        0;
       emit("exit", process2.exitCode, null);
       emit("afterexit", process2.exitCode, null);
       originalProcessReallyExit.call(process2, process2.exitCode);
@@ -4158,7 +4158,7 @@ var hasRequiredCliCursor;
 function requireCliCursor() {
   if (hasRequiredCliCursor) return cliCursor;
   hasRequiredCliCursor = 1;
-  (function(exports$1) {
+  (function (exports$1) {
     const restoreCursor2 = requireRestoreCursor();
     let isHidden = false;
     exports$1.show = (writableStream = process.stderr) => {
@@ -4390,7 +4390,7 @@ function requireIsUnicodeSupported() {
       return true;
     }
     return Boolean(process.env.CI) || Boolean(process.env.WT_SESSION) || // Windows Terminal
-    process.env.TERM_PROGRAM === "vscode" || process.env.TERM === "xterm-256color" || process.env.TERM === "alacritty";
+      process.env.TERM_PROGRAM === "vscode" || process.env.TERM === "xterm-256color" || process.env.TERM === "alacritty";
   };
   return isUnicodeSupported;
 }
@@ -4422,8 +4422,8 @@ var hasRequiredClone;
 function requireClone() {
   if (hasRequiredClone) return clone.exports;
   hasRequiredClone = 1;
-  (function(module) {
-    var clone2 = (function() {
+  (function (module) {
+    var clone2 = (function () {
       function clone3(parent, circular, depth, prototype) {
         if (typeof circular === "object") {
           depth = circular.depth;
@@ -4497,7 +4497,7 @@ function requireClone() {
       clone3.clonePrototype = function clonePrototype(parent) {
         if (parent === null)
           return null;
-        var c2 = function() {
+        var c2 = function () {
         };
         c2.prototype = parent;
         return new c2();
@@ -4540,9 +4540,9 @@ function requireDefaults() {
   if (hasRequiredDefaults) return defaults;
   hasRequiredDefaults = 1;
   var clone2 = requireClone();
-  defaults = function(options, defaults2) {
+  defaults = function (options, defaults2) {
     options = options || {};
-    Object.keys(defaults2).forEach(function(key) {
+    Object.keys(defaults2).forEach(function (key) {
       if (typeof options[key] === "undefined") {
         options[key] = clone2(defaults2[key]);
       }
@@ -4715,7 +4715,7 @@ function requireWcwidth() {
   wcwidth.exports = function wcwidth2(str2) {
     return wcswidth(str2, DEFAULTS);
   };
-  wcwidth.exports.config = function(opts) {
+  wcwidth.exports.config = function (opts) {
     opts = defaults2(opts || {}, DEFAULTS);
     return function wcwidth2(str2) {
       return wcswidth(str2, opts);
@@ -4736,13 +4736,13 @@ function requireWcwidth() {
     if (ucs < 32 || ucs >= 127 && ucs < 160) return opts.control;
     if (bisearch(ucs)) return 0;
     return 1 + (ucs >= 4352 && (ucs <= 4447 || // Hangul Jamo init. consonants
-    ucs == 9001 || ucs == 9002 || ucs >= 11904 && ucs <= 42191 && ucs != 12351 || // CJK ... Yi
-    ucs >= 44032 && ucs <= 55203 || // Hangul Syllables
-    ucs >= 63744 && ucs <= 64255 || // CJK Compatibility Ideographs
-    ucs >= 65040 && ucs <= 65049 || // Vertical forms
-    ucs >= 65072 && ucs <= 65135 || // CJK Compatibility Forms
-    ucs >= 65280 && ucs <= 65376 || // Fullwidth Forms
-    ucs >= 65504 && ucs <= 65510 || ucs >= 131072 && ucs <= 196605 || ucs >= 196608 && ucs <= 262141));
+      ucs == 9001 || ucs == 9002 || ucs >= 11904 && ucs <= 42191 && ucs != 12351 || // CJK ... Yi
+      ucs >= 44032 && ucs <= 55203 || // Hangul Syllables
+      ucs >= 63744 && ucs <= 64255 || // CJK Compatibility Ideographs
+      ucs >= 65040 && ucs <= 65049 || // Vertical forms
+      ucs >= 65072 && ucs <= 65135 || // CJK Compatibility Forms
+      ucs >= 65280 && ucs <= 65376 || // Fullwidth Forms
+      ucs >= 65504 && ucs <= 65510 || ucs >= 131072 && ucs <= 196605 || ucs >= 196608 && ucs <= 262141));
   }
   function bisearch(ucs) {
     var min = 0;
@@ -4790,7 +4790,7 @@ function requireBuffer_list() {
     var keys = Object.keys(object);
     if (Object.getOwnPropertySymbols) {
       var symbols = Object.getOwnPropertySymbols(object);
-      enumerableOnly && (symbols = symbols.filter(function(sym) {
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
         return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       })), keys.push.apply(keys, symbols);
     }
@@ -4799,9 +4799,9 @@ function requireBuffer_list() {
   function _objectSpread(target) {
     for (var i = 1; i < arguments.length; i++) {
       var source2 = null != arguments[i] ? arguments[i] : {};
-      i % 2 ? ownKeys(Object(source2), true).forEach(function(key) {
+      i % 2 ? ownKeys(Object(source2), true).forEach(function (key) {
         _defineProperty(target, key, source2[key]);
-      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source2)) : ownKeys(Object(source2)).forEach(function(key) {
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source2)) : ownKeys(Object(source2)).forEach(function (key) {
         Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source2, key));
       });
     }
@@ -4855,7 +4855,7 @@ function requireBuffer_list() {
   function copyBuffer(src, target, offset) {
     Buffer2.prototype.copy.call(src, target, offset);
   }
-  buffer_list = /* @__PURE__ */ (function() {
+  buffer_list = /* @__PURE__ */ (function () {
     function BufferList() {
       _classCallCheck(this, BufferList);
       this.head = null;
@@ -5048,7 +5048,7 @@ function requireDestroy() {
     if (this._writableState) {
       this._writableState.destroyed = true;
     }
-    this._destroy(err || null, function(err2) {
+    this._destroy(err || null, function (err2) {
       if (!cb && err2) {
         if (!_this._writableState) {
           process.nextTick(emitErrorAndCloseNT, _this, err2);
@@ -5169,10 +5169,10 @@ function requireErrors() {
       return str2.indexOf(search, start) !== -1;
     }
   }
-  createErrorType("ERR_INVALID_OPT_VALUE", function(name, value) {
+  createErrorType("ERR_INVALID_OPT_VALUE", function (name, value) {
     return 'The value "' + value + '" is invalid for option "' + name + '"';
   }, TypeError);
-  createErrorType("ERR_INVALID_ARG_TYPE", function(name, expected, actual) {
+  createErrorType("ERR_INVALID_ARG_TYPE", function (name, expected, actual) {
     let determiner;
     if (typeof expected === "string" && startsWith(expected, "not ")) {
       determiner = "must not be";
@@ -5191,18 +5191,18 @@ function requireErrors() {
     return msg;
   }, TypeError);
   createErrorType("ERR_STREAM_PUSH_AFTER_EOF", "stream.push() after EOF");
-  createErrorType("ERR_METHOD_NOT_IMPLEMENTED", function(name) {
+  createErrorType("ERR_METHOD_NOT_IMPLEMENTED", function (name) {
     return "The " + name + " method is not implemented";
   });
   createErrorType("ERR_STREAM_PREMATURE_CLOSE", "Premature close");
-  createErrorType("ERR_STREAM_DESTROYED", function(name) {
+  createErrorType("ERR_STREAM_DESTROYED", function (name) {
     return "Cannot call " + name + " after a stream was destroyed";
   });
   createErrorType("ERR_MULTIPLE_CALLBACK", "Callback called multiple times");
   createErrorType("ERR_STREAM_CANNOT_PIPE", "Cannot pipe, not readable");
   createErrorType("ERR_STREAM_WRITE_AFTER_END", "write after end");
   createErrorType("ERR_STREAM_NULL_VALUES", "May not write null values to stream", TypeError);
-  createErrorType("ERR_UNKNOWN_ENCODING", function(arg) {
+  createErrorType("ERR_UNKNOWN_ENCODING", function (arg) {
     return "Unknown encoding: " + arg;
   }, TypeError);
   createErrorType("ERR_STREAM_UNSHIFT_AFTER_END_EVENT", "stream.unshift() after end event");
@@ -5258,7 +5258,7 @@ function requireInherits_browser() {
     inherits_browser.exports = function inherits2(ctor, superCtor) {
       if (superCtor) {
         ctor.super_ = superCtor;
-        var TempCtor = function() {
+        var TempCtor = function () {
         };
         TempCtor.prototype = superCtor.prototype;
         ctor.prototype = new TempCtor();
@@ -5299,7 +5299,7 @@ function require_stream_writable() {
     var _this = this;
     this.next = null;
     this.entry = null;
-    this.finish = function() {
+    this.finish = function () {
       onCorkedFinish(_this, state2);
     };
   }
@@ -5310,7 +5310,7 @@ function require_stream_writable() {
   };
   var Stream = requireStream();
   var Buffer2 = require$$0$5.Buffer;
-  var OurUint8Array = (typeof commonjsGlobal !== "undefined" ? commonjsGlobal : typeof window !== "undefined" ? window : typeof self !== "undefined" ? self : {}).Uint8Array || function() {
+  var OurUint8Array = (typeof commonjsGlobal !== "undefined" ? commonjsGlobal : typeof window !== "undefined" ? window : typeof self !== "undefined" ? self : {}).Uint8Array || function () {
   };
   function _uint8ArrayToBuffer(chunk) {
     return Buffer2.from(chunk);
@@ -5346,7 +5346,7 @@ function require_stream_writable() {
     this.corked = 0;
     this.sync = true;
     this.bufferProcessing = false;
-    this.onwrite = function(er) {
+    this.onwrite = function (er) {
       onwrite(stream2, er);
     };
     this.writecb = null;
@@ -5370,7 +5370,7 @@ function require_stream_writable() {
     }
     return out;
   };
-  (function() {
+  (function () {
     try {
       Object.defineProperty(WritableState.prototype, "buffer", {
         get: internalUtil.deprecate(function writableStateBufferGetter() {
@@ -5409,7 +5409,7 @@ function require_stream_writable() {
     }
     Stream.call(this);
   }
-  Writable.prototype.pipe = function() {
+  Writable.prototype.pipe = function () {
     errorOrDestroy(this, new ERR_STREAM_CANNOT_PIPE());
   };
   function writeAfterEnd(stream2, cb) {
@@ -5431,7 +5431,7 @@ function require_stream_writable() {
     }
     return true;
   }
-  Writable.prototype.write = function(chunk, encoding, cb) {
+  Writable.prototype.write = function (chunk, encoding, cb) {
     var state2 = this._writableState;
     var ret = false;
     var isBuf = !state2.objectMode && _isUint8Array(chunk);
@@ -5452,10 +5452,10 @@ function require_stream_writable() {
     }
     return ret;
   };
-  Writable.prototype.cork = function() {
+  Writable.prototype.cork = function () {
     this._writableState.corked++;
   };
-  Writable.prototype.uncork = function() {
+  Writable.prototype.uncork = function () {
     var state2 = this._writableState;
     if (state2.corked) {
       state2.corked--;
@@ -5631,11 +5631,11 @@ function require_stream_writable() {
     state2.bufferedRequest = entry;
     state2.bufferProcessing = false;
   }
-  Writable.prototype._write = function(chunk, encoding, cb) {
+  Writable.prototype._write = function (chunk, encoding, cb) {
     cb(new ERR_METHOD_NOT_IMPLEMENTED("_write()"));
   };
   Writable.prototype._writev = null;
-  Writable.prototype.end = function(chunk, encoding, cb) {
+  Writable.prototype.end = function (chunk, encoding, cb) {
     var state2 = this._writableState;
     if (typeof chunk === "function") {
       cb = chunk;
@@ -5666,7 +5666,7 @@ function require_stream_writable() {
     return state2.ending && state2.length === 0 && state2.bufferedRequest === null && !state2.finished && !state2.writing;
   }
   function callFinal(stream2, state2) {
-    stream2._final(function(err) {
+    stream2._final(function (err) {
       state2.pendingcb--;
       if (err) {
         errorOrDestroy(stream2, err);
@@ -5746,7 +5746,7 @@ function require_stream_writable() {
   });
   Writable.prototype.destroy = destroyImpl.destroy;
   Writable.prototype._undestroy = destroyImpl.undestroy;
-  Writable.prototype._destroy = function(err, cb) {
+  Writable.prototype._destroy = function (err, cb) {
     cb(err);
   };
   return _stream_writable;
@@ -5756,7 +5756,7 @@ var hasRequired_stream_duplex;
 function require_stream_duplex() {
   if (hasRequired_stream_duplex) return _stream_duplex;
   hasRequired_stream_duplex = 1;
-  var objectKeys = Object.keys || function(obj) {
+  var objectKeys = Object.keys || function (obj) {
     var keys2 = [];
     for (var key in obj) keys2.push(key);
     return keys2;
@@ -5847,7 +5847,7 @@ var hasRequiredSafeBuffer;
 function requireSafeBuffer() {
   if (hasRequiredSafeBuffer) return safeBuffer.exports;
   hasRequiredSafeBuffer = 1;
-  (function(module, exports$1) {
+  (function (module, exports$1) {
     var buffer = require$$0$5;
     var Buffer2 = buffer.Buffer;
     function copyProps(src, dst) {
@@ -5866,13 +5866,13 @@ function requireSafeBuffer() {
     }
     SafeBuffer.prototype = Object.create(Buffer2.prototype);
     copyProps(Buffer2, SafeBuffer);
-    SafeBuffer.from = function(arg, encodingOrOffset, length) {
+    SafeBuffer.from = function (arg, encodingOrOffset, length) {
       if (typeof arg === "number") {
         throw new TypeError("Argument must not be a number");
       }
       return Buffer2(arg, encodingOrOffset, length);
     };
-    SafeBuffer.alloc = function(size, fill, encoding) {
+    SafeBuffer.alloc = function (size, fill, encoding) {
       if (typeof size !== "number") {
         throw new TypeError("Argument must be a number");
       }
@@ -5888,13 +5888,13 @@ function requireSafeBuffer() {
       }
       return buf;
     };
-    SafeBuffer.allocUnsafe = function(size) {
+    SafeBuffer.allocUnsafe = function (size) {
       if (typeof size !== "number") {
         throw new TypeError("Argument must be a number");
       }
       return Buffer2(size);
     };
-    SafeBuffer.allocUnsafeSlow = function(size) {
+    SafeBuffer.allocUnsafeSlow = function (size) {
       if (typeof size !== "number") {
         throw new TypeError("Argument must be a number");
       }
@@ -5908,7 +5908,7 @@ function requireString_decoder() {
   if (hasRequiredString_decoder) return string_decoder;
   hasRequiredString_decoder = 1;
   var Buffer2 = requireSafeBuffer().Buffer;
-  var isEncoding = Buffer2.isEncoding || function(encoding) {
+  var isEncoding = Buffer2.isEncoding || function (encoding) {
     encoding = "" + encoding;
     switch (encoding && encoding.toLowerCase()) {
       case "hex":
@@ -5987,7 +5987,7 @@ function requireString_decoder() {
     this.lastTotal = 0;
     this.lastChar = Buffer2.allocUnsafe(nb);
   }
-  StringDecoder.prototype.write = function(buf) {
+  StringDecoder.prototype.write = function (buf) {
     if (buf.length === 0) return "";
     var r;
     var i;
@@ -6004,7 +6004,7 @@ function requireString_decoder() {
   };
   StringDecoder.prototype.end = utf8End;
   StringDecoder.prototype.text = utf8Text;
-  StringDecoder.prototype.fillLast = function(buf) {
+  StringDecoder.prototype.fillLast = function (buf) {
     if (this.lastNeed <= buf.length) {
       buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, this.lastNeed);
       return this.lastChar.toString(this.encoding, 0, this.lastTotal);
@@ -6148,7 +6148,7 @@ function requireEndOfStream() {
   var ERR_STREAM_PREMATURE_CLOSE = requireErrors().codes.ERR_STREAM_PREMATURE_CLOSE;
   function once(callback) {
     var called = false;
-    return function() {
+    return function () {
       if (called) return;
       called = true;
       for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -6213,7 +6213,7 @@ function requireEndOfStream() {
     stream2.on("finish", onfinish);
     if (opts.error !== false) stream2.on("error", onerror);
     stream2.on("close", onclose);
-    return function() {
+    return function () {
       stream2.removeListener("complete", onfinish);
       stream2.removeListener("abort", onclose);
       stream2.removeListener("request", onrequest);
@@ -6288,8 +6288,8 @@ function requireAsync_iterator() {
     process.nextTick(readAndResolve, iter);
   }
   function wrapForNext(lastPromise, iter) {
-    return function(resolve, reject) {
-      lastPromise.then(function() {
+    return function (resolve, reject) {
+      lastPromise.then(function () {
         if (iter[kEnded]) {
           resolve(createIterResult(void 0, true));
           return;
@@ -6298,7 +6298,7 @@ function requireAsync_iterator() {
       }, reject);
     };
   }
-  var AsyncIteratorPrototype = Object.getPrototypeOf(function() {
+  var AsyncIteratorPrototype = Object.getPrototypeOf(function () {
   });
   var ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf((_Object$setPrototypeO = {
     get stream() {
@@ -6314,8 +6314,8 @@ function requireAsync_iterator() {
         return Promise.resolve(createIterResult(void 0, true));
       }
       if (this[kStream].destroyed) {
-        return new Promise(function(resolve, reject) {
-          process.nextTick(function() {
+        return new Promise(function (resolve, reject) {
+          process.nextTick(function () {
             if (_this[kError]) {
               reject(_this[kError]);
             } else {
@@ -6338,12 +6338,12 @@ function requireAsync_iterator() {
       this[kLastPromise] = promise;
       return promise;
     }
-  }, _defineProperty(_Object$setPrototypeO, Symbol.asyncIterator, function() {
+  }, _defineProperty(_Object$setPrototypeO, Symbol.asyncIterator, function () {
     return this;
   }), _defineProperty(_Object$setPrototypeO, "return", function _return() {
     var _this2 = this;
-    return new Promise(function(resolve, reject) {
-      _this2[kStream].destroy(null, function(err) {
+    return new Promise(function (resolve, reject) {
+      _this2[kStream].destroy(null, function (err) {
         if (err) {
           reject(err);
           return;
@@ -6385,7 +6385,7 @@ function requireAsync_iterator() {
       writable: true
     }), _Object$create));
     iterator[kLastPromise] = null;
-    finished(stream2, function(err) {
+    finished(stream2, function (err) {
       if (err && err.code !== "ERR_STREAM_PREMATURE_CLOSE") {
         var reject = iterator[kLastReject];
         if (reject !== null) {
@@ -6432,9 +6432,9 @@ function requireFrom() {
     }
   }
   function _asyncToGenerator(fn) {
-    return function() {
+    return function () {
       var self2 = this, args = arguments;
-      return new Promise(function(resolve, reject) {
+      return new Promise(function (resolve, reject) {
         var gen = fn.apply(self2, args);
         function _next(value) {
           asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
@@ -6450,7 +6450,7 @@ function requireFrom() {
     var keys = Object.keys(object);
     if (Object.getOwnPropertySymbols) {
       var symbols = Object.getOwnPropertySymbols(object);
-      enumerableOnly && (symbols = symbols.filter(function(sym) {
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
         return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       })), keys.push.apply(keys, symbols);
     }
@@ -6459,9 +6459,9 @@ function requireFrom() {
   function _objectSpread(target) {
     for (var i = 1; i < arguments.length; i++) {
       var source2 = null != arguments[i] ? arguments[i] : {};
-      i % 2 ? ownKeys(Object(source2), true).forEach(function(key) {
+      i % 2 ? ownKeys(Object(source2), true).forEach(function (key) {
         _defineProperty(target, key, source2[key]);
-      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source2)) : ownKeys(Object(source2)).forEach(function(key) {
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source2)) : ownKeys(Object(source2)).forEach(function (key) {
         Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source2, key));
       });
     }
@@ -6502,7 +6502,7 @@ function requireFrom() {
       objectMode: true
     }, opts));
     var reading = false;
-    readable2._read = function() {
+    readable2._read = function () {
       if (!reading) {
         reading = true;
         next();
@@ -6547,7 +6547,7 @@ function require_stream_readable() {
   };
   var Stream = requireStream();
   var Buffer2 = require$$0$5.Buffer;
-  var OurUint8Array = (typeof commonjsGlobal !== "undefined" ? commonjsGlobal : typeof window !== "undefined" ? window : typeof self !== "undefined" ? self : {}).Uint8Array || function() {
+  var OurUint8Array = (typeof commonjsGlobal !== "undefined" ? commonjsGlobal : typeof window !== "undefined" ? window : typeof self !== "undefined" ? self : {}).Uint8Array || function () {
   };
   function _uint8ArrayToBuffer(chunk) {
     return Buffer2.from(chunk);
@@ -6646,10 +6646,10 @@ function require_stream_readable() {
   });
   Readable.prototype.destroy = destroyImpl.destroy;
   Readable.prototype._undestroy = destroyImpl.undestroy;
-  Readable.prototype._destroy = function(err, cb) {
+  Readable.prototype._destroy = function (err, cb) {
     cb(err);
   };
-  Readable.prototype.push = function(chunk, encoding) {
+  Readable.prototype.push = function (chunk, encoding) {
     var state2 = this._readableState;
     var skipChunkCheck;
     if (!state2.objectMode) {
@@ -6666,7 +6666,7 @@ function require_stream_readable() {
     }
     return readableAddChunk(this, chunk, encoding, false, skipChunkCheck);
   };
-  Readable.prototype.unshift = function(chunk) {
+  Readable.prototype.unshift = function (chunk) {
     return readableAddChunk(this, chunk, null, true, false);
   };
   function readableAddChunk(stream2, chunk, encoding, addToFront, skipChunkCheck) {
@@ -6727,10 +6727,10 @@ function require_stream_readable() {
     }
     return er;
   }
-  Readable.prototype.isPaused = function() {
+  Readable.prototype.isPaused = function () {
     return this._readableState.flowing === false;
   };
-  Readable.prototype.setEncoding = function(enc) {
+  Readable.prototype.setEncoding = function (enc) {
     if (!StringDecoder) StringDecoder = requireString_decoder().StringDecoder;
     var decoder = new StringDecoder(enc);
     this._readableState.decoder = decoder;
@@ -6776,7 +6776,7 @@ function require_stream_readable() {
     }
     return state2.length;
   }
-  Readable.prototype.read = function(n) {
+  Readable.prototype.read = function (n) {
     debug("read", n);
     n = parseInt(n, 10);
     var state2 = this._readableState;
@@ -6885,10 +6885,10 @@ function require_stream_readable() {
     }
     state2.readingMore = false;
   }
-  Readable.prototype._read = function(n) {
+  Readable.prototype._read = function (n) {
     errorOrDestroy(this, new ERR_METHOD_NOT_IMPLEMENTED("_read()"));
   };
-  Readable.prototype.pipe = function(dest, pipeOpts) {
+  Readable.prototype.pipe = function (dest, pipeOpts) {
     var src = this;
     var state2 = this._readableState;
     switch (state2.pipesCount) {
@@ -6991,7 +6991,7 @@ function require_stream_readable() {
       }
     };
   }
-  Readable.prototype.unpipe = function(dest) {
+  Readable.prototype.unpipe = function (dest) {
     var state2 = this._readableState;
     var unpipeInfo = {
       hasUnpiped: false
@@ -7025,7 +7025,7 @@ function require_stream_readable() {
     dest.emit("unpipe", this, unpipeInfo);
     return this;
   };
-  Readable.prototype.on = function(ev, fn) {
+  Readable.prototype.on = function (ev, fn) {
     var res = Stream.prototype.on.call(this, ev, fn);
     var state2 = this._readableState;
     if (ev === "data") {
@@ -7047,14 +7047,14 @@ function require_stream_readable() {
     return res;
   };
   Readable.prototype.addListener = Readable.prototype.on;
-  Readable.prototype.removeListener = function(ev, fn) {
+  Readable.prototype.removeListener = function (ev, fn) {
     var res = Stream.prototype.removeListener.call(this, ev, fn);
     if (ev === "readable") {
       process.nextTick(updateReadableListening, this);
     }
     return res;
   };
-  Readable.prototype.removeAllListeners = function(ev) {
+  Readable.prototype.removeAllListeners = function (ev) {
     var res = Stream.prototype.removeAllListeners.apply(this, arguments);
     if (ev === "readable" || ev === void 0) {
       process.nextTick(updateReadableListening, this);
@@ -7074,7 +7074,7 @@ function require_stream_readable() {
     debug("readable nexttick read 0");
     self2.read(0);
   }
-  Readable.prototype.resume = function() {
+  Readable.prototype.resume = function () {
     var state2 = this._readableState;
     if (!state2.flowing) {
       debug("resume");
@@ -7100,7 +7100,7 @@ function require_stream_readable() {
     flow(stream2);
     if (state2.flowing && !state2.reading) stream2.read(0);
   }
-  Readable.prototype.pause = function() {
+  Readable.prototype.pause = function () {
     debug("call pause flowing=%j", this._readableState.flowing);
     if (this._readableState.flowing !== false) {
       debug("pause");
@@ -7113,13 +7113,13 @@ function require_stream_readable() {
   function flow(stream2) {
     var state2 = stream2._readableState;
     debug("flow", state2.flowing);
-    while (state2.flowing && stream2.read() !== null) ;
+    while (state2.flowing && stream2.read() !== null);
   }
-  Readable.prototype.wrap = function(stream2) {
+  Readable.prototype.wrap = function (stream2) {
     var _this = this;
     var state2 = this._readableState;
     var paused = false;
-    stream2.on("end", function() {
+    stream2.on("end", function () {
       debug("wrapped end");
       if (state2.decoder && !state2.ended) {
         var chunk = state2.decoder.end();
@@ -7127,7 +7127,7 @@ function require_stream_readable() {
       }
       _this.push(null);
     });
-    stream2.on("data", function(chunk) {
+    stream2.on("data", function (chunk) {
       debug("wrapped data");
       if (state2.decoder) chunk = state2.decoder.write(chunk);
       if (state2.objectMode && (chunk === null || chunk === void 0)) return;
@@ -7150,7 +7150,7 @@ function require_stream_readable() {
     for (var n = 0; n < kProxyEvents.length; n++) {
       stream2.on(kProxyEvents[n], this.emit.bind(this, kProxyEvents[n]));
     }
-    this._read = function(n2) {
+    this._read = function (n2) {
       debug("wrapped _read", n2);
       if (paused) {
         paused = false;
@@ -7160,7 +7160,7 @@ function require_stream_readable() {
     return this;
   };
   if (typeof Symbol === "function") {
-    Readable.prototype[Symbol.asyncIterator] = function() {
+    Readable.prototype[Symbol.asyncIterator] = function () {
       if (createReadableStreamAsyncIterator === void 0) {
         createReadableStreamAsyncIterator = requireAsync_iterator();
       }
@@ -7246,7 +7246,7 @@ function require_stream_readable() {
     }
   }
   if (typeof Symbol === "function") {
-    Readable.from = function(iterable, opts) {
+    Readable.from = function (iterable, opts) {
       if (from === void 0) {
         from = requireFrom();
       }
@@ -7310,21 +7310,21 @@ function require_stream_transform() {
   function prefinish() {
     var _this = this;
     if (typeof this._flush === "function" && !this._readableState.destroyed) {
-      this._flush(function(er, data) {
+      this._flush(function (er, data) {
         done(_this, er, data);
       });
     } else {
       done(this, null, null);
     }
   }
-  Transform.prototype.push = function(chunk, encoding) {
+  Transform.prototype.push = function (chunk, encoding) {
     this._transformState.needTransform = false;
     return Duplex.prototype.push.call(this, chunk, encoding);
   };
-  Transform.prototype._transform = function(chunk, encoding, cb) {
+  Transform.prototype._transform = function (chunk, encoding, cb) {
     cb(new ERR_METHOD_NOT_IMPLEMENTED("_transform()"));
   };
-  Transform.prototype._write = function(chunk, encoding, cb) {
+  Transform.prototype._write = function (chunk, encoding, cb) {
     var ts = this._transformState;
     ts.writecb = cb;
     ts.writechunk = chunk;
@@ -7334,7 +7334,7 @@ function require_stream_transform() {
       if (ts.needTransform || rs.needReadable || rs.length < rs.highWaterMark) this._read(rs.highWaterMark);
     }
   };
-  Transform.prototype._read = function(n) {
+  Transform.prototype._read = function (n) {
     var ts = this._transformState;
     if (ts.writechunk !== null && !ts.transforming) {
       ts.transforming = true;
@@ -7343,8 +7343,8 @@ function require_stream_transform() {
       ts.needTransform = true;
     }
   };
-  Transform.prototype._destroy = function(err, cb) {
-    Duplex.prototype._destroy.call(this, err, function(err2) {
+  Transform.prototype._destroy = function (err, cb) {
+    Duplex.prototype._destroy.call(this, err, function (err2) {
       cb(err2);
     });
   };
@@ -7370,7 +7370,7 @@ function require_stream_passthrough() {
     if (!(this instanceof PassThrough)) return new PassThrough(options);
     Transform.call(this, options);
   }
-  PassThrough.prototype._transform = function(chunk, encoding, cb) {
+  PassThrough.prototype._transform = function (chunk, encoding, cb) {
     cb(null, chunk);
   };
   return _stream_passthrough;
@@ -7383,7 +7383,7 @@ function requirePipeline() {
   var eos;
   function once(callback) {
     var called = false;
-    return function() {
+    return function () {
       if (called) return;
       called = true;
       callback.apply(void 0, arguments);
@@ -7399,20 +7399,20 @@ function requirePipeline() {
   function destroyer(stream2, reading, writing, callback) {
     callback = once(callback);
     var closed = false;
-    stream2.on("close", function() {
+    stream2.on("close", function () {
       closed = true;
     });
     if (eos === void 0) eos = requireEndOfStream();
     eos(stream2, {
       readable: reading,
       writable: writing
-    }, function(err) {
+    }, function (err) {
       if (err) return callback(err);
       closed = true;
       callback();
     });
     var destroyed = false;
-    return function(err) {
+    return function (err) {
       if (closed) return;
       if (destroyed) return;
       destroyed = true;
@@ -7442,10 +7442,10 @@ function requirePipeline() {
       throw new ERR_MISSING_ARGS("streams");
     }
     var error;
-    var destroys = streams.map(function(stream2, i) {
+    var destroys = streams.map(function (stream2, i) {
       var reading = i < streams.length - 1;
       var writing = i > 0;
-      return destroyer(stream2, reading, writing, function(err) {
+      return destroyer(stream2, reading, writing, function (err) {
         if (!error) error = err;
         if (err) destroys.forEach(call);
         if (reading) return;
@@ -7462,7 +7462,7 @@ var hasRequiredReadable;
 function requireReadable() {
   if (hasRequiredReadable) return readable.exports;
   hasRequiredReadable = 1;
-  (function(module, exports$1) {
+  (function (module, exports$1) {
     var Stream = require$$0$4;
     if (process.env.READABLE_STREAM === "disable" && Stream) {
       module.exports = Stream.Readable;
@@ -7519,7 +7519,7 @@ function requireBufferList() {
       tot = _t2;
     }
   };
-  BufferList.prototype._reverseOffset = function(blOffset) {
+  BufferList.prototype._reverseOffset = function (blOffset) {
     const bufferId = blOffset[0];
     let offset = blOffset[1];
     for (let i = 0; i < bufferId; i++) {
@@ -7673,7 +7673,7 @@ function requireBufferList() {
     this._bufs.push(buf);
     this.length += buf.length;
   };
-  BufferList.prototype.indexOf = function(search, offset, encoding) {
+  BufferList.prototype.indexOf = function (search, offset, encoding) {
     if (encoding === void 0 && typeof offset === "string") {
       encoding = offset;
       offset = void 0;
@@ -7729,7 +7729,7 @@ function requireBufferList() {
     }
     return -1;
   };
-  BufferList.prototype._match = function(offset, search) {
+  BufferList.prototype._match = function (offset, search) {
     if (this.length - offset < search.length) {
       return false;
     }
@@ -7740,7 +7740,7 @@ function requireBufferList() {
     }
     return true;
   };
-  (function() {
+  (function () {
     const methods = {
       readDoubleBE: 8,
       readDoubleLE: 8,
@@ -7762,13 +7762,13 @@ function requireBufferList() {
       readUIntLE: null
     };
     for (const m in methods) {
-      (function(m2) {
+      (function (m2) {
         if (methods[m2] === null) {
-          BufferList.prototype[m2] = function(offset, byteLength) {
+          BufferList.prototype[m2] = function (offset, byteLength) {
             return this.slice(offset, offset + byteLength)[m2](0, byteLength);
           };
         } else {
-          BufferList.prototype[m2] = function(offset = 0) {
+          BufferList.prototype[m2] = function (offset = 0) {
             return this.slice(offset, offset + methods[m2])[m2](0);
           };
         }
@@ -7877,7 +7877,7 @@ function requireOra() {
       this.mutedStream = new BufferListStream();
       this.mutedStream.pipe(process.stdout);
       const self2 = this;
-      this.ourEmit = function(event, data, ...args) {
+      this.ourEmit = function (event, data, ...args) {
         const { stdin } = process;
         if (self2.requests > 0 || stdin.emit === self2.ourEmit) {
           if (event === "keypress") {
@@ -8156,7 +8156,7 @@ function requireOra() {
       return this;
     }
   }
-  const oraFactory = function(options) {
+  const oraFactory = function (options) {
     return new Ora(options);
   };
   ora.exports = oraFactory;
@@ -8181,7 +8181,7 @@ function requireOra() {
 var oraExports = requireOra();
 const eo = /* @__PURE__ */ getDefaultExportFromCjs(oraExports);
 var he = Object.defineProperty;
-((t) => typeof require2 < "u" ? require2 : typeof Proxy < "u" ? new Proxy(t, { get: (e, o) => (typeof require2 < "u" ? require2 : e)[o] }) : t)(function(t) {
+((t) => typeof require2 < "u" ? require2 : typeof Proxy < "u" ? new Proxy(t, { get: (e, o) => (typeof require2 < "u" ? require2 : e)[o] }) : t)(function (t) {
   if (typeof require2 < "u") return require2.apply(this, arguments);
   throw Error('Dynamic require of "' + t + '" is not supported');
 });
@@ -8391,7 +8391,7 @@ async function ot(t, e = {}, o = process.cwd()) {
 }
 async function nt(t = process.cwd()) {
   let e = await V(t), o = (n) => {
-    if (n) for (let [s, i] of Object.entries(n)) ;
+    if (n) for (let [s, i] of Object.entries(n));
   };
   o(e.dependencies), o(e.devDependencies), await ce(e, t);
 }
@@ -8466,7 +8466,7 @@ async function to(t) {
 }
 function oo(t) {
   let e = ["B", "KB", "MB", "GB"], o = t, n = 0;
-  for (; o >= 1024 && n < e.length - 1; ) o /= 1024, n++;
+  for (; o >= 1024 && n < e.length - 1;) o /= 1024, n++;
   return `${o.toFixed(2)} ${e[n]}`;
 }
 function Le(t) {
@@ -8638,7 +8638,7 @@ var w = promisify(exec), pt = class {
     let o = this.getProject(e);
     if (!o) throw new Error(`Project '${e}' not found`);
     let { postgres: n, redis: s, rabbitmq: i, keycloak: r } = o.resources;
-    return { DATABASE_URL: `postgresql://${n.user}:${n.password}@localhost:5432/${n.database}`, POSTGRES_DB: n.database, POSTGRES_USER: n.user, POSTGRES_PASSWORD: n.password, REDIS_URL: `redis://${s.host}:${s.port}/${s.db}`, REDIS_HOST: s.host, REDIS_PORT: s.port.toString(), REDIS_DB: s.db.toString(), RABBITMQ_URL: `amqp://${i.user}:${i.password}@localhost:5672/${i.vhost}`, RABBITMQ_VHOST: i.vhost, RABBITMQ_USER: i.user, RABBITMQ_PASSWORD: i.password, KEYCLOAK_URL: `http://localhost:8080/realms/${r.realm}`, KEYCLOAK_REALM: r.realm, KEYCLOAK_CLIENT_ID: r.clientId, KEYCLOAK_CLIENT_SECRET: r.clientSecret };
+    return { DATABASE_URL: `postgresql://${n.user}:${n.password}@localhost:5432/${n.database}`, POSTGRES_DB: n.database, POSTGRES_USER: n.user, POSTGRES_PASSWORD: n.password, REDIS_URL: `redis://${s.host}:${s.port}/${s.db}`, REDIS_HOST: s.host, REDIS_PORT: s.port.toString(), REDIS_DB: s.db.toString(), RABBITMQ_URL: `amqp://${i.user}:${i.password}@localhost:5672/${i.vhost}`, RABBITMQ_VHOST: i.vhost, RABBITMQ_USER: i.user, RABBITMQ_PASSWORD: i.password, KEYCLOAK_URL: `http://keycloak.localhost:8080/realms/${r.realm}`, KEYCLOAK_REALM: r.realm, KEYCLOAK_CLIENT_ID: r.clientId, KEYCLOAK_CLIENT_SECRET: r.clientSecret };
   }
   async generateEnvFile(e, o) {
     let n = this.getConnectionStrings(e);
@@ -8937,8 +8937,8 @@ var YAML_NODE_KINDS = [
 function compileStyleAliases(map2) {
   var result = {};
   if (map2 !== null) {
-    Object.keys(map2).forEach(function(style) {
-      map2[style].forEach(function(alias) {
+    Object.keys(map2).forEach(function (style) {
+      map2[style].forEach(function (alias) {
         result[String(alias)] = style;
       });
     });
@@ -8947,7 +8947,7 @@ function compileStyleAliases(map2) {
 }
 function Type$1(tag, options) {
   options = options || {};
-  Object.keys(options).forEach(function(name) {
+  Object.keys(options).forEach(function (name) {
     if (TYPE_CONSTRUCTOR_OPTIONS.indexOf(name) === -1) {
       throw new exception('Unknown option "' + name + '" is met in definition of "' + tag + '" YAML type.');
     }
@@ -8955,10 +8955,10 @@ function Type$1(tag, options) {
   this.options = options;
   this.tag = tag;
   this.kind = options["kind"] || null;
-  this.resolve = options["resolve"] || function() {
+  this.resolve = options["resolve"] || function () {
     return true;
   };
-  this.construct = options["construct"] || function(data) {
+  this.construct = options["construct"] || function (data) {
     return data;
   };
   this.instanceOf = options["instanceOf"] || null;
@@ -8975,9 +8975,9 @@ function Type$1(tag, options) {
 var type = Type$1;
 function compileList(schema2, name) {
   var result = [];
-  schema2[name].forEach(function(currentType) {
+  schema2[name].forEach(function (currentType) {
     var newIndex = result.length;
-    result.forEach(function(previousType, previousIndex) {
+    result.forEach(function (previousType, previousIndex) {
       if (previousType.tag === currentType.tag && previousType.kind === currentType.kind && previousType.multi === currentType.multi) {
         newIndex = previousIndex;
       }
@@ -9028,7 +9028,7 @@ Schema$1.prototype.extend = function extend2(definition) {
   } else {
     throw new exception("Schema.extend argument should be a Type, [ Type ], or a schema definition ({ implicit: [...], explicit: [...] })");
   }
-  implicit.forEach(function(type$1) {
+  implicit.forEach(function (type$1) {
     if (!(type$1 instanceof type)) {
       throw new exception("Specified list of YAML types (or a single Type object) contains a non-Type object.");
     }
@@ -9039,7 +9039,7 @@ Schema$1.prototype.extend = function extend2(definition) {
       throw new exception("There is a multi type in the implicit list of a schema. Multi tags can only be listed as explicit.");
     }
   });
-  explicit.forEach(function(type$1) {
+  explicit.forEach(function (type$1) {
     if (!(type$1 instanceof type)) {
       throw new exception("Specified list of YAML types (or a single Type object) contains a non-Type object.");
     }
@@ -9055,19 +9055,19 @@ Schema$1.prototype.extend = function extend2(definition) {
 var schema = Schema$1;
 var str = new type("tag:yaml.org,2002:str", {
   kind: "scalar",
-  construct: function(data) {
+  construct: function (data) {
     return data !== null ? data : "";
   }
 });
 var seq = new type("tag:yaml.org,2002:seq", {
   kind: "sequence",
-  construct: function(data) {
+  construct: function (data) {
     return data !== null ? data : [];
   }
 });
 var map = new type("tag:yaml.org,2002:map", {
   kind: "mapping",
-  construct: function(data) {
+  construct: function (data) {
     return data !== null ? data : {};
   }
 });
@@ -9095,19 +9095,19 @@ var _null = new type("tag:yaml.org,2002:null", {
   construct: constructYamlNull,
   predicate: isNull,
   represent: {
-    canonical: function() {
+    canonical: function () {
       return "~";
     },
-    lowercase: function() {
+    lowercase: function () {
       return "null";
     },
-    uppercase: function() {
+    uppercase: function () {
       return "NULL";
     },
-    camelcase: function() {
+    camelcase: function () {
       return "Null";
     },
-    empty: function() {
+    empty: function () {
       return "";
     }
   },
@@ -9130,13 +9130,13 @@ var bool = new type("tag:yaml.org,2002:bool", {
   construct: constructYamlBoolean,
   predicate: isBoolean,
   represent: {
-    lowercase: function(object) {
+    lowercase: function (object) {
       return object ? "true" : "false";
     },
-    uppercase: function(object) {
+    uppercase: function (object) {
       return object ? "TRUE" : "FALSE";
     },
-    camelcase: function(object) {
+    camelcase: function (object) {
       return object ? "True" : "False";
     }
   },
@@ -9233,17 +9233,17 @@ var int = new type("tag:yaml.org,2002:int", {
   construct: constructYamlInteger,
   predicate: isInteger,
   represent: {
-    binary: function(obj) {
+    binary: function (obj) {
       return obj >= 0 ? "0b" + obj.toString(2) : "-0b" + obj.toString(2).slice(1);
     },
-    octal: function(obj) {
+    octal: function (obj) {
       return obj >= 0 ? "0o" + obj.toString(8) : "-0o" + obj.toString(8).slice(1);
     },
-    decimal: function(obj) {
+    decimal: function (obj) {
       return obj.toString(10);
     },
     /* eslint-disable max-len */
-    hexadecimal: function(obj) {
+    hexadecimal: function (obj) {
       return obj >= 0 ? "0x" + obj.toString(16).toUpperCase() : "-0x" + obj.toString(16).toUpperCase().slice(1);
     }
   },
@@ -9262,8 +9262,8 @@ var YAML_FLOAT_PATTERN = new RegExp(
 function resolveYamlFloat(data) {
   if (data === null) return false;
   if (!YAML_FLOAT_PATTERN.test(data) || // Quick hack to not allow integers end with `_`
-  // Probably should update regexp & check speed
-  data[data.length - 1] === "_") {
+    // Probably should update regexp & check speed
+    data[data.length - 1] === "_") {
     return false;
   }
   return true;

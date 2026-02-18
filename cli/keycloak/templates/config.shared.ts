@@ -12,7 +12,7 @@ import { defineConfig } from '@oxlayer/cli-keycloak/templates';
 
 export default defineConfig({
   keycloak: {
-    url: process.env.KEYCLOAK_URL || 'http://localhost:8080',
+    url: process.env.KEYCLOAK_URL || 'http://keycloak.localhost:8080',
     admin: {
       username: process.env.KEYCLOAK_ADMIN || 'admin',
       password: process.env.KEYCLOAK_ADMIN_PASSWORD || 'admin',
