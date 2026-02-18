@@ -103,6 +103,10 @@ export class RegistryManager {
 
     const { postgres, redis, rabbitmq, keycloak } = project.resources;
 
+    // Backwards compatibility: handle legacy projects without queue/exchange
+    const rabbitmqQueue = (rabbitmq as any).queue || 'events';
+    const rabbitmqExchange = (rabbitmq as any).exchange || `${projectName}.events`;
+
     return {
       // PostgreSQL - Changed to match capabilities expectations
       POSTGRES_HOST: 'localhost',
@@ -120,7 +124,8 @@ export class RegistryManager {
       // RabbitMQ - Changed to use individual components, renamed USER to USERNAME
       RABBITMQ_HOST: 'localhost',
       RABBITMQ_PORT: '5672',
-      RABBITMQ_QUEUE: 'events',
+      RABBITMQ_QUEUE: rabbitmqQueue,
+      RABBITMQ_EXCHANGE: rabbitmqExchange,
       RABBITMQ_VHOST: rabbitmq.vhost,
       RABBITMQ_USERNAME: rabbitmq.user,
       RABBITMQ_PASSWORD: rabbitmq.password,

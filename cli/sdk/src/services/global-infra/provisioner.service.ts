@@ -219,13 +219,59 @@ export class ProvisionerService {
       }
 
       // Set permissions (idempotent)
+      // Permissions for both project-prefixed resources and generic names
+      // Allows: alolabs.*, alo.*, events, etc.
       await execAsync(
         `docker exec ox-rabbitmq rabbitmqctl set_permissions -p ${vhost} ${user} ".*" ".*" ".*"`,
         { timeout: 5000 }
       );
       console.log(`  ✓ Set RabbitMQ permissions for ${user} on ${vhost}`);
 
-      return { vhost, user, password };
+      // Create default exchange and queue using rabbitmqadmin
+      const defaultQueue = `${projectName}.manager.events`;
+      const defaultExchange = `${projectName}.events`;
+
+      try {
+        // Ensure rabbitmqadmin is installed
+        try {
+          await execAsync(`docker exec ox-rabbitmq which rabbitmqadmin`, { timeout: 2000 });
+        } catch {
+          // Install rabbitmqadmin if not present
+          await execAsync(`docker exec ox-rabbitmq wget -O /usr/local/bin/rabbitmqadmin http://localhost:15672/cli/rabbitmqadmin`, { timeout: 10000 });
+          await execAsync(`docker exec ox-rabbitmq chmod +x /usr/local/bin/rabbitmqadmin`, { timeout: 2000 });
+        }
+        // Check if queue exists
+        const queueExists = await execAsync(
+          `docker exec ox-rabbitmq rabbitmqctl list_queues -p ${vhost} | grep "^${defaultQueue}" || true`,
+          { timeout: 5000 }
+        );
+
+        if (queueExists.stdout.trim()) {
+          console.log(`  ℹ  RabbitMQ queue '${defaultQueue}' already exists`);
+        } else {
+          // Create queue, exchange, and binding using rabbitmqadmin with authentication
+          await execAsync(
+            `docker exec ox-rabbitmq rabbitmqadmin --username=guest --password=guest --vhost=${vhost} declare queue name=${defaultQueue} durable=true`,
+            { timeout: 5000 }
+          );
+          await execAsync(
+            `docker exec ox-rabbitmq rabbitmqadmin --username=guest --password=guest --vhost=${vhost} declare exchange name=${defaultExchange} type=topic durable=true`,
+            { timeout: 5000 }
+          );
+          await execAsync(
+            `docker exec ox-rabbitmq rabbitmqadmin --username=guest --password=guest --vhost=${vhost} declare binding source=${defaultExchange} destination=${defaultQueue} destination_type=queue routing_key="#"`,
+            { timeout: 5000 }
+          );
+          console.log(`  ✓ Created RabbitMQ queue: ${defaultQueue}`);
+          console.log(`    - Exchange: ${defaultExchange} (topic)`);
+          console.log(`    - Binding: ${defaultExchange} -> ${defaultQueue} (#)`);
+        }
+      } catch (error: any) {
+        // Non-fatal - queue/exchange creation is nice-to-have but not critical
+        console.warn(`  ⚠ Could not create queue/exchange: ${error.message}`);
+      }
+
+      return { vhost, user, password, queue: defaultQueue, exchange: defaultExchange };
     } catch (error: any) {
       throw new Error(`Failed to provision RabbitMQ: ${error.message}`);
     }
@@ -301,7 +347,8 @@ REDIS_PASSWORD=
 # RabbitMQ
 RABBITMQ_HOST=localhost
 RABBITMQ_PORT=5672
-RABBITMQ_QUEUE=events
+RABBITMQ_QUEUE=${config.resources.rabbitmq.queue}
+RABBITMQ_EXCHANGE=${config.resources.rabbitmq.exchange}
 RABBITMQ_VHOST=${config.resources.rabbitmq.vhost}
 RABBITMQ_USERNAME=${config.resources.rabbitmq.user}
 RABBITMQ_PASSWORD=
@@ -333,7 +380,7 @@ KEYCLOAK_CLIENT_SECRET=
    * Create monitoring configuration templates for the project
    * Generates starter configs for Prometheus, Grafana, and OTEL collectors
    */
-  private createMonitoringTemplates(oxlayerDir: string, projectName: string, config: ProjectConfig): void {
+  private createMonitoringTemplates(oxlayerDir: string, projectName: string, _config: ProjectConfig): void {
     try {
       // Create Prometheus template
       const prometheusDir = oxlayerDir + '/prometheus';
@@ -534,7 +581,7 @@ service:
 `;
   }
 
-  private generateCollectorDomainTemplate(projectName: string): string {
+  private generateCollectorDomainTemplate(_projectName: string): string {
     return `# OpenTelemetry Collector - Domain Events Pipeline
 # Receives: Domain events, business metrics
 # Sends to: Analytics backend (ClickHouse, BigQuery, etc.)

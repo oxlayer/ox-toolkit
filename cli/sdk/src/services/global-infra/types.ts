@@ -17,6 +17,8 @@ export interface ProjectResources {
     vhost: string;
     user: string;
     password: string;
+    queue: string;
+    exchange: string;
   };
   keycloak: {
     realm: string;
