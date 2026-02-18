@@ -59,6 +59,7 @@ jobs:
         run: |
           pnpm --filter "@oxlayer/create-backend" run build || true
           pnpm --filter "@oxlayer/create-frontend" run build || true
+          pnpm --filter "@oxlayer/cli-keycloak" run build || true
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -67,3 +68,4 @@ jobs:
           path: |
             cli/create-backend/dist/**
             cli/create-frontend/dist/**
+            cli/keycloak/dist/**
