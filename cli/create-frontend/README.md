@@ -172,7 +172,7 @@ Uses CSS variables for theming:
 Set environment variables in `.env`:
 
 ```bash
-VITE_KEYCLOAK_URL=http://localhost:8080
+VITE_KEYCLOAK_URL=http://keycloak.localhost:8080
 VITE_KEYCLOAK_REALM=my-app
 VITE_KEYCLOAK_CLIENT_ID=my-app-frontend
 ```
