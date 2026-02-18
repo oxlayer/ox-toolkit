@@ -11,6 +11,7 @@
   },
   "scripts": {
     "infra": "cd ./infra_oxlayer && docker-compose up -d",
+    "keycloak": "node ./apps/control-panel/backend/api/node_modules/@oxlayer/cli-keycloak/dist/bin/index.js bootstrap --config ./apps/control-panel/backend/api/keycloak.config.json",
     "panel": "pnpm --filter @oxlayer/control-panel-dashboard dev",
     "panel:api": "bws run -- pnpm --filter @oxlayer/control-panel-api dev",
     "backend": "pnpm -r --filter \"./backend/**\" --filter \"!./backend/release/**\" run build",
