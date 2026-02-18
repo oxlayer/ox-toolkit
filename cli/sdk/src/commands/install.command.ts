@@ -74,6 +74,16 @@ async function createSubPackageJsons(vendorVersionDir: string, manifest: any): P
       // File doesn't exist or invalid JSON, that's okay
     }
 
+    // Read existing package.json to preserve dependencies
+    let existingPeerDeps: Record<string, string> = {};
+    try {
+      const existingContent = await fs.readFile(packageJsonPath, 'utf-8');
+      const existingPkg = JSON.parse(existingContent);
+      existingPeerDeps = existingPkg.peerDependencies || {};
+    } catch {
+      // File doesn't exist or invalid JSON, that's okay
+    }
+
     const packageJson = {
       name: name,
       version: semverVersion,
@@ -81,6 +91,7 @@ async function createSubPackageJsons(vendorVersionDir: string, manifest: any): P
       type: 'module',
       main: pkg.main || './dist/index.js',
       dependencies: existingDeps,
+      peerDependencies: existingPeerDeps,
       exports: {
         '.': {
           types: pkg.main?.replace('.js', '.d.ts') || './dist/index.d.ts',
@@ -130,7 +141,7 @@ async function updateWorkspaceConfig(rootDir: string): Promise<void> {
     }
   }
 
-  const yamlContent = `packages:\n${workspaceConfig.packages.map(p => `  - '${p}'`).join('\n')}\n`;
+  const yamlContent = `packages:\n${(workspaceConfig.packages || []).map(p => `  - '${p}'`).join('\n')}\n`;
   await fs.writeFile(workspacePath, yamlContent, 'utf-8');
 }
 

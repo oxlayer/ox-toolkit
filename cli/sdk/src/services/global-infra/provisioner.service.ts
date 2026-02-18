@@ -115,6 +115,15 @@ export class ProvisionerService {
 
       if (userExists.stdout.trim() === '1') {
         console.log(`  ℹ  PostgreSQL user '${user}' already exists`);
+        // Ensure schema permissions are set (in case user was created without them)
+        await execAsync(
+          `docker exec ox-postgres psql -U postgres -d ${dbName} -c "GRANT ALL ON SCHEMA public TO ${user};"`,
+          { timeout: 5000 }
+        );
+        await execAsync(
+          `docker exec ox-postgres psql -U postgres -d ${dbName} -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO ${user};"`,
+          { timeout: 5000 }
+        );
       } else {
         // Create user and grant privileges
         await execAsync(
@@ -123,6 +132,15 @@ export class ProvisionerService {
         );
         await execAsync(
           `docker exec ox-postgres psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE ${dbName} TO ${user};"`,
+          { timeout: 5000 }
+        );
+        // Grant schema privileges (required for creating tables, running migrations)
+        await execAsync(
+          `docker exec ox-postgres psql -U postgres -d ${dbName} -c "GRANT ALL ON SCHEMA public TO ${user};"`,
+          { timeout: 5000 }
+        );
+        await execAsync(
+          `docker exec ox-postgres psql -U postgres -d ${dbName} -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO ${user};"`,
           { timeout: 5000 }
         );
         console.log(`  ✓ Created PostgreSQL user: ${user}`);
@@ -268,25 +286,31 @@ export class ProvisionerService {
 # Copy this file to .env.local or use: ox infra env
 
 # PostgreSQL
-DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/${config.resources.postgres.database}
-POSTGRES_DB=${config.resources.postgres.database}
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DATABASE=${config.resources.postgres.database}
 POSTGRES_USER=${config.resources.postgres.user}
+POSTGRES_PASSWORD=
 
 # Redis
-REDIS_URL=redis://localhost:6379/${config.resources.redis.db}
 REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_DB=${config.resources.redis.db}
+REDIS_PASSWORD=
 
 # RabbitMQ
-RABBITMQ_URL=amqp://USER:PASSWORD@localhost:5672/${config.resources.rabbitmq.vhost}
+RABBITMQ_HOST=localhost
+RABBITMQ_PORT=5672
+RABBITMQ_QUEUE=events
 RABBITMQ_VHOST=${config.resources.rabbitmq.vhost}
-RABBITMQ_USER=${config.resources.rabbitmq.user}
+RABBITMQ_USERNAME=${config.resources.rabbitmq.user}
+RABBITMQ_PASSWORD=
 
 # Keycloak
-KEYCLOAK_URL=http://localhost:8080/realms/${config.resources.keycloak.realm}
+KEYCLOAK_SERVER_URL=http://localhost:8080
 KEYCLOAK_REALM=${config.resources.keycloak.realm}
 KEYCLOAK_CLIENT_ID=${config.resources.keycloak.clientId}
+KEYCLOAK_CLIENT_SECRET=
 `;
       writeFileSync(envExamplePath, envTemplate);
 

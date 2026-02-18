@@ -104,22 +104,29 @@ export class RegistryManager {
     const { postgres, redis, rabbitmq, keycloak } = project.resources;
 
     return {
-      DATABASE_URL: `postgresql://${postgres.user}:${postgres.password}@localhost:5432/${postgres.database}`,
-      POSTGRES_DB: postgres.database,
+      // PostgreSQL - Changed to match capabilities expectations
+      POSTGRES_HOST: 'localhost',
+      POSTGRES_PORT: '5432',
+      POSTGRES_DATABASE: postgres.database,
       POSTGRES_USER: postgres.user,
       POSTGRES_PASSWORD: postgres.password,
 
-      REDIS_URL: `redis://${redis.host}:${redis.port}/${redis.db}`,
+      // Redis - Added REDIS_PASSWORD, removed REDIS_URL
       REDIS_HOST: redis.host,
       REDIS_PORT: redis.port.toString(),
       REDIS_DB: redis.db.toString(),
+      REDIS_PASSWORD: '', // Optional, no password by default
 
-      RABBITMQ_URL: `amqp://${rabbitmq.user}:${rabbitmq.password}@localhost:5672/${rabbitmq.vhost}`,
+      // RabbitMQ - Changed to use individual components, renamed USER to USERNAME
+      RABBITMQ_HOST: 'localhost',
+      RABBITMQ_PORT: '5672',
+      RABBITMQ_QUEUE: 'events',
       RABBITMQ_VHOST: rabbitmq.vhost,
-      RABBITMQ_USER: rabbitmq.user,
+      RABBITMQ_USERNAME: rabbitmq.user,
       RABBITMQ_PASSWORD: rabbitmq.password,
 
-      KEYCLOAK_URL: `http://localhost:8080/realms/${keycloak.realm}`,
+      // Keycloak - Renamed URL to SERVER_URL
+      KEYCLOAK_SERVER_URL: `http://localhost:8080`,
       KEYCLOAK_REALM: keycloak.realm,
       KEYCLOAK_CLIENT_ID: keycloak.clientId,
       KEYCLOAK_CLIENT_SECRET: keycloak.clientSecret,
