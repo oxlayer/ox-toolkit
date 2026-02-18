@@ -22,6 +22,85 @@ import { pid } from 'process';
 
 const execAsync = promisify(exec);
 
+// Service definitions for global infrastructure
+interface ServiceDefinition {
+  id: string;
+  name: string;
+  description: string;
+  category: 'core' | 'monitoring' | 'proxy';
+  ports: string[];
+  dependsOn?: string[];
+}
+
+const SERVICE_DEFINITIONS: ServiceDefinition[] = [
+  // Core services
+  {
+    id: 'postgres',
+    name: 'PostgreSQL',
+    description: 'Primary database (multi-tenant via databases)',
+    category: 'core',
+    ports: ['5432'],
+  },
+  {
+    id: 'redis',
+    name: 'Redis',
+    description: 'Cache and session store (multi-tenant via DB numbers)',
+    category: 'core',
+    ports: ['6379'],
+  },
+  {
+    id: 'rabbitmq',
+    name: 'RabbitMQ',
+    description: 'Message queue (multi-tenant via vhosts)',
+    category: 'core',
+    ports: ['5672', '15672'],
+  },
+  {
+    id: 'keycloak',
+    name: 'Keycloak',
+    description: 'Identity and access management',
+    category: 'core',
+    ports: ['8080'],
+    dependsOn: ['keycloak-postgres'],
+  },
+  {
+    id: 'keycloak-postgres',
+    name: 'Keycloak PostgreSQL',
+    description: 'Database for Keycloak',
+    category: 'core',
+    ports: [],
+  },
+
+  // Monitoring services
+  {
+    id: 'prometheus',
+    name: 'Prometheus',
+    description: 'Metrics collection and storage',
+    category: 'monitoring',
+    ports: ['9090'],
+  },
+  {
+    id: 'grafana',
+    name: 'Grafana',
+    description: 'Metrics visualization dashboard',
+    category: 'monitoring',
+    ports: ['3000'],
+    dependsOn: ['prometheus'],
+  },
+
+  // Proxy
+  {
+    id: 'traefik',
+    name: 'Traefik',
+    description: 'Reverse proxy and load balancer',
+    category: 'proxy',
+    ports: ['80', '443', '8081'],
+  },
+];
+
+const CORE_SERVICES = ['postgres', 'redis', 'rabbitmq', 'keycloak', 'keycloak-postgres'];
+const ALL_SERVICES = SERVICE_DEFINITIONS.map(s => s.id);
+
 export interface ProjectResources {
   postgres: {
     database: string;
@@ -145,7 +224,7 @@ export class GlobalInfraService {
    * Initialize global infrastructure (one-time setup)
    * Creates static docker-compose.yml - NEVER modified after
    */
-  async initialize(): Promise<void> {
+  async initialize(selectedServices?: string[]): Promise<void> {
     if (this.isInitialized()) {
       throw new Error('Global infrastructure already initialized');
     }
@@ -169,7 +248,27 @@ export class GlobalInfraService {
       writeFileSync(this.PROJECTS_FILE, JSON.stringify(emptyRegistry, null, 2));
     }
 
+    // Prompt for service selection if not provided
+    let servicesToInclude: string[];
+    if (selectedServices && selectedServices.length > 0) {
+      servicesToInclude = selectedServices;
+    } else {
+      servicesToInclude = await this.promptServiceSelection();
+    }
+
+    // Validate dependencies are included
+    servicesToInclude = this.ensureDependencies(servicesToInclude);
+
+    // Create static docker-compose.yml for global infrastructure
+    const dockerComposeYml = this.generateDockerCompose(servicesToInclude);
+    writeFileSync(this.COMPOSE_FILE, dockerComposeYml);
+
+    console.log();
     console.log('✓ Global infrastructure initialized at', this.INFRA_DIR);
+    console.log('  Services:', servicesToInclude.map(s => {
+      const def = SERVICE_DEFINITIONS.find(d => d.id === s);
+      return def?.name || s;
+    }).join(', '));
   }
 
   /**
@@ -902,5 +1001,293 @@ export class GlobalInfraService {
    */
   private sanitizeName(name: string): string {
     return name.toLowerCase().replace(/[^a-z0-9_]/g, '_').substring(0, 63);
+  }
+
+  /**
+   * Prompt user to select which services to include in global infrastructure
+   */
+  private async promptServiceSelection(): Promise<string[]> {
+    const { default: prompts } = await import('prompts');
+
+    console.log();
+    console.log('Select services for global OxLayer infrastructure:');
+    console.log();
+
+    const { choice } = await prompts({
+      type: 'select',
+      name: 'choice',
+      message: 'Which services would you like to run?',
+      choices: [
+        { title: 'Core services only (PostgreSQL, Redis, RabbitMQ, Keycloak)', value: 'core' },
+        { title: 'All services (Core + Monitoring + Proxy)', value: 'all' },
+        { title: 'Custom (select individual services)', value: 'custom' },
+      ],
+      initial: 0,
+    });
+
+    if (choice === 'core') {
+      return [...CORE_SERVICES];
+    }
+
+    if (choice === 'all') {
+      return [...ALL_SERVICES];
+    }
+
+    // Custom selection
+    const { services } = await prompts({
+      type: 'multiselect',
+      name: 'services',
+      message: 'Select services to include:',
+      choices: SERVICE_DEFINITIONS.filter(s => s.id !== 'keycloak-postgres').map(service => ({
+        title: `${service.name} - ${service.description}`,
+        value: service.id,
+        selected: CORE_SERVICES.includes(service.id),
+      })),
+    });
+
+    const selected = services || CORE_SERVICES;
+
+    // Always include keycloak-postgres if keycloak is selected
+    if (selected.includes('keycloak') && !selected.includes('keycloak-postgres')) {
+      selected.push('keycloak-postgres');
+    }
+
+    return selected;
+  }
+
+  /**
+   * Ensure all dependencies of selected services are included
+   */
+  private ensureDependencies(services: string[]): string[] {
+    const result = new Set(services);
+
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const service of result) {
+        const def = SERVICE_DEFINITIONS.find(s => s.id === service);
+        if (def?.dependsOn) {
+          for (const dep of def.dependsOn) {
+            if (!result.has(dep)) {
+              result.add(dep);
+              changed = true;
+            }
+          }
+        }
+      }
+    }
+
+    return Array.from(result);
+  }
+
+  /**
+   * Generate docker-compose.yml for selected services
+   */
+  private generateDockerCompose(services: string[]): string {
+    const serviceConfigs = this.getServiceConfigs();
+    const selectedServices: string[] = [];
+    const volumes: string[] = [];
+
+    for (const serviceId of services) {
+      const config = serviceConfigs[serviceId];
+      if (config) {
+        selectedServices.push(config);
+        // Collect volumes
+        const volumeMatches = config.match(/- ox_\w+_data:/g);
+        if (volumeMatches) {
+          volumeMatches.forEach(v => {
+            const volumeName = v.replace(/- |:/g, '');
+            if (!volumes.includes(volumeName)) {
+              volumes.push(volumeName);
+            }
+          });
+        }
+      }
+    }
+
+    return `services:
+${selectedServices.join('\n')}
+
+volumes:
+${volumes.map((v: string) => `  ${v}:\n    driver: local`).join('\n')}
+
+networks:
+  ox_net:
+    driver: bridge
+`;
+  }
+
+  /**
+   * Get individual service configurations for docker-compose
+   */
+  private getServiceConfigs(): Record<string, string> {
+    return {
+      'postgres': `  # PostgreSQL Database (multi-tenant)
+  postgres:
+    image: postgres:16-alpine
+    container_name: ox-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ox_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ox_net
+    restart: unless-stopped`,
+
+      'redis': `  # Redis Cache (multi-tenant via DB number)
+  redis:
+    image: redis:7-alpine
+    container_name: ox-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ox_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ox_net
+    restart: unless-stopped`,
+
+      'rabbitmq': `  # RabbitMQ Message Broker (multi-tenant via vhosts)
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: ox-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ox_rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ox_net
+    restart: unless-stopped`,
+
+      'keycloak': `  # Keycloak Authentication Server
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.5
+    container_name: ox-keycloak
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://ox-keycloak-postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 8080
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HTTP_ENABLED: true
+      KC_SPI_OPTIONS_COOKIE_DEFAULT_SECURE: "false"
+      KC_SPI_OPTIONS_COOKIE_DEFAULT_SAME_SITE: "lax"
+    ports:
+      - "8080:8080"
+    depends_on:
+      ox-keycloak-postgres:
+        condition: service_healthy
+    volumes:
+      - ox_keycloak_data:/opt/keycloak/data
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost:8080 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n' >&3 && cat <3 | grep -q '200 OK'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    networks:
+      - ox_net
+    restart: unless-stopped`,
+
+      'keycloak-postgres': `  # Keycloak Database
+  ox-keycloak-postgres:
+    image: postgres:16-alpine
+    container_name: ox-keycloak-postgres
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+      POSTGRES_DB: keycloak
+    volumes:
+      - ox_keycloak_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ox_net
+    restart: unless-stopped`,
+
+      'prometheus': `  # Prometheus (metrics collection)
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: ox-prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+      - "--web.enable-lifecycle"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ox_prometheus_data:/prometheus
+    networks:
+      - ox_net
+    restart: unless-stopped`,
+
+      'grafana': `  # Grafana (visualization)
+  grafana:
+    image: grafana/grafana:12.3.1
+    container_name: ox-grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3000:3000"
+    volumes:
+      - ox_grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - ox_net
+    restart: unless-stopped`,
+
+      'traefik': `  # Traefik Reverse Proxy
+  traefik:
+    image: traefik:v3.0
+    container_name: ox-traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.websecure.address=:443"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8081:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - ox_net
+    restart: unless-stopped`,
+    };
   }
 }
