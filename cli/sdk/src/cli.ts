@@ -316,6 +316,16 @@ infraCmd
     await infraEnv();
   });
 
+// Connections command (new global infra)
+infraCmd
+  .command('connections')
+  .description('Show connection URLs for project')
+  .action(async () => {
+    trackCommand('infra.connections');
+    const { showConnections } = await import('./commands/global-infra.command.js');
+    await showConnections();
+  });
+
 // Reset command (new global infra)
 infraCmd
   .command('reset <project>')
@@ -325,6 +335,16 @@ infraCmd
     trackCommand('infra.reset', { project, confirmed: !!options.confirm });
     const { infraReset } = await import('./commands/infra.command.js');
     await infraReset(project, options.confirm || false);
+  });
+
+// Sync command (sync monitoring configuration)
+infraCmd
+  .command('sync')
+  .description('Sync project monitoring configuration (Grafana dashboards, Prometheus configs, etc.)')
+  .action(async () => {
+    trackCommand('infra.sync');
+    const { syncProject } = await import('./commands/global-infra.command.js');
+    await syncProject();
   });
 
 // ═══════════════════════════════════════════════════════════════
@@ -381,6 +401,17 @@ globalCmd
     trackCommand('global.doctor');
     const { globalDoctor } = await import('./commands/infra.command.js');
     await globalDoctor();
+  });
+
+// Global logs command
+globalCmd
+  .command('logs [service]')
+  .description('Show logs from global infrastructure services')
+  .option('-f, --follow', 'Follow log output')
+  .action(async (service, options) => {
+    trackCommand('global.logs');
+    const { globalLogs } = await import('./commands/global-infra.command.js');
+    await globalLogs(service, options.follow || false);
   });
 
 // Parse arguments

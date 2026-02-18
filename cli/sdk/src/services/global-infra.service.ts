@@ -408,6 +408,9 @@ export class GlobalInfraService {
       registry.projects[projectName] = projectConfig;
       this.saveRegistry(registry);
 
+      // Create project-local .oxlayer folder
+      this.createProjectLocalConfig(projectPath, projectName, projectConfig);
+
       console.log(`✓ Project '${projectName}' registered successfully`);
       return projectConfig;
     });
@@ -1289,5 +1292,742 @@ networks:
       - ox_net
     restart: unless-stopped`,
     };
+  }
+
+  /**
+   * Create project-local .ox folder with configuration
+   * This allows projects to have local overrides and custom settings
+   */
+  private createProjectLocalConfig(projectPath: string, projectName: string, config: ProjectConfig): void {
+    const oxDir = projectPath + '/.ox';
+
+    try {
+      // Create .ox directory if it doesn't exist
+      if (!existsSync(oxDir)) {
+        mkdirSync(oxDir, { recursive: true });
+      }
+
+      // Create .gitkeep to ensure the folder is git-tracked
+      const gitkeepPath = oxDir + '/.gitkeep';
+      if (!existsSync(gitkeepPath)) {
+        writeFileSync(gitkeepPath, '# This directory stores OxLayer project-specific configuration\n');
+      }
+
+      // Create config.json with project metadata
+      const configPath = oxDir + '/config.json';
+      const projectConfig = {
+        name: projectName,
+        registeredAt: config.createdAt,
+        oxlayerVersion: '0.0.28',
+        globalRegistry: `${this.OXLAYER_DIR}/projects.json`,
+      };
+
+      writeFileSync(configPath, JSON.stringify(projectConfig, null, 2));
+
+      // Create .env.example template (without sensitive data)
+      const envExamplePath = oxDir + '/.env.example';
+      const envTemplate = `# OxLayer Environment Variables for ${projectName}
+# Generated: ${new Date().toISOString()}
+# Copy this file to .env.local or use: ox infra env
+
+# PostgreSQL
+DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/${config.resources.postgres.database}
+POSTGRES_DB=${config.resources.postgres.database}
+POSTGRES_USER=${config.resources.postgres.user}
+
+# Redis
+REDIS_URL=redis://localhost:6379/${config.resources.redis.db}
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_DB=${config.resources.redis.db}
+
+# RabbitMQ
+RABBITMQ_URL=amqp://USER:PASSWORD@localhost:5672/${config.resources.rabbitmq.vhost}
+RABBITMQ_VHOST=${config.resources.rabbitmq.vhost}
+RABBITMQ_USER=${config.resources.rabbitmq.user}
+
+# Keycloak
+KEYCLOAK_URL=http://localhost:8080/realms/${config.resources.keycloak.realm}
+KEYCLOAK_REALM=${config.resources.keycloak.realm}
+KEYCLOAK_CLIENT_ID=${config.resources.keycloak.clientId}
+`;
+      writeFileSync(envExamplePath, envTemplate);
+
+      // Create monitoring configuration templates
+      this.createMonitoringTemplates(oxDir, projectName, config);
+
+      // Create README.md with documentation
+      const readmePath = oxDir + '/README.md';
+      const readme = `# OxLayer Configuration for ${projectName}
+
+This directory stores project-specific OxLayer configuration and settings.
+
+## Files
+
+- \`config.json\` - Project metadata and registration info
+- \`.env.example\` - Environment variable template
+- \`.env.local\` - Generated environment file with credentials (run \`ox infra env\` to generate)
+- \`prometheus/prometheus.yml\` - Prometheus scrape configuration template
+- \`grafana/provisioning/datasources/datasources.yml\` - Grafana datasources template
+- \`grafana/provisioning/dashboards/dashboards.yml\` - Grafana dashboards provider config
+- \`grafana/provisioning/dashboards/*.json\` - Dashboard definitions (add your own)
+- \`collector-observability.yaml\` - OpenTelemetry observability collector config (optional)
+- \`collector-domain.yaml\` - OpenTelemetry domain events collector config (optional)
+
+## Commands
+
+\`\`\`bash
+# View connection URLs
+ox infra connections
+
+# Generate .env.local file
+ox infra env
+
+# Sync monitoring configuration to global infrastructure
+ox infra sync
+
+# View project status
+ox global status
+
+# View logs
+ox global logs [service]
+
+# Reset project (deletes all resources)
+ox infra reset ${projectName} --confirm
+\`\`\`
+
+## Resources
+
+- **PostgreSQL Database**: \`${config.resources.postgres.database}\`
+- **PostgreSQL User**: \`${config.resources.postgres.user}\`
+- **Redis DB**: \`${config.resources.redis.db}\`
+- **RabbitMQ VHost**: \`${config.resources.rabbitmq.vhost}\`
+- **Keycloak Realm**: \`${config.resources.keycloak.realm}\`
+
+## Monitoring Configuration
+
+This project includes templates for monitoring stack integration:
+
+### Prometheus
+Edit \`prometheus/prometheus.yml\` to add scrape jobs for your services:
+\`\`\`yaml
+scrape_configs:
+  - job_name: '${projectName}-api'
+    static_configs:
+      - targets: ['host.docker.internal:3001']
+    metrics_path: '/metrics'
+\`\`\`
+
+### Grafana
+1. Add datasources in \`grafana/provisioning/datasources/datasources.yml\`
+2. Add dashboard JSON files in \`grafana/provisioning/dashboards/\`
+3. Run \`ox infra sync\` to create a Grafana organization with your config
+
+### OpenTelemetry (Optional)
+- \`collector-observability.yaml\` - For logs, traces, metrics
+- \`collector-domain.yaml\` - For domain events and business metrics
+
+## Global Infrastructure
+
+All projects share the global OxLayer infrastructure running at:
+\`~/.oxlayer/infra/\`
+
+To manage global infrastructure:
+\`\`\`bash
+# Start global infra
+oxlayer global start
+
+# Stop global infra
+oxlayer global stop
+
+# View status
+oxlayer global status
+
+# Run diagnostics
+oxlayer global doctor
+\`\`\`
+`;
+      writeFileSync(readmePath, readme);
+
+      console.log(`  ✓ Created .oxlayer folder in project`);
+    } catch (error) {
+      // Non-fatal error - log warning but don't fail registration
+      console.warn(`  ⚠ Could not create .oxlayer folder: ${error}`);
+    }
+  }
+
+  /**
+   * Create monitoring configuration templates for the project
+   * Generates starter configs for Prometheus, Grafana, and OTEL collectors
+   */
+  private createMonitoringTemplates(oxlayerDir: string, projectName: string, config: ProjectConfig): void {
+    try {
+      // Create Prometheus template
+      const prometheusDir = oxlayerDir + '/prometheus';
+      if (!existsSync(prometheusDir)) {
+        mkdirSync(prometheusDir, { recursive: true });
+      }
+
+      const prometheusTemplate = `# Prometheus Scrape Configuration for ${projectName}
+# This file will be synced to: ~/.oxlayer/infra/prometheus/scrape.d/${projectName}.yml
+# Run: ox infra sync
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Scrape Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Scrape infrastructure services
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+
+  - job_name: 'rabbitmq'
+    static_configs:
+      - targets: ['rabbitmq:15692']
+
+  # Add your application's metrics endpoint here
+  # Example:
+  # - job_name: '${projectName}-api'
+  #   static_configs:
+  #     - targets: ['host.docker.internal:3001']
+  #   metrics_path: '/metrics'
+`;
+      writeFileSync(prometheusDir + '/prometheus.yml', prometheusTemplate);
+
+      // Create Grafana datasources template
+      const grafanaDatasourcesDir = oxlayerDir + '/grafana/provisioning/datasources';
+      if (!existsSync(grafanaDatasourcesDir)) {
+        mkdirSync(grafanaDatasourcesDir, { recursive: true });
+      }
+
+      const datasourcesTemplate = `# Grafana Datasources for ${projectName}
+# These will be created in a dedicated Grafana organization via API
+# Run: ox infra sync
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+
+  # Add more datasources here
+  # Example:
+  # - name: PostgreSQL
+  #   type: postgres
+  #   url: postgres://${config.resources.postgres.user}:password@postgres:5432/${config.resources.postgres.database}
+  #   access: proxy
+  #   isDefault: false
+  #   editable: true
+`;
+      writeFileSync(grafanaDatasourcesDir + '/datasources.yml', datasourcesTemplate);
+
+      // Create Grafana dashboards template
+      const grafanaDashboardsDir = oxlayerDir + '/grafana/provisioning/dashboards';
+      if (!existsSync(grafanaDashboardsDir)) {
+        mkdirSync(grafanaDashboardsDir, { recursive: true });
+      }
+
+      const dashboardsTemplate = `# Grafana Dashboards Provider for ${projectName}
+# Dashboards in this directory will be synced to Grafana via API
+# Run: ox infra sync
+
+apiVersion: 1
+
+providers:
+  - name: '${projectName}'
+    orgId: 1
+    folder: '${projectName}'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
+`;
+      writeFileSync(grafanaDashboardsDir + '/dashboards.yml', dashboardsTemplate);
+
+      // Create example dashboard (empty template)
+      const exampleDashboard = {
+        dashboard: {
+          id: null,
+          title: `${projectName} - Quick Start`,
+          tags: [projectName, 'oxlayer'],
+          style: 'dark',
+          timezone: 'browser',
+          editable: true,
+          hideControls: false,
+          graphTooltip: 1,
+          panels: [],
+          time: {
+            from: 'now-6h',
+            to: 'now',
+          },
+          refresh: '5s',
+          schemaVersion: 38,
+          version: 0,
+        },
+        overwrite: true,
+      };
+      writeFileSync(grafanaDashboardsDir + `/example-dashboard.json`, JSON.stringify(exampleDashboard, null, 2));
+
+      // Create OpenTelemetry collector templates (optional)
+      const collectorObservabilityTemplate = `# OpenTelemetry Collector - Observability Pipeline
+# Receives: logs, traces, metrics
+# Sends to: Backend (Quickwit, Loki, Tempo, etc.)
+#
+# This is an optional template - modify based on your needs
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 1s
+    send_batch_size: 100
+    send_batch_max_size: 200
+
+  resource:
+    attributes:
+      - key: deployment.environment
+        value: development
+        action: upsert
+      - key: service.name
+        value: ${projectName}
+        action: upsert
+
+exporters:
+  # Debug exporter (for development)
+  debug:
+    verbosity: detailed
+
+  # Add your exporters here (Loki, Tempo, etc.)
+  # Example for Prometheus:
+  # prometheusremotewrite:
+  #   endpoint: http://prometheus:9090/api/v1/write
+
+service:
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [batch, resource]
+      exporters: [debug]
+
+    traces:
+      receivers: [otlp]
+      processors: [batch, resource]
+      exporters: [debug]
+
+    metrics:
+      receivers: [otlp]
+      processors: [batch, resource]
+      exporters: [debug]
+`;
+      writeFileSync(oxlayerDir + '/collector-observability.yaml', collectorObservabilityTemplate);
+
+      const collectorDomainTemplate = `# OpenTelemetry Collector - Domain Events Pipeline
+# Receives: Domain events, business metrics
+# Sends to: Analytics backend (ClickHouse, BigQuery, etc.)
+#
+# This is an optional template - modify based on your needs
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:14317
+      http:
+        endpoint: 0.0.0.0:14318
+
+processors:
+  batch:
+    timeout: 1s
+
+  resource:
+    attributes:
+      - key: deployment.environment
+        value: development
+        action: upsert
+      - key: collector.intent
+        value: domain
+        action: upsert
+
+exporters:
+  # Debug exporter (for development)
+  debug:
+    verbosity: detailed
+
+  # Add your analytics exporters here
+  # Example for ClickHouse:
+  # clickhouse:
+  #   endpoint: tcp://clickhouse:9000
+  #   database: analytics
+  #   table: events
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [batch, resource]
+      exporters: [debug]
+
+    logs:
+      receivers: [otlp]
+      processors: [batch, resource]
+      exporters: [debug]
+`;
+      writeFileSync(oxlayerDir + '/collector-domain.yaml', collectorDomainTemplate);
+
+      console.log(`    ✓ Created monitoring configuration templates`);
+    } catch (error) {
+      // Non-fatal
+      console.warn(`    ⚠ Could not create monitoring templates: ${error}`);
+    }
+  }
+
+  /**
+   * Sync monitoring configuration from project to global infrastructure
+   * APPROACH:
+   * - Prometheus/OTEL: File-based (scrape.d/*.yml, collectors.d/*.yaml)
+   * - Grafana: API-based (create org, user, datasources, dashboards)
+   */
+  async syncMonitoringConfig(projectName: string, oxlayerDir: string): Promise<void> {
+    console.log(`🔄 Syncing monitoring configuration for '${projectName}'...`);
+
+    const project = this.getProject(projectName);
+    if (!project) {
+      throw new Error(`Project '${projectName}' not found`);
+    }
+
+    // Define monitoring config paths in project
+    const monitoringPaths = {
+      prometheus: oxlayerDir + '/prometheus/prometheus.yml',
+      grafanaDatasources: oxlayerDir + '/grafana/provisioning/datasources/datasources.yml',
+      grafanaDashboards: oxlayerDir + '/grafana/provisioning/dashboards/dashboards.yml',
+      grafanaDashboardDir: oxlayerDir + '/grafana/provisioning/dashboards/',
+      collectorObservability: oxlayerDir + '/collector-observability.yaml',
+      collectorDomain: oxlayerDir + '/collector-domain.yaml',
+    };
+
+    // Define global infra paths (split config approach)
+    const globalPaths = {
+      prometheusScrapeDir: this.INFRA_DIR + '/prometheus/scrape.d/',
+      prometheusMain: this.INFRA_DIR + '/prometheus/prometheus.yml',
+      collectorDir: this.INFRA_DIR + '/collectors/',
+    };
+
+    // Sync Prometheus via file-based config
+    if (existsSync(monitoringPaths.prometheus)) {
+      try {
+        console.log('  📊 Syncing Prometheus configuration (file-based)...');
+        await this.syncPrometheusFileBased(monitoringPaths.prometheus, globalPaths.prometheusScrapeDir, projectName);
+      } catch (error: any) {
+        console.warn('  ⚠ Could not sync Prometheus:', error.message);
+      }
+    } else {
+      console.log('  ℹ No Prometheus configuration found');
+    }
+
+    // Sync OpenTelemetry collectors via file-based config
+    if (existsSync(monitoringPaths.collectorObservability)) {
+      try {
+        console.log('  🔍 Syncing OTEL observability collector (file-based)...');
+        await this.syncCollectorFileBased(monitoringPaths.collectorObservability, globalPaths.collectorDir, `${projectName}-observability.yaml`);
+      } catch (error: any) {
+        console.warn('  ⚠ Could not sync OTEL collector:', error.message);
+      }
+    }
+
+    if (existsSync(monitoringPaths.collectorDomain)) {
+      try {
+        console.log('  🔍 Syncing OTEL domain collector (file-based)...');
+        await this.syncCollectorFileBased(monitoringPaths.collectorDomain, globalPaths.collectorDir, `${projectName}-domain.yaml`);
+      } catch (error: any) {
+        console.warn('  ⚠ Could not sync OTEL collector:', error.message);
+      }
+    }
+
+    // Sync Grafana via API-based approach
+    if (existsSync(monitoringPaths.grafanaDatasources) || existsSync(monitoringPaths.grafanaDashboards)) {
+      try {
+        console.log('  📈 Syncing Grafana configuration (API-based)...');
+        await this.syncGrafanaApiBased(projectName, oxlayerDir, monitoringPaths);
+      } catch (error: any) {
+        console.warn('  ⚠ Could not sync Grafana:', error.message);
+      }
+    }
+
+    // Reload Prometheus to pick up new scrape configs
+    try {
+      console.log('  🔄 Reloading Prometheus...');
+      await execAsync(`docker exec ox-prometheus kill -HUP 1`, { timeout: 5000 });
+      console.log('  ✓ Prometheus reloaded');
+    } catch (error: any) {
+      console.warn('  ⚠ Could not reload Prometheus:', error.message);
+    }
+
+    console.log(`✓ Monitoring configuration synced for '${projectName}'`);
+  }
+
+  /**
+   * Sync Prometheus using file-based approach (split configs)
+   * Each project gets its own file: scrape.d/project-name.yml
+   */
+  private async syncPrometheusFileBased(projectConfigPath: string, globalScrapeDir: string, projectName: string): Promise<void> {
+    // Ensure scrape.d directory exists
+    if (!existsSync(globalScrapeDir)) {
+      mkdirSync(globalScrapeDir, { recursive: true });
+    }
+
+    // Copy project's prometheus.yml to scrape.d/project-name.yml
+    const targetFile = globalScrapeDir + `${projectName}.yml`;
+
+    // Read project config
+    const projectConfigContent = readFileSync(projectConfigPath, 'utf-8');
+
+    // Validate it's a valid prometheus config (has scrape_configs)
+    if (!projectConfigContent.includes('scrape_configs') && !projectConfigContent.includes('scrape_config_files')) {
+      throw new Error('Invalid Prometheus config: missing scrape_configs or scrape_config_files');
+    }
+
+    // Write to split config file
+    writeFileSync(targetFile, projectConfigContent);
+    console.log(`    + Created ${targetFile}`);
+
+    // Update main prometheus.yml to include scrape_config_files if not already present
+    const mainConfigPath = this.INFRA_DIR + '/prometheus/prometheus.yml';
+    let mainConfigContent = '';
+
+    if (existsSync(mainConfigPath)) {
+      mainConfigContent = readFileSync(mainConfigPath, 'utf-8');
+    } else {
+      // Create default main config
+      mainConfigContent = `global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+scrape_config_files:
+  - /etc/prometheus/scrape.d/*.yml
+`;
+    }
+
+    // Ensure scrape_config_files is present
+    if (!mainConfigContent.includes('scrape_config_files')) {
+      // Add scrape_config_files section
+      mainConfigContent += `\nscrape_config_files:\n  - /etc/prometheus/scrape.d/*.yml\n`;
+      writeFileSync(mainConfigPath, mainConfigContent);
+      console.log('    ✓ Added scrape_config_files to main prometheus.yml');
+    }
+  }
+
+  /**
+   * Sync OpenTelemetry collector using file-based approach
+   * Each project gets its own file: collectors.d/project-name-observability.yaml
+   */
+  private async syncCollectorFileBased(projectCollectorPath: string, globalCollectorDir: string, targetFilename: string): Promise<void> {
+    // Ensure collectors.d directory exists
+    if (!existsSync(globalCollectorDir)) {
+      mkdirSync(globalCollectorDir, { recursive: true });
+    }
+
+    // Copy collector config to global dir
+    const targetFile = globalCollectorDir + targetFilename;
+    const collectorContent = readFileSync(projectCollectorPath, 'utf-8');
+    writeFileSync(targetFile, collectorContent);
+    console.log(`    + Created ${targetFile}`);
+
+    // Note: OTEL collectors need to be restarted to pick up new configs
+    // This should be done by the project owner or via a separate reload command
+  }
+
+  /**
+   * Sync Grafana using API-based approach
+   * Creates organization, user, datasources, and dashboards via Grafana API
+   */
+  private async syncGrafanaApiBased(projectName: string, _oxlayerDir: string, monitoringPaths: any): Promise<void> {
+    const grafanaUrl = 'http://localhost:3000';
+    const grafanaUser = 'admin';
+    const grafanaPassword = 'admin';
+
+    // Step 1: Create organization for this project
+    const orgId = await this.createGrafanaOrganization(grafanaUrl, grafanaUser, grafanaPassword, projectName);
+    console.log(`    ✓ Created Grafana organization: ${projectName} (ID: ${orgId})`);
+
+    // Step 2: Create API key for this org
+    const apiKey = await this.createGrafanaApiKey(grafanaUrl, grafanaUser, grafanaPassword, orgId);
+    console.log(`    ✓ Created API key for organization`);
+
+    // Step 3: Create datasources in the project's organization
+    if (existsSync(monitoringPaths.grafanaDatasources)) {
+      await this.createGrafanaDatasources(grafanaUrl, apiKey, monitoringPaths.grafanaDatasources);
+      console.log('    ✓ Created datasources');
+    }
+
+    // Step 4: Create dashboards in the project's organization
+    if (existsSync(monitoringPaths.grafanaDashboards)) {
+      await this.createGrafanaDashboards(grafanaUrl, apiKey, projectName, monitoringPaths.grafanaDashboardDir);
+      console.log('    ✓ Created dashboards');
+    }
+  }
+
+  /**
+   * Create Grafana organization via API
+   */
+  private async createGrafanaOrganization(grafanaUrl: string, user: string, password: string, orgName: string): Promise<number> {
+    const response = await execAsync(
+      `curl -s -X POST "${grafanaUrl}/api/orgs" \
+       -u "${user}:${password}" \
+       -H "Content-Type: application/json" \
+       -d '{"name":"${orgName}"}'`
+    );
+
+    const result = JSON.parse(response.stdout);
+    return result.orgId || result.id;
+  }
+
+  /**
+   * Create Grafana API key for organization
+   */
+  private async createGrafanaApiKey(grafanaUrl: string, user: string, password: string, orgId: number): Promise<string> {
+    const response = await execAsync(
+      `curl -s -X POST "${grafanaUrl}/api/auth/keys" \
+       -u "${user}:${password}" \
+       -H "Content-Type: application/json" \
+       -H "X-Grafana-Org-Id: ${orgId}" \
+       -d '{"name":"oxlayer-auto","role":"Admin","secondsToLive":0}'`
+    );
+
+    const result = JSON.parse(response.stdout);
+    return result.key;
+  }
+
+  /**
+   * Create Grafana datasources via API
+   */
+  private async createGrafanaDatasources(grafanaUrl: string, apiKey: string, datasourcesPath: string): Promise<void> {
+    const yaml = await import('js-yaml');
+    const configContent = readFileSync(datasourcesPath, 'utf-8');
+    const config = yaml.load(configContent) as any;
+
+    if (!config.datasources) return;
+
+    for (const ds of config.datasources) {
+      const response = await execAsync(
+        `curl -s -X POST "${grafanaUrl}/api/datasources" \
+         -H "Authorization: Bearer ${apiKey}" \
+         -H "Content-Type: application/json" \
+         -d '${JSON.stringify(ds)}'`
+      );
+
+      const result = JSON.parse(response.stdout);
+      if (result.message === 'Datasource added') {
+        console.log(`      + Added datasource: ${ds.name}`);
+      } else if (result.message && result.message.includes('already exists')) {
+        console.log(`      ℹ Datasource exists: ${ds.name}`);
+      }
+    }
+  }
+
+  /**
+   * Create Grafana dashboards via API
+   */
+  private async createGrafanaDashboards(grafanaUrl: string, apiKey: string, projectName: string, dashboardDir: string): Promise<void> {
+    if (!existsSync(dashboardDir)) return;
+
+    const dashboardFiles = require('fs').readdirSync(dashboardDir)
+      .filter((f: string) => f.endsWith('.json'));
+
+    for (const file of dashboardFiles) {
+      const dashboardPath = dashboardDir + file;
+      const dashboardContent = readFileSync(dashboardPath, 'utf-8');
+      const dashboard = JSON.parse(dashboardContent);
+
+      // Wrap in Grafana API format
+      const payload = {
+        dashboard: dashboard,
+        overwrite: true,
+        message: `Synced from ${projectName}`,
+      };
+
+      const response = await execAsync(
+        `curl -s -X POST "${grafanaUrl}/api/dashboards/db" \
+         -H "Authorization: Bearer ${apiKey}" \
+         -H "Content-Type: application/json" \
+         -d '${JSON.stringify(payload)}'`
+      );
+
+      const result = JSON.parse(response.stdout);
+      if (result.status === 'success') {
+        console.log(`      + Added dashboard: ${dashboard.title || file}`);
+      }
+    }
+  }
+
+  /**
+   * Get logs from global infrastructure services
+   */
+  async getLogs(service?: string, follow = false): Promise<void> {
+    if (!this.isInitialized()) {
+      throw new Error('Global infrastructure not initialized');
+    }
+
+    const running = await this.isRunning();
+    if (!running) {
+      throw new Error('Global infrastructure is not running');
+    }
+
+    const followFlag = follow ? '--follow' : '';
+    const serviceArg = service ? `${service}` : '';
+
+    try {
+      // Use spawn for logs to stream output properly
+      const { spawn } = await import('child_process');
+
+      const args = [
+        '-f', this.COMPOSE_FILE,
+        '-p', 'oxlayer',
+        'logs',
+        followFlag,
+        serviceArg,
+      ].filter(Boolean);
+
+      const child = spawn('docker-compose', args, {
+        cwd: this.INFRA_DIR,
+        stdio: 'inherit',
+      });
+
+      await new Promise<void>((resolve, reject) => {
+        child.on('error', reject);
+        child.on('exit', (code) => {
+          if (code === 0) resolve();
+          else reject(new Error(`Logs exited with code ${code}`));
+        });
+      });
+    } catch (error: any) {
+      throw new Error(`Failed to get logs: ${error.message}`);
+    }
   }
 }

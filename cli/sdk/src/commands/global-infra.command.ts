@@ -300,19 +300,69 @@ export async function showConnections(): Promise<void> {
     const strings = globalService.getConnectionStrings(projectName);
 
     console.log();
-    if (strings.postgres) {
-      console.log(`  PostgreSQL:  ${strings.postgres}`);
+    if (strings.DATABASE_URL) {
+      console.log(`  PostgreSQL:  ${strings.DATABASE_URL}`);
     }
-    if (strings.redis) {
-      console.log(`  Redis:       ${strings.redis}`);
+    if (strings.REDIS_URL) {
+      console.log(`  Redis:       ${strings.REDIS_URL}`);
     }
-    if (strings.rabbitmq) {
-      console.log(`  RabbitMQ:    ${strings.rabbitmq}`);
+    if (strings.RABBITMQ_URL) {
+      console.log(`  RabbitMQ:    ${strings.RABBITMQ_URL}`);
     }
-    if (strings.keycloak) {
-      console.log(`  Keycloak:    ${strings.keycloak}`);
+    if (strings.KEYCLOAK_URL) {
+      console.log(`  Keycloak:    ${strings.KEYCLOAK_URL}`);
     }
     console.log();
+  } catch (err: any) {
+    error(err.message);
+    process.exit(1);
+  }
+}
+
+/**
+ * Sync project monitoring configuration
+ * Applies project-specific overrides for Grafana dashboards, datasources, Prometheus configs
+ */
+export async function syncProject(): Promise<void> {
+  header('Sync Project Monitoring Configuration');
+
+  try {
+    const projectName = getProjectName();
+    const project = globalService.getProject(projectName);
+
+    if (!project) {
+      error(`Project '${projectName}' is not registered`);
+      console.log();
+      info('Register the project first:');
+      console.log(`  ox infra register`);
+      process.exit(1);
+    }
+
+    const projectPath = process.cwd();
+    const oxDir = projectPath + '/.ox';
+
+    info(`Project: ${projectName}`);
+    info(`Path: ${projectPath}`);
+    console.log();
+
+    // Check if global infra is running
+    const isRunning = await globalService.isRunning();
+    if (!isRunning) {
+      error('Global infrastructure is not running');
+      console.log();
+      info('Start it first:');
+      console.log(`  ox global start`);
+      process.exit(1);
+    }
+
+    // Sync monitoring configuration
+    await globalService.syncMonitoringConfig(projectName, oxDir);
+
+    success('Monitoring configuration synced successfully');
+    console.log();
+    info('Available services:');
+    console.log(`  • Grafana: http://localhost:3000 (admin/admin)`);
+    console.log(`  • Prometheus: http://localhost:9090`);
   } catch (err: any) {
     error(err.message);
     process.exit(1);
