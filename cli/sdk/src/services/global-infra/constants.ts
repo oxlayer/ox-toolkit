@@ -154,7 +154,7 @@ export function getServiceConfigs(): Record<string, string> {
     ports:
       - "8080:8080"
     depends_on:
-      ox-postgres:
+      postgres:
         condition: service_healthy
     volumes:
       - ox_keycloak_data:/opt/keycloak/data

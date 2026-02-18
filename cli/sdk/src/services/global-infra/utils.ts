@@ -80,7 +80,7 @@ export async function promptServiceSelection(serviceDefinitions: any[], coreServ
     type: 'multiselect',
     name: 'services',
     message: 'Select services to include:',
-    choices: serviceDefinitions.filter(s => s.id !== 'keycloak-postgres').map(service => ({
+    choices: serviceDefinitions.map(service => ({
       title: `${service.name} - ${service.description}`,
       value: service.id,
       selected: coreServices.includes(service.id),
@@ -88,11 +88,6 @@ export async function promptServiceSelection(serviceDefinitions: any[], coreServ
   });
 
   const selected = services || coreServices;
-
-  // Always include keycloak-postgres if keycloak is selected
-  if (selected.includes('keycloak') && !selected.includes('keycloak-postgres')) {
-    selected.push('keycloak-postgres');
-  }
 
   return selected;
 }

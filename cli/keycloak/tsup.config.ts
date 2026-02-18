@@ -3,10 +3,10 @@ import { type Options as TsupConfigOptions, defineConfig } from "tsup";
 const baseConfig = {
   format: ["esm"],
   splitting: false,
-  sourcemap: true,
+  sourcemap: false,
   clean: true,
   target: "es2022",
-  minify: false,
+  minify: true,
   dts: true,
   esbuildOptions(options) {
     options.keepNames = true;

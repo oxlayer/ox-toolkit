@@ -271,6 +271,7 @@ jobs:
         run: |
           pnpm --filter "@oxlayer/create-backend" run build
           pnpm --filter "@oxlayer/create-frontend" run build
+          pnpm --filter "@oxlayer/cli-keycloak" run build
 
       - name: Package CLI Tools
         id: package
@@ -281,7 +282,7 @@ jobs:
 
           mkdir -p "$OUTPUT_DIR"
 
-          for cli_pkg in create-backend create-frontend; do
+          for cli_pkg in create-backend create-frontend keycloak; do
             if [ -d "cli/$cli_pkg" ]; then
               pkg_dir="cli/$cli_pkg"
               if [ -d "$pkg_dir/dist" ]; then
