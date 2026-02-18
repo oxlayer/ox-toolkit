@@ -52,7 +52,7 @@ npx @oxlayer/cli-keycloak bootstrap --config keycloak.config.json --env-file .en
 ```json
 {
   "keycloak": {
-    "url": "${KEYCLOAK_URL:-http://keycloak.localhost:8080}",
+    "url": "${KEYCLOAK_URL:-http://localhost:8080}",
     "admin": {
       "username": "${KEYCLOAK_ADMIN:-admin}",
       "password": "${KEYCLOAK_ADMIN_PASSWORD:-admin}"
@@ -111,7 +111,7 @@ npx @oxlayer/cli-keycloak bootstrap --config keycloak.config.json --env-file .en
 
 ```yaml
 keycloak:
-  url: ${KEYCLOAK_URL:-http://keycloak.localhost:8080}
+  url: ${KEYCLOAK_URL:-http://localhost:8080}
   admin:
     username: ${KEYCLOAK_ADMIN:-admin}
     password: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
@@ -157,7 +157,7 @@ import { defineConfig } from '@oxlayer/cli-keycloak/templates';
 
 export default defineConfig({
   keycloak: {
-    url: process.env.KEYCLOAK_URL || 'http://keycloak.localhost:8080',
+    url: process.env.KEYCLOAK_URL || 'http://localhost:8080',
     admin: {
       username: process.env.KEYCLOAK_ADMIN || 'admin',
       password: process.env.KEYCLOAK_ADMIN_PASSWORD || 'admin',
@@ -237,7 +237,7 @@ Options:
 Create a `.env` file:
 
 ```bash
-KEYCLOAK_URL=http://keycloak.localhost:8080
+KEYCLOAK_URL=http://localhost:8080
 KEYCLOAK_ADMIN=admin
 KEYCLOAK_ADMIN_PASSWORD=admin
 FRONTEND_URL=http://localhost:3000
@@ -256,7 +256,7 @@ keycloak bootstrap --config keycloak.config.json --env-file .env
 npx @oxlayer/cli-keycloak init --output keycloak.config.json
 
 # Create .env file with your credentials
-echo "KEYCLOAK_URL=http://keycloak.localhost:8080" > .env
+echo "KEYCLOAK_URL=http://localhost:8080" > .env
 echo "KEYCLOAK_ADMIN=admin" >> .env
 echo "KEYCLOAK_ADMIN_PASSWORD=admin" >> .env
 
@@ -330,14 +330,14 @@ Configuration supports environment variable substitution using shell-style synta
 **JSON/YAML configs** use shell-style syntax:
 ```json
 {
-  "url": "${KEYCLOAK_URL:-http://keycloak.localhost:8080}"
+  "url": "${KEYCLOAK_URL:-http://localhost:8080}"
 }
 ```
 
 **TypeScript configs** use JavaScript syntax:
 ```typescript
 {
-  url: process.env.KEYCLOAK_URL || 'http://keycloak.localhost:8080'
+  url: process.env.KEYCLOAK_URL || 'http://localhost:8080'
 }
 ```
 
@@ -420,7 +420,7 @@ For npx usage, prefer JSON or YAML configs instead.
 Verify your Keycloak admin credentials:
 
 ```bash
-export KEYCLOAK_URL=http://keycloak.localhost:8080
+export KEYCLOAK_URL=http://localhost:8080
 export KEYCLOAK_ADMIN=admin
 export KEYCLOAK_ADMIN_PASSWORD=admin
 ```
@@ -428,7 +428,7 @@ export KEYCLOAK_ADMIN_PASSWORD=admin
 Or use a `.env` file:
 
 ```bash
-KEYCLOAK_URL=http://keycloak.localhost:8080
+KEYCLOAK_URL=http://localhost:8080
 KEYCLOAK_ADMIN=admin
 KEYCLOAK_ADMIN_PASSWORD=admin
 ```

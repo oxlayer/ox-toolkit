@@ -68,11 +68,10 @@ function ServiceRow({ service, onToggleService, onViewLogs }: ServiceRowProps) {
       <tr className="hover:bg-white/[0.02] transition group">
         <td className="px-4 py-3">
           <div className="flex items-center space-x-2">
-            <div className={`w-2 h-2 rounded-full ${
-              service.status === 'running' ? 'bg-emerald-400' :
-              service.status === 'stopped' ? 'bg-red-400' :
-              'bg-amber-400'
-            }`} />
+            <div className={`w-2 h-2 rounded-full ${service.status === 'running' ? 'bg-emerald-400' :
+                service.status === 'stopped' ? 'bg-red-400' :
+                  'bg-amber-400'
+              }`} />
             <span className="text-sm text-white/90">{service.name}</span>
             {service.ports && service.ports.length > 1 && (
               <span className="px-2 py-0.5 text-xs bg-white/5 text-white/50 rounded-full border border-white/10">
@@ -82,11 +81,10 @@ function ServiceRow({ service, onToggleService, onViewLogs }: ServiceRowProps) {
           </div>
         </td>
         <td className="px-4 py-3">
-          <span className={`text-xs ${
-            service.status === 'running' ? 'text-emerald-400' :
-            service.status === 'stopped' ? 'text-red-400' :
-            'text-amber-400'
-          }`}>
+          <span className={`text-xs ${service.status === 'running' ? 'text-emerald-400' :
+              service.status === 'stopped' ? 'text-red-400' :
+                'text-amber-400'
+            }`}>
             {service.status === 'running' ? 'Running' : service.status === 'stopped' ? 'Stopped' : 'Unknown'}
           </span>
         </td>
@@ -128,11 +126,10 @@ function ServiceRow({ service, onToggleService, onViewLogs }: ServiceRowProps) {
             {/* Restart/Stop Button */}
             <button
               onClick={() => onToggleService(service.name)}
-              className={`p-1.5 hover:bg-white/10 rounded-lg transition ${
-                service.status === 'running'
+              className={`p-1.5 hover:bg-white/10 rounded-lg transition ${service.status === 'running'
                   ? 'text-white/40 hover:text-red-400 hover:bg-red-500/10'
                   : 'text-white/40 hover:text-emerald-400 hover:bg-emerald-500/10'
-              }`}
+                }`}
               title={service.status === 'running' ? 'Stop Service' : 'Start Service'}
             >
               {service.status === 'running' ? (
@@ -192,7 +189,7 @@ export function ServicesTable({ servicesStatus }: ServicesTableProps) {
     {
       name: 'Keycloak',
       port: '8080',
-      url: 'keycloak.localhost',
+      url: 'localhost',
       hasLogs: true,
     },
     {
@@ -316,9 +313,9 @@ export function ServicesTable({ servicesStatus }: ServicesTableProps) {
                     <div key={index} className="text-white/70 hover:bg-white/5 px-2 py-1 rounded">
                       <span className="text-white/40 mr-2">{log.split(']')[0]}]</span>
                       <span className={log.toLowerCase().includes('error') ? 'text-red-400' :
-                                  log.toLowerCase().includes('warn') ? 'text-amber-400' :
-                                  log.toLowerCase().includes('starting') || log.toLowerCase().includes('ready') ? 'text-emerald-400' :
-                                  'text-white/70'}>
+                        log.toLowerCase().includes('warn') ? 'text-amber-400' :
+                          log.toLowerCase().includes('starting') || log.toLowerCase().includes('ready') ? 'text-emerald-400' :
+                            'text-white/70'}>
                         {log.split(']').slice(1).join(']')}
                       </span>
                     </div>

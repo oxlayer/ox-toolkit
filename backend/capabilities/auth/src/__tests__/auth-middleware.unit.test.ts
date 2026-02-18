@@ -129,7 +129,7 @@ describe('Auth Middleware', () => {
 
       const middleware = authMiddleware({
         enableKeycloak: true,
-        keycloak: { url: 'http://keycloak.localhost:8080', realm: 'test' },
+        keycloak: { url: 'http://localhost:8080', realm: 'test' },
         enableJwt: true,
         jwtSecret: 'secret',
       });
@@ -155,7 +155,7 @@ describe('Auth Middleware', () => {
 
       const middleware = authMiddleware({
         enableKeycloak: true,
-        keycloak: { url: 'http://keycloak.localhost:8080', realm: 'test' },
+        keycloak: { url: 'http://localhost:8080', realm: 'test' },
         enableJwt: true,
         jwtSecret: 'secret',
       });
@@ -203,7 +203,7 @@ describe('Auth Middleware', () => {
 
       const middleware = authMiddleware({
         enableKeycloak: true,
-        keycloak: { url: 'http://keycloak.localhost:8080', realm: 'test' },
+        keycloak: { url: 'http://localhost:8080', realm: 'test' },
         enableJwt: true,
         jwtSecret: 'secret',
       });

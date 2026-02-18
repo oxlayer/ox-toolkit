@@ -8638,7 +8638,7 @@ var w = promisify(exec), pt = class {
     let o = this.getProject(e);
     if (!o) throw new Error(`Project '${e}' not found`);
     let { postgres: n, redis: s, rabbitmq: i, keycloak: r } = o.resources;
-    return { DATABASE_URL: `postgresql://${n.user}:${n.password}@localhost:5432/${n.database}`, POSTGRES_DB: n.database, POSTGRES_USER: n.user, POSTGRES_PASSWORD: n.password, REDIS_URL: `redis://${s.host}:${s.port}/${s.db}`, REDIS_HOST: s.host, REDIS_PORT: s.port.toString(), REDIS_DB: s.db.toString(), RABBITMQ_URL: `amqp://${i.user}:${i.password}@localhost:5672/${i.vhost}`, RABBITMQ_VHOST: i.vhost, RABBITMQ_USER: i.user, RABBITMQ_PASSWORD: i.password, KEYCLOAK_URL: `http://keycloak.localhost:8080/realms/${r.realm}`, KEYCLOAK_REALM: r.realm, KEYCLOAK_CLIENT_ID: r.clientId, KEYCLOAK_CLIENT_SECRET: r.clientSecret };
+    return { DATABASE_URL: `postgresql://${n.user}:${n.password}@localhost:5432/${n.database}`, POSTGRES_DB: n.database, POSTGRES_USER: n.user, POSTGRES_PASSWORD: n.password, REDIS_URL: `redis://${s.host}:${s.port}/${s.db}`, REDIS_HOST: s.host, REDIS_PORT: s.port.toString(), REDIS_DB: s.db.toString(), RABBITMQ_URL: `amqp://${i.user}:${i.password}@localhost:5672/${i.vhost}`, RABBITMQ_VHOST: i.vhost, RABBITMQ_USER: i.user, RABBITMQ_PASSWORD: i.password, KEYCLOAK_URL: `http://localhost:8080/realms/${r.realm}`, KEYCLOAK_REALM: r.realm, KEYCLOAK_CLIENT_ID: r.clientId, KEYCLOAK_CLIENT_SECRET: r.clientSecret };
   }
   async generateEnvFile(e, o) {
     let n = this.getConnectionStrings(e);
