@@ -45,7 +45,7 @@ export interface RabbitMQEventBusOptions {
  * RabbitMQ event bus implementation
  *
  * Uses RabbitMQClient from the adapter for connection management.
- * Implements the EventBus interface from @staples/events.
+ * Implements the EventBus interface from @oxlayer/capabilities-events.
  */
 export class RabbitMQEventBus implements EventBus {
   private client: RabbitMQClient;
@@ -60,15 +60,45 @@ export class RabbitMQEventBus implements EventBus {
     private readonly config: RabbitMQEventBusConfig,
     private readonly options: RabbitMQEventBusOptions
   ) {
+    // Validate required configuration
+    if (!config.url) {
+      throw new Error('[RabbitMQEventBus] Configuration error: "url" is required');
+    }
+    if (!config.exchange) {
+      throw new Error('[RabbitMQEventBus] Configuration error: "exchange" is required');
+    }
+    if (!options.serviceName) {
+      throw new Error('[RabbitMQEventBus] Options error: "serviceName" is required');
+    }
+
+    // Validate URL format
+    try {
+      new URL(config.url);
+    } catch (error) {
+      throw new Error(`[RabbitMQEventBus] Invalid URL format: ${config.url}`);
+    }
+
+    // Validate heartbeat range
+    if (config.heartbeat !== undefined && config.heartbeat < 0) {
+      throw new Error(`[RabbitMQEventBus] Heartbeat must be >= 0, got: ${config.heartbeat}`);
+    }
+
     this.tracer = options.tracer || null;
 
+    // Warn if telemetry is not configured (optional but recommended)
+    if (!options.tracer) {
+      console.warn('[RabbitMQEventBus] No tracer provided - OpenTelemetry tracing disabled. Pass a tracer for better observability.');
+    }
+
     // Create RabbitMQ client with event-specific configuration
+    const parsedUrl = new URL(config.url);
     const connectionConfig: RabbitMQConnectionConfig = {
-      hostname: new URL(config.url).hostname,
-      port: parseInt(new URL(config.url).port) || 5672,
-      username: new URL(config.url).username || 'guest',
-      password: new URL(config.url).password || 'guest',
-      vhost: new URL(config.url).pathname || '/',
+      hostname: parsedUrl.hostname,
+      port: parseInt(parsedUrl.port) || 5672,
+      username: parsedUrl.username || 'guest',
+      password: parsedUrl.password || 'guest',
+      // Remove leading slash from vhost pathname (e.g., "/vhost" -> "vhost")
+      vhost: parsedUrl.pathname?.replace(/^\//, '') || '/',
       // Pass through heartbeat config, or let client use its safe default (10s)
       ...(config.heartbeat !== undefined && { heartbeat: config.heartbeat }),
     };
