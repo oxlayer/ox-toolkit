@@ -176,10 +176,24 @@ export class RabbitMQClient implements RabbitMQContext {
     }, delay);
   }
 
+  /**
+   * Publish a message to RabbitMQ with automatic reconnection
+   */
   async publish(routingKey: string, message: any): Promise<void> {
+    // Try to connect if not connected
     if (!this.isConnected || !this.channel) {
-      console.warn(`⚠️ RabbitMQ not available - message to '${routingKey}' was not published`);
-      return;
+      if (this.isConnecting) {
+        // Wait for ongoing connection attempt
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      // Attempt connection
+      await this.connect();
+
+      // If still not connected after reconnection attempt, drop the message
+      if (!this.isConnected || !this.channel) {
+        console.warn(`⚠️ RabbitMQ not available - message to '${routingKey}' was not published`);
+        return;
+      }
     }
 
     const messageBuffer = Buffer.from(JSON.stringify(message));
