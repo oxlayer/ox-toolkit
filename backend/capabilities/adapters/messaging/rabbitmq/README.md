@@ -53,9 +53,55 @@ await eventBus.start();
 // Emit events
 await eventBus.emit({ type: 'UserCreated', data: { userId: '123' } });
 
+// Or publish directly with explicit exchange and routing key
+await eventBus.publish('events', 'user.created', {
+  userId: '123',
+  email: 'user@example.com',
+});
+
 // Stop when done
 await eventBus.stop();
 ```
+
+### Publishing Events
+
+You have two ways to publish events:
+
+#### Using `emit()` - Type-safe Domain Events
+
+```typescript
+// Define a DomainEvent class
+class UserCreatedEvent {
+  type = 'UserCreated';
+  data = {
+    userId: '123',
+    email: 'user@example.com',
+    name: 'John Doe',
+  };
+}
+
+// Emit - envelope and routing key are created automatically
+await eventBus.emit(new UserCreatedEvent());
+```
+
+#### Using `publish()` - Direct Publishing
+
+```typescript
+// Publish directly with explicit parameters
+await eventBus.publish(
+  'my-app.events',     // exchange
+  'user.created',      // routing key
+  {                    // payload
+    userId: '123',
+    email: 'user@example.com',
+    name: 'John Doe',
+  }
+);
+```
+
+**When to use each:**
+- Use `emit()` for type-safe events with DomainEvent classes
+- Use `publish()` for simple, direct event publishing without class definitions
 
 ### Exchange Types
 
@@ -226,11 +272,23 @@ Stop the event bus and close connection.
 
 ##### `emit<T>(event: T): Promise<void>`
 
-Emit a domain event.
+Emit a domain event. The event envelope is created automatically with a unique ID, timestamp, and proper routing key generation.
 
 ##### `emitEnvelope<T>(envelope: EventEnvelope<T>): Promise<void>`
 
-Emit an event envelope.
+Emit an event envelope directly.
+
+##### `publish(exchange: string, routingKey: string, payload: any): Promise<void>`
+
+Publish a message directly to a specific exchange with an explicit routing key and payload. This method creates the event envelope automatically and provides a simple way to publish events without defining DomainEvent classes.
+
+```typescript
+await eventBus.publish('acme.events', 'exam.assigned', {
+  assignmentId: '123',
+  examId: 'exam-001',
+  candidateId: 'candidate-001',
+});
+```
 
 ##### `getClient(): RabbitMQClient`
 
@@ -367,7 +425,7 @@ any message       -> delivered to all bound queues
 2. **Make resources durable**: Prevent data loss on restart
 3. **Use meaningful routing keys**: Enable complex routing patterns
 4. **Monitor queue depths**: Prevent memory issues
-5. **Handle connection failures**: Implement reconnection logic
+5. **Connection is resilient**: The `publish()` method automatically attempts to reconnect if the connection is lost
 
 ## When to Use
 

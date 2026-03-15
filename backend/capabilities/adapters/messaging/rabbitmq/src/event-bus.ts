@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { DomainEvent } from '@oxlayer/capabilities-events';
 import type { EventBus, EventEnvelope } from '@oxlayer/capabilities-events';
 import { createEnvelope } from '@oxlayer/capabilities-events';
@@ -322,6 +323,46 @@ export class RabbitMQEventBus implements EventBus {
    */
   getChannel(): any {
     return this.client.channel;
+  }
+
+  /**
+   * Publish a message directly with exchange, routing key, and payload
+   *
+   * This method provides backwards compatibility for code that expects
+   * to publish with explicit exchange and routing key parameters.
+   *
+   * @param exchange - The exchange name to publish to
+   * @param routingKey - The routing key for the message
+   * @param payload - The message payload
+   */
+  async publish(exchange: string, routingKey: string, payload: any): Promise<void> {
+    // Build envelope format that the event bus expects
+    const envelope = {
+      id: randomUUID(),
+      type: routingKey,
+      version: '1.0',
+      source: this.options.serviceName,
+      timestamp: new Date().toISOString(),
+      data: payload,
+    };
+
+    try {
+      console.log(`[RabbitMQEventBus] Publishing to exchange=${exchange}, routingKey=${routingKey}`);
+
+      // Try to get the channel and publish directly
+      const channel = this.client.channel;
+      if (channel) {
+        await channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(envelope)));
+        console.log(`[RabbitMQEventBus] ✓ Published via channel.publish() to ${exchange}/${routingKey}`);
+      } else {
+        // Fallback to client.publish
+        await this.client.publish(routingKey, envelope);
+        console.log(`[RabbitMQEventBus] ✓ Published via client.publish()`);
+      }
+    } catch (error) {
+      console.error(`[RabbitMQEventBus] ✗ Failed to publish to ${exchange} with routing key ${routingKey}:`, error);
+      throw error;
+    }
   }
 
   private buildRoutingKey(eventType: string): string {
