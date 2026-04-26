@@ -42,9 +42,13 @@
     "**/node_modules/**",
     "**/dist/**",
     "**/build/**",
+    "**/out/**",
     "**/.next/**",
+    "**/.turbo/**",
     "**/coverage/**",
     "**/*.d.ts",
-    "**/templates/**"
+    "**/*.min.js",
+    "**/templates/**",
+    "**/.specify/**"
   ]
 }
