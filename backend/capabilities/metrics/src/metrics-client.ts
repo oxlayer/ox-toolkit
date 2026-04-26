@@ -1,4 +1,4 @@
-import type { MetricsConfig, CounterMetric, GaugeMetric, HistogramMetric } from './types.js';
+import type { MetricsConfig, _CounterMetric, _GaugeMetric, _HistogramMetric } from './types.js';
 
 /**
  * Simple in-memory metrics client

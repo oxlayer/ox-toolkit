@@ -33,7 +33,7 @@ import type {
   ChannelIdentifier,
   ChannelCapabilities,
   ChannelOutboundMessage,
-  ChannelInboundMessage,
+  _ChannelInboundMessage,
   ChannelAuthChallenge,
   ChannelMessageResult,
   ChannelVerificationResult,
@@ -573,7 +573,7 @@ export class WhatsAppIdentityBridge {
    *
    * Creates or updates lead based on message content.
    */
-  async handleInboundMessage(message: WhatsAppInboundMessage): Promise<any> {
+  async handleInboundMessage(_message: WhatsAppInboundMessage): Promise<any> {
     // Implementation moved to use case pattern
     throw new Error('Use WhatsAppChannelAdapter + TrackIntentUseCase instead');
   }
@@ -581,7 +581,7 @@ export class WhatsAppIdentityBridge {
   /**
    * Initiate conversion via WhatsApp OTP
    */
-  async initiateConversion(input: {
+  async initiateConversion(_input: {
     phoneNumber: string;
     action: string;
     redirectUrl?: string;
@@ -593,7 +593,7 @@ export class WhatsAppIdentityBridge {
   /**
    * Verify OTP from WhatsApp reply
    */
-  async verifyOTP(input: {
+  async verifyOTP(_input: {
     phoneNumber: string;
     code: string;
   }): Promise<any> {

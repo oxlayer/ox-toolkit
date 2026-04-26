@@ -79,7 +79,7 @@ let workerPort: MessagePort | null = null;
 let tabWorker: Worker | null = null;
 let clientId: string | null = null;
 let isReady = false;
-let pendingQueries = new Map<number, {
+const pendingQueries = new Map<number, {
   resolve: (value: unknown) => void;
   reject: (error: Error) => void;
 }>();
@@ -222,7 +222,7 @@ async function sendQuery(method: string, key?: string, value?: string): Promise<
     workerPort!.postMessage({
       type: 'sqlite-query',
       query: { method, key, value },
-    } as CoordinatorMessage);
+    } as CoordinatorMessage, self.location.origin);
   });
 }
 
@@ -253,7 +253,7 @@ export const sharedSqliteStorage: SharedSQLiteAdapter = {
       workerPort!.postMessage({
         type: 'register',
         clientId,
-      } as CoordinatorMessage);
+      } as CoordinatorMessage, self.location.origin);
 
       // Initialize SQLite
       await sendQuery('init');

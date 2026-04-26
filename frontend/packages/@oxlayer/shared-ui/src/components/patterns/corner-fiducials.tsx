@@ -24,7 +24,7 @@ export function CornerFiducials({
   const showBottomLeft = corners.includes("bottom-left");
   const showBottomRight = corners.includes("bottom-right");
 
-  const topLeftOpacity = mounted ? (showTopLeft ? 1 : 0) : 0;
+  const _topLeftOpacity = mounted ? (showTopLeft ? 1 : 0) : 0;
   const topRightOpacity = mounted ? (showTopRight ? 1 : 0) : 0;
   const bottomLeftOpacity = mounted ? (showBottomLeft ? 1 : 0) : 0;
   const bottomRightOpacity = mounted ? (showBottomRight ? 1 : 0) : 0;

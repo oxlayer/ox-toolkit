@@ -73,7 +73,7 @@ export interface MockRepositoryOptions<T, ID, F = Record<string, unknown>> {
   search?: (entity: T, query: string) => boolean;
 }
 
-export interface MockRepositoryFilters<F = Record<string, unknown>> {
+export interface MockRepositoryFilters<_F = Record<string, unknown>> {
   status?: string;
   userId?: string;
   search?: string;

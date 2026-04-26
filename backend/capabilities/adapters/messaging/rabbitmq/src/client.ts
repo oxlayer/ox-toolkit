@@ -79,7 +79,7 @@ export class RabbitMQClient implements RabbitMQContext {
       console.log('✅ RabbitMQ channel created');
 
       // Assert exchanges
-      for (const [key, exchange] of Object.entries(this.exchanges)) {
+      for (const [_key, exchange] of Object.entries(this.exchanges)) {
         const exchangeOptions: Record<string, boolean> = {
           durable: exchange.options?.durable ?? true,
           autoDelete: exchange.options?.autoDelete ?? false,

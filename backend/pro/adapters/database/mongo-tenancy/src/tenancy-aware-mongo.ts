@@ -341,7 +341,7 @@ export class TenancyAwareMongo implements TenantScopedMongoClient {
    *
    * Convenience method for direct collection access.
    */
-  collection<T>(name: string): TenantScopedCollection<T> {
+  collection<T>(_name: string): TenantScopedCollection<T> {
     throw new Error('Use resolve(tenantId).collection(name) instead');
   }
 

@@ -79,7 +79,7 @@ export interface OwnershipTestOptions<TInput, TOutput> {
  * ```
  */
 export function ownershipTests<TInput, TOutput>(
-  options: OwnershipTestOptions<TInput, TOutput>
+  _options: OwnershipTestOptions<TInput, TOutput>
 ): void {
   throw new Error(
     'ownershipTests is a template. Import this function and call it within ' +
@@ -118,7 +118,7 @@ export interface PermissionTestOptions<TInput, TOutput> {
  * Test definitions for permission-based authorization
  */
 export function permissionTests<TInput, TOutput>(
-  options: PermissionTestOptions<TInput, TOutput>
+  _options: PermissionTestOptions<TInput, TOutput>
 ): void {
   throw new Error(
     'permissionTests is a template. Import this function and call it within ' +
@@ -162,7 +162,7 @@ export interface CrossUserAccessTestOptions<TInput, TOutput> {
  * Test definitions for cross-user access prevention
  */
 export function crossUserAccessTests<TInput, TOutput>(
-  options: CrossUserAccessTestOptions<TInput, TOutput>
+  _options: CrossUserAccessTestOptions<TInput, TOutput>
 ): void {
   throw new Error(
     'crossUserAccessTests is a template. Import this function and call it within ' +
@@ -211,7 +211,7 @@ export interface DataFilteringTestOptions<TInput, TOutput> {
  * Test definitions for data filtering
  */
 export function dataFilteringTests<TInput, TOutput>(
-  options: DataFilteringTestOptions<TInput, TOutput>
+  _options: DataFilteringTestOptions<TInput, TOutput>
 ): void {
   throw new Error(
     'dataFilteringTests is a template. Import this function and call it within ' +

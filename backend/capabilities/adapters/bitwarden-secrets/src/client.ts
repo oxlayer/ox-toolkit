@@ -169,7 +169,7 @@ export class BitwardenSecretsClient {
         host: creds.host,
         port: creds.port,
       };
-    } catch (error) {
+    } catch (_error) {
       throw new Error(
         `Invalid database credentials format for secret ${secretRef}: expected JSON with username, password`
       );
@@ -194,7 +194,7 @@ export class BitwardenSecretsClient {
         secretAccessKey: creds.secretAccessKey,
         region: creds.region,
       };
-    } catch (error) {
+    } catch (_error) {
       throw new Error(
         `Invalid storage credentials format for secret ${secretRef}: expected JSON with accessKeyId, secretAccessKey`
       );

@@ -1,4 +1,4 @@
-import type { EnvSchema, EnvVar, LoadedEnv, EnvValidationError, OptionalEnvVar, EnvSchemaShorthandDefinition } from './types.js';
+import type { EnvSchema, EnvVar, LoadedEnv, _EnvValidationError, OptionalEnvVar, EnvSchemaShorthandDefinition } from './types.js';
 import { Parsers } from './types.js';
 
 /**

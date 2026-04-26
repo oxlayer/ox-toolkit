@@ -5,7 +5,7 @@
  * and proper naming convention
  */
 
-import { readdir, readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 
 const ADAPTERS_BASE = join(import.meta.dir, '../capabilities/adapters');

@@ -57,7 +57,7 @@ export interface ErrorHandlingTestOptions<TInput, TOutput> {
  * Test definitions for error handling
  */
 export function errorHandlingTests<TInput, TOutput>(
-  options: ErrorHandlingTestOptions<TInput, TOutput>
+  _options: ErrorHandlingTestOptions<TInput, TOutput>
 ): void {
   throw new Error(
     'errorHandlingTests is a template. Import this function and call it within ' +
@@ -155,7 +155,7 @@ export interface RetryTestOptions<TInput, TOutput> {
  * Test definitions for retry logic
  */
 export function retryTests<TInput, TOutput>(
-  options: RetryTestOptions<TInput, TOutput>
+  _options: RetryTestOptions<TInput, TOutput>
 ): void {
   throw new Error(
     'retryTests is a template. Import this function and call it within ' +

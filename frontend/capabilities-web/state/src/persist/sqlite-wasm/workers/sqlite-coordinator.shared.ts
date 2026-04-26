@@ -132,14 +132,14 @@ function handleMessage(fromId: ClientId, msg: CoordinatorMessage): void {
         activeClient.port.postMessage({
           ...msg,
           replyTo: fromId,
-        } as CoordinatorMessage);
+        } as CoordinatorMessage, self.location.origin);
       } else {
         // Active worker not ready, send error back
         client.port.postMessage({
           type: 'sqlite-result',
           error: 'SQLite worker not ready',
           replyTo: fromId,
-        } as CoordinatorMessage);
+        } as CoordinatorMessage, self.location.origin);
       }
       break;
 
@@ -147,7 +147,7 @@ function handleMessage(fromId: ClientId, msg: CoordinatorMessage): void {
       // Route result back to original requester
       const target = msg.replyTo ? clients.get(msg.replyTo) : null;
       if (target) {
-        target.port.postMessage(msg);
+        target.port.postMessage(msg, self.location.origin);
       }
       break;
 
@@ -168,7 +168,7 @@ function setActiveClient(clientId: ClientId): void {
       previousClient.port.postMessage({
         type: 'set-active',
         active: false,
-      } as CoordinatorMessage);
+      } as CoordinatorMessage, self.location.origin);
     }
   }
 
@@ -181,7 +181,7 @@ function setActiveClient(clientId: ClientId): void {
     newClient.port.postMessage({
       type: 'set-active',
       active: true,
-    } as CoordinatorMessage);
+    } as CoordinatorMessage, self.location.origin);
   }
 }
 

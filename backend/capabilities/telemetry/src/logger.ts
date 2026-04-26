@@ -155,7 +155,7 @@ export class OtelLogger {
       // Build attributes
       const attrs: Record<string, any> = {
         context: this.context,
-        ...(attributes || {}),
+        ...attributes,
       };
 
       // Add error attributes

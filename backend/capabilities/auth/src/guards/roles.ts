@@ -213,7 +213,7 @@ export function workspaceGuard(): MiddlewareHandler {
       return c.json({ error: 'No tenant context found' }, 401);
     }
 
-    const userRoles = 'roles' in tenantContext ? tenantContext.roles : [];
+    const _userRoles = 'roles' in tenantContext ? tenantContext.roles : [];
     const canAccessMultipleWorkspaces = c.get('multiWorkspaceAccess') === true;
 
     // If user doesn't have multi-workspace access, verify workspace matches
@@ -260,7 +260,7 @@ export function organizationGuard(): MiddlewareHandler {
       return c.json({ error: 'No tenant context found' }, 401);
     }
 
-    const userRoles = 'roles' in tenantContext ? tenantContext.roles : [];
+    const _userRoles = 'roles' in tenantContext ? tenantContext.roles : [];
     const canAccessMultipleWorkspaces = c.get('multiWorkspaceAccess') === true;
 
     // If user doesn't have multi-workspace access, verify organization matches

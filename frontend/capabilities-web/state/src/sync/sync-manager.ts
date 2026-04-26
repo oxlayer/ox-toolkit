@@ -244,7 +244,7 @@ export class SyncManager {
    */
   private setupAuthWatcher(): void {
     // Watch for auth state changes and enable/disable sync accordingly
-    const unobserve = isAuthenticated$.onChange((isAuthenticated) => {
+    const _unobserve = isAuthenticated$.onChange((isAuthenticated) => {
       if (isAuthenticated) {
         this.enable();
       } else {

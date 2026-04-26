@@ -83,18 +83,18 @@ class SharedRabbitMQClient implements QueueClient {
     }
   ) { }
 
-  async publish(routingKey: string, message: any): Promise<void> {
-    const prefixedKey = `${this.config.tenantId}.${routingKey}`;
+  async publish(routingKey: string, _message: any): Promise<void> {
+    const _prefixedKey = `${this.config.tenantId}.${routingKey}`;
     // TODO: Publish to RabbitMQ with prefixed routing key
   }
 
-  async subscribe(queue: string, handler: (msg: any) => void): Promise<void> {
-    const prefixedQueue = `${this.config.tenantId}.${queue}`;
+  async subscribe(queue: string, _handler: (msg: any) => void): Promise<void> {
+    const _prefixedQueue = `${this.config.tenantId}.${queue}`;
     // TODO: Subscribe to RabbitMQ queue
   }
 
   async createQueue(queue: string): Promise<void> {
-    const prefixedQueue = `${this.config.tenantId}.${queue}`;
+    const _prefixedQueue = `${this.config.tenantId}.${queue}`;
     // TODO: Create queue in RabbitMQ
   }
 }
@@ -111,15 +111,15 @@ class DedicatedRabbitMQClient implements QueueClient {
     }
   ) { }
 
-  async publish(routingKey: string, message: any): Promise<void> {
+  async publish(_routingKey: string, _message: any): Promise<void> {
     // TODO: Publish to tenant's dedicated exchange
   }
 
-  async subscribe(queue: string, handler: (msg: any) => void): Promise<void> {
+  async subscribe(_queue: string, _handler: (msg: any) => void): Promise<void> {
     // TODO: Subscribe to tenant's dedicated queue
   }
 
-  async createQueue(queue: string): Promise<void> {
+  async createQueue(_queue: string): Promise<void> {
     // TODO: Create queue in tenant's vhost or exchange
   }
 }

@@ -38,11 +38,9 @@
  */
 
 import type {
-  Lead,
   LeadRepository,
   UserRepository,
   KeycloakService,
-  ConvertLeadToUserInput,
   IntentType,
 } from '@oxlayer/snippets';
 
@@ -84,7 +82,7 @@ export interface WhatsAppOutboundMessage {
 export type WhatsAppConversationState =
   | 'new'              // First message
   | 'greeting'         // Bot greeting sent
-  * 'engaged'          // Active conversation
+  | 'engaged'          // Active conversation
   | 'otp_sent'         // OTP sent, waiting for reply
   | 'verified'         // OTP verified, now authenticated
   | 'converted';       // Converted to user

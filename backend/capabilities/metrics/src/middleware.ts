@@ -6,7 +6,7 @@ import type { MetricsConfig } from './types.js';
  * Metrics collection middleware for Hono
  * Tracks HTTP request count, duration, and status codes
  */
-export function metricsMiddleware(client: MetricsClient, config: MetricsConfig = {}) {
+export function metricsMiddleware(client: MetricsClient, _config: MetricsConfig = {}) {
   return async (c: Context, next: Next) => {
     const start = Date.now();
     const method = c.req.method;

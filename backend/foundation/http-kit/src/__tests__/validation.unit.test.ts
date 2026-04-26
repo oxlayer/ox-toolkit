@@ -10,7 +10,7 @@ import {
   validate,
   validateOrThrow,
   validationErrorResponse,
-  type ValidationResult,
+  type _ValidationResult,
   type ValidationErrorDetail,
 } from '../validation/validation';
 

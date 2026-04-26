@@ -465,13 +465,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'search_docs': {
         const results: string[] = [];
-        let docsToSearch: Array<{ name: string; key: string; category: string }>;
 
         if (!args) return { content: [{ type: 'text', text: 'Missing arguments' }] };
 
-        docsToSearch = Object.entries(DOCS).filter(([_, doc]) =>
-          args.category === 'all' || doc.category === args.category
-        ).map(([name, doc]) => ({ name, key: doc.key, category: doc.category }));
+        const docsToSearch: Array<{ name: string; key: string; category: string }> =
+          Object.entries(DOCS).filter(([_, doc]) =>
+            args.category === 'all' || doc.category === args.category
+          ).map(([name, doc]) => ({ name, key: doc.key, category: doc.category }));
 
         for (const doc of docsToSearch) {
           const docContent = embeddedDocs[doc.key];
@@ -518,7 +518,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 // Helper functions
-function extractSection(content: string, sectionName: string, headingLevel: string = '## '): string {
+function extractSection(content: string, sectionName: string, _headingLevel: string = '## '): string {
   const patterns: Record<string, RegExp> = {
     'overview': /## Overview\n([\s\S]*?)(?=\n##|$)/,
     'packages': /## OxLayer Packages\n([\s\S]*?)(?=\n##|$)/,

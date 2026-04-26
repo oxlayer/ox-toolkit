@@ -22,7 +22,7 @@
  * ```
  */
 
-import { trace, SpanStatusCode, type Span, type Tracer } from '@opentelemetry/api';
+import { SpanStatusCode, type Span, type Tracer } from '@opentelemetry/api';
 
 // OpenTelemetry Semantic Conventions
 // See: https://opentelemetry.io/docs/specs/semconv/

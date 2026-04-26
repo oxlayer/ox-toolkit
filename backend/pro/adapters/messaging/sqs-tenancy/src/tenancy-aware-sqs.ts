@@ -86,7 +86,7 @@ class SharedSQSClient implements SQSClient {
 
   async send(queueName: string, message: any): Promise<void> {
     // Add tenant_id as message attribute
-    const messageWithTenant = {
+    const _messageWithTenant = {
       ...message,
       tenant_id: this.config.tenantId,
       messageAttributes: {
@@ -99,7 +99,7 @@ class SharedSQSClient implements SQSClient {
     // TODO: Send to SQS
   }
 
-  async receive(queueName: string, handler: (msg: any) => void): Promise<void> {
+  async receive(_queueName: string, _handler: (msg: any) => void): Promise<void> {
     // TODO: Receive from SQS and filter by tenant_id attribute
   }
 }
@@ -117,11 +117,11 @@ class DedicatedSQSClient implements SQSClient {
     }
   ) { }
 
-  async send(queueName: string, message: any): Promise<void> {
+  async send(_queueName: string, _message: any): Promise<void> {
     // TODO: Send to tenant's dedicated SQS queue
   }
 
-  async receive(queueName: string, handler: (msg: any) => void): Promise<void> {
+  async receive(_queueName: string, _handler: (msg: any) => void): Promise<void> {
     // TODO: Receive from tenant's dedicated SQS queue
   }
 }

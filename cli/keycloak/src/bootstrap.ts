@@ -3,7 +3,7 @@
  */
 
 import type { KeycloakBootstrapConfig } from './types/config.js';
-import type { ApplyOptions, BootstrapResult, DryRunResult, Resource } from './types/keycloak.js';
+import type { ApplyOptions, BootstrapResult, DryRunResult, _Resource } from './types/keycloak.js';
 import { KeycloakAdminClient } from './keycloak/admin.js';
 import { KeycloakOrganizationClient } from './keycloak/organizations.js';
 import type { KeycloakConnectionConfig } from './types/config.js';

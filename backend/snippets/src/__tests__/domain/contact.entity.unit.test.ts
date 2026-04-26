@@ -281,7 +281,7 @@ describe('Contact Entity', () => {
   describe('Persistence and Rehydration', () => {
     it('should serialize to persistence format', () => {
       const now = new Date();
-      const contact = Contact.create({
+_      const contact = Contact.create({
         externalUserId: 'ext_123',
         tenantId: 'tenant_abc',
         name: 'Test User',

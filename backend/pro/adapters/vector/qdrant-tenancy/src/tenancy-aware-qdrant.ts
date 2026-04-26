@@ -115,7 +115,7 @@ class SharedQdrantClient implements QdrantClient {
 
   async upsert(points: VectorPoint[]): Promise<void> {
     // Automatically add tenant_id to payload
-    const enrichedPoints = points.map(p => ({
+    const _enrichedPoints = points.map(p => ({
       ...p,
       payload: {
         ...p.payload,
@@ -127,7 +127,7 @@ class SharedQdrantClient implements QdrantClient {
 
   async search(vector: number[], options?: SearchOptions): Promise<SearchResult[]> {
     // Add tenant_id filter to search
-    const filter = {
+    const _filter = {
       must: [
         ...(options?.filter?.must || []),
         { key: 'tenant_id', match: { value: this.config.tenantId } },
@@ -137,7 +137,7 @@ class SharedQdrantClient implements QdrantClient {
     return [];
   }
 
-  async delete(ids: string[]): Promise<void> {
+  async delete(_ids: string[]): Promise<void> {
     // TODO: Delete from Qdrant
   }
 }
@@ -155,17 +155,17 @@ class DedicatedQdrantClient implements QdrantClient {
     }
   ) { }
 
-  async upsert(points: VectorPoint[]): Promise<void> {
+  async upsert(_points: VectorPoint[]): Promise<void> {
     // TODO: Upsert to tenant's dedicated collection
     // No tenant_id injection needed - collection is isolated
   }
 
-  async search(vector: number[], options?: SearchOptions): Promise<SearchResult[]> {
+  async search(_vector: number[], _options?: SearchOptions): Promise<SearchResult[]> {
     // TODO: Search in tenant's dedicated collection
     return [];
   }
 
-  async delete(ids: string[]): Promise<void> {
+  async delete(_ids: string[]): Promise<void> {
     // TODO: Delete from tenant's dedicated collection
   }
 }

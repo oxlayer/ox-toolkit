@@ -106,7 +106,7 @@ describe('Result Type', () => {
     it('should flatMap and remain failure', () => {
       const error = new Error('test');
       const failure = new Failure(error);
-      const flatMapped = failure.flatMap((x: never) => Result.ok(10));
+      const flatMapped = failure.flatMap((_x: never) => Result.ok(10));
       expect(flatMapped.isErr()).toBe(true);
       if (flatMapped.isErr()) {
         expect(flatMapped.error).toBe(error);
@@ -333,7 +333,7 @@ describe('Result Type', () => {
     });
 
     it('should short-circuit on failure in map chain', () => {
-      const result = Result.ok(5)
+      const _result = Result.ok(5)
         .map((x) => x * 2)
         .map(() => {
           throw new Error('Should not reach here');

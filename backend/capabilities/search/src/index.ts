@@ -309,7 +309,7 @@ export interface Search {
    * @param id - Document ID
    * @returns Document or null
    */
-  get<T = unknown>(id: string): Promise<SearchDocument | null>;
+  get<_T = unknown>(id: string): Promise<SearchDocument | null>;
 
   /**
    * Delete a document
@@ -383,7 +383,7 @@ export interface SearchStore {
   /**
    * Raw get operation
    */
-  get<T>(index: string, id: string): Promise<SearchDocument | null>;
+  get<_T>(index: string, id: string): Promise<SearchDocument | null>;
 
   /**
    * Raw delete operation

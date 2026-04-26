@@ -4,7 +4,7 @@
  * Tests JWT token generation, verification, and authentication strategy.
  */
 
-import { describe, it, expect, beforeEach } from 'bun:test';
+import { describe, it, expect } from 'bun:test';
 import jwt from 'jsonwebtoken';
 import {
   generateToken,
@@ -26,7 +26,7 @@ function createMockContext(authHeader?: string, path = '/api/test') {
       status: status || 200,
       json: async () => data,
     }),
-    set: (key: string, value: any) => {},
+    set: (_key: string, _value: any) => {},
   } as any;
 }
 

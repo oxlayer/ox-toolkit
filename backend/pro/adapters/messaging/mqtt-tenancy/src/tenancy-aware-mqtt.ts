@@ -77,13 +77,13 @@ class TenantScopedMQTTClient implements MQTTClient {
     return `${this.config.topicPrefix}${topic}`;
   }
 
-  async publish(topic: string, message: string | Buffer): Promise<void> {
+  async publish(topic: string, _message: string | Buffer): Promise<void> {
     const prefixedTopic = this.prefixTopic(topic);
     // TODO: Publish to MQTT broker
     console.log(`[MQTT-${this.config.tenantId}] Publishing to ${prefixedTopic}`);
   }
 
-  async subscribe(topic: string, handler: (topic: string, message: Buffer) => void): Promise<void> {
+  async subscribe(topic: string, _handler: (topic: string, message: Buffer) => void): Promise<void> {
     const prefixedTopic = this.prefixTopic(topic);
     // TODO: Subscribe to MQTT topic
     console.log(`[MQTT-${this.config.tenantId}] Subscribing to ${prefixedTopic}`);

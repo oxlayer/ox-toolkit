@@ -218,7 +218,7 @@ export class TenancyAwarePostgres implements DatabaseResolver<Database> {
    * @param tenantId - Tenant identifier
    * @returns Shared database instance
    */
-  private async getSharedDbWithRLS(tenantId: string): Promise<Database> {
+  private async getSharedDbWithRLS(_tenantId: string): Promise<Database> {
     // Return the shared database instance
     // Application code is responsible for setting RLS context via:
     //   await tenancyPostgres.setRlsContext(tenantId);

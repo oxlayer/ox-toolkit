@@ -1,4 +1,4 @@
-import { BatchSpanProcessor, SpanExporter } from '@opentelemetry/sdk-trace-base';
+import { SpanExporter } from '@opentelemetry/sdk-trace-base';
 import { ReadableSpan } from '@opentelemetry/sdk-trace-base';
 import type { ExporterOptions, SpanData } from './types.js';
 

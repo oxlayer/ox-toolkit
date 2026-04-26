@@ -86,7 +86,7 @@ describe('Tenant Indexing Manager', () => {
     it('should not create index if already exists', async () => {
       // Mock existing indexes
       const mockDbWithIndexes = createMockDb();
-      mockDbWithIndexes.collection = jest.fn((name: string) => {
+      mockDbWithIndexes.collection = jest.fn((_name: string) => {
         return {
           indexes: async () => [{ key: { tenant_id: 1 }, name: 'existing_tenant_idx' }],
           createIndex: jest.fn(),
@@ -107,9 +107,9 @@ describe('Tenant Indexing Manager', () => {
 
     it('should continue processing other collections if one fails', async () => {
       const mockDbWithError = createMockDb();
-      let callCount = 0;
+      let _callCount = 0;
       mockDbWithError.collection = jest.fn((name: string) => {
-        callCount++;
+        _callCount++;
         if (name === 'products') {
           return {
             indexes: async () => [],
@@ -134,7 +134,7 @@ describe('Tenant Indexing Manager', () => {
 
     it('should include error details for failed collections', async () => {
       const mockDbWithError = createMockDb();
-      mockDbWithError.collection = jest.fn((name: string) => {
+      mockDbWithError.collection = jest.fn((_name: string) => {
         return {
           indexes: async () => [],
           createIndex: jest.fn(() => {
@@ -244,9 +244,9 @@ describe('Tenant Indexing Manager', () => {
   describe('Existing Indexes', () => {
     it('should skip collections with existing tenant_id index', async () => {
       const dbWithIndexes = createMockDb();
-      let callCount = 0;
+      let _callCount = 0;
       dbWithIndexes.collection = jest.fn((name: string) => {
-        callCount++;
+        _callCount++;
         return {
           indexes: async () => {
             if (name === 'users') {
@@ -267,7 +267,7 @@ describe('Tenant Indexing Manager', () => {
 
     it('should detect tenant_id index regardless of index name', async () => {
       const dbWithIndexes = createMockDb();
-      dbWithIndexes.collection = jest.fn((name: string) => {
+      dbWithIndexes.collection = jest.fn((_name: string) => {
         return {
           indexes: async () => [
             { key: { _id: 1 }, name: '_id_' },
@@ -333,7 +333,7 @@ describe('Tenant Indexing Manager', () => {
 
     it('should handle indexes() errors gracefully', async () => {
       const dbWithError = createMockDb();
-      dbWithError.collection = jest.fn((name: string) => {
+      dbWithError.collection = jest.fn((_name: string) => {
         return {
           indexes: async () => {
             throw new Error('Cannot get indexes');
@@ -351,7 +351,7 @@ describe('Tenant Indexing Manager', () => {
     it('should handle partial failures', async () => {
       const dbWithPartialFailure = createMockDb();
       let callCount = 0;
-      dbWithPartialFailure.collection = jest.fn((name: string) => {
+      dbWithPartialFailure.collection = jest.fn((_name: string) => {
         callCount++;
         return {
           indexes: async () => [],

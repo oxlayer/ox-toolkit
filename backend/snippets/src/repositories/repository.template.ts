@@ -320,7 +320,7 @@ export abstract class PostgresRepositoryTemplate<TEntity, TFilters, TProps> {
    * Override to implement custom filter logic
    */
   protected buildFindAllQuery(filters: TFilters): any {
-    let query = this.db.select().from(this.tableSchema);
+    const query = this.db.select().from(this.tableSchema);
     return this.applyFilters(query, filters);
   }
 
@@ -329,7 +329,7 @@ export abstract class PostgresRepositoryTemplate<TEntity, TFilters, TProps> {
    * Override to implement custom filter logic
    */
   protected buildCountQuery(filters: TFilters): any {
-    let query = this.db.select({ count: sql`count(*)::int` }).from(this.tableSchema);
+    const query = this.db.select({ count: sql`count(*)::int` }).from(this.tableSchema);
     return this.applyFilters(query, filters);
   }
 

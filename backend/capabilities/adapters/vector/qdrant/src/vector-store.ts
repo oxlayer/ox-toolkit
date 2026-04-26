@@ -1,4 +1,4 @@
-import type { VectorStore, VectorCollectionConfig } from '@oxlayer/capabilities-vector';
+import type { VectorStore, _VectorCollectionConfig } from '@oxlayer/capabilities-vector';
 import type { QdrantClient } from './client.js';
 import type { QdrantConfig } from './types.js';
 

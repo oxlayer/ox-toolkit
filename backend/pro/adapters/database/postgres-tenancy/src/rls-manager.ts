@@ -177,7 +177,7 @@ export class RLSManager {
    * Inspect all tables in the schema
    */
   private async inspectTables(schema: string): Promise<TableMetadata[]> {
-    const sql = this.db as any;
+    const _sql = this.db as any;
     const tables: TableMetadata[] = [];
 
     // Get all tables

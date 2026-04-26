@@ -277,7 +277,7 @@ export abstract class CrudControllerTemplate<
       });
 
       return this.handleResult(result);
-    } catch (error) {
+    } catch (_error) {
       return this.error('Failed to create resource', 500);
     }
   }
@@ -298,7 +298,7 @@ export abstract class CrudControllerTemplate<
       });
 
       return this.handleResult(result);
-    } catch (error) {
+    } catch (_error) {
       return this.error('Failed to get resource', 500);
     }
   }
@@ -319,7 +319,7 @@ export abstract class CrudControllerTemplate<
       });
 
       return this.handleResult(result);
-    } catch (error) {
+    } catch (_error) {
       return this.error('Failed to list resources', 500);
     }
   }
@@ -342,7 +342,7 @@ export abstract class CrudControllerTemplate<
       });
 
       return this.handleResult(result);
-    } catch (error) {
+    } catch (_error) {
       return this.error('Failed to update resource', 500);
     }
   }
@@ -363,7 +363,7 @@ export abstract class CrudControllerTemplate<
       });
 
       return this.handleResult(result);
-    } catch (error) {
+    } catch (_error) {
       return this.error('Failed to delete resource', 500);
     }
   }
@@ -424,7 +424,7 @@ export abstract class ReadOnlyControllerTemplate<
       });
 
       return this.handleResult(result);
-    } catch (error) {
+    } catch (_error) {
       return this.error('Failed to get resource', 500);
     }
   }
@@ -445,7 +445,7 @@ export abstract class ReadOnlyControllerTemplate<
       });
 
       return this.handleResult(result);
-    } catch (error) {
+    } catch (_error) {
       return this.error('Failed to list resources', 500);
     }
   }

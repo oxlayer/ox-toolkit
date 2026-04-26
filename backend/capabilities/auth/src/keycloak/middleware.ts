@@ -15,7 +15,7 @@ export interface KeycloakMiddlewareOptions {
 export function keycloakMiddleware(options: KeycloakMiddlewareOptions = {}) {
   const {
     publicPaths = ['/health', '/auth/login', '/auth/callback', '/reference', '/openapi.json', '/docs'],
-    adminOnlyRoutes = ['/organizations', '/users', '/keycloak'],
+    _adminOnlyRoutes = ['/organizations', '/users', '/keycloak'],
     config,
   } = options;
 
@@ -23,7 +23,7 @@ export function keycloakMiddleware(options: KeycloakMiddlewareOptions = {}) {
 
   return async (c: Context, next: Next) => {
     const path = c.req.path;
-    const method = c.req.method;
+    const _method = c.req.method;
 
     // Skip authentication for public paths
     if (publicPaths.some(publicPath => path.startsWith(publicPath))) {

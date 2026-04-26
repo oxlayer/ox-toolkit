@@ -29,13 +29,12 @@ import type {
 import {
   TenantNotFoundError,
   TenantNotReadyError,
-  TenantConfigInvalidError,
 } from '../errors.js';
 
 /**
  * Request validation types
  */
-interface ListTenantsQuery {
+interface _ListTenantsQuery {
   state?: TenantState;
   tier?: TenantTier;
   limit?: number;
@@ -87,8 +86,8 @@ export function tenantManagementRoutes(options: {
    */
   app.get('/', async (c: Context) => {
     const query = c.req.query();
-    const state = query.state as TenantState | undefined;
-    const tier = query.tier as TenantTier | undefined;
+    const _state = query.state as TenantState | undefined;
+    const _tier = query.tier as TenantTier | undefined;
     const limit = query.limit ? parseInt(query.limit) : 100;
     const offset = query.offset ? parseInt(query.offset) : 0;
 
@@ -249,14 +248,14 @@ export function tenantManagementRoutes(options: {
       return c.json({ error: 'isolation is required' }, 400);
     }
 
-    const validModes: IsolationMode[] = ['shared', 'schema', 'database', 'dedicated'];
-    if (body.isolation.database && !validModes.includes(body.isolation.database)) {
+    const validModes: IsolationMode[] = new Set(['shared', 'schema', 'database', 'dedicated']);
+    if (body.isolation.database && !validModes.has(body.isolation.database)) {
       return c.json({ error: `Invalid database isolation mode: ${body.isolation.database}` }, 400);
     }
-    if (body.isolation.bucket && !validModes.includes(body.isolation.bucket)) {
+    if (body.isolation.bucket && !validModes.has(body.isolation.bucket)) {
       return c.json({ error: `Invalid bucket isolation mode: ${body.isolation.bucket}` }, 400);
     }
-    if (body.isolation.cache && !validModes.includes(body.isolation.cache)) {
+    if (body.isolation.cache && !validModes.has(body.isolation.cache)) {
       return c.json({ error: `Invalid cache isolation mode: ${body.isolation.cache}` }, 400);
     }
 

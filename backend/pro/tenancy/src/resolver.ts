@@ -11,7 +11,6 @@ import {
   TenantNotFoundError,
   TenantNotReadyError,
   TenantDisabledError,
-  CacheExpiredError,
 } from "./errors.js";
 
 /**

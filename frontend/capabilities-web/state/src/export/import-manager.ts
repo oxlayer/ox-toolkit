@@ -183,7 +183,7 @@ export class ImportManager<W = Record<string, unknown>, T = Record<string, unkno
    * This is a placeholder - apps should implement their own workspace storage logic.
    * The addWorkspace function is used as a proxy to check if workspaces exist.
    */
-  private getLocalWorkspaces(addWorkspace: (workspace: W) => void): W[] {
+  private getLocalWorkspaces(_addWorkspace: (workspace: W) => void): W[] {
     // This is a simplified implementation
     // In a real app, you'd have a proper workspace store
     return [];

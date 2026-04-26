@@ -284,7 +284,7 @@ export function createRRuleStrategy(): (
   return (millis: number, opts: any, _jobName: string) => {
     // This would require 'rrule' package to be installed
     // Implementation provided as reference for custom strategies
-    const currentDate =
+    const _currentDate =
       opts.startDate && new Date(opts.startDate) > new Date(millis)
         ? new Date(opts.startDate)
         : new Date(millis);

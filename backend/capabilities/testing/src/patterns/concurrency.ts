@@ -30,7 +30,7 @@ export type AppResult<T> =
   | { success: true; data: T }
   | { success: false; error: { message: string; code?: string } };
 
-export interface RaceConditionTestOptions<TInput, TOutput> {
+export interface RaceConditionTestOptions<_TInput, TOutput> {
   /**
    * Setup test data and return the entity ID
    */
@@ -62,8 +62,8 @@ export interface RaceConditionTestOptions<TInput, TOutput> {
  *
  * Run these tests in your test framework to verify concurrent operation safety.
  */
-export function raceConditionTests<TInput, TOutput>(
-  options: RaceConditionTestOptions<TInput, TOutput>
+export function raceConditionTests<_TInput, TOutput>(
+  _options: RaceConditionTestOptions<_TInput, TOutput>
 ): void {
   throw new Error(
     'raceConditionTests is a template. Import this function and call it within ' +
@@ -71,7 +71,7 @@ export function raceConditionTests<TInput, TOutput>(
   );
 }
 
-export interface IdempotencyTestOptions<TInput, TOutput> {
+export interface IdempotencyTestOptions<_TInput, TOutput> {
   /**
    * Setup test data
    */
@@ -101,8 +101,8 @@ export interface IdempotencyTestOptions<TInput, TOutput> {
 /**
  * Test definitions for idempotency
  */
-export function idempotencyTests<TInput, TOutput>(
-  options: IdempotencyTestOptions<TInput, TOutput>
+export function idempotencyTests<_TInput, TOutput>(
+  _options: IdempotencyTestOptions<_TInput, TOutput>
 ): void {
   throw new Error(
     'idempotencyTests is a template. Import this function and call it within ' +
@@ -110,7 +110,7 @@ export function idempotencyTests<TInput, TOutput>(
   );
 }
 
-export interface StressTestOptions<TInput, TOutput> {
+export interface StressTestOptions<_TInput, TOutput> {
   /**
    * Create a use case
    */
@@ -135,8 +135,8 @@ export interface StressTestOptions<TInput, TOutput> {
 /**
  * Test definitions for stress testing
  */
-export function stressTests<TInput, TOutput>(
-  options: StressTestOptions<TInput, TOutput>
+export function stressTests<_TInput, TOutput>(
+  _options: StressTestOptions<_TInput, TOutput>
 ): void {
   throw new Error(
     'stressTests is a template. Import this function and call it within ' +
@@ -144,7 +144,7 @@ export function stressTests<TInput, TOutput>(
   );
 }
 
-export interface FaultToleranceTestOptions<TInput, TOutput> {
+export interface FaultToleranceTestOptions<_TInput, TOutput> {
   /**
    * Setup test data
    */
@@ -169,8 +169,8 @@ export interface FaultToleranceTestOptions<TInput, TOutput> {
 /**
  * Test definitions for fault tolerance
  */
-export function faultToleranceTests<TInput, TOutput>(
-  options: FaultToleranceTestOptions<TInput, TOutput>
+export function faultToleranceTests<_TInput, TOutput>(
+  _options: FaultToleranceTestOptions<_TInput, TOutput>
 ): void {
   throw new Error(
     'faultToleranceTests is a template. Import this function and call it within ' +

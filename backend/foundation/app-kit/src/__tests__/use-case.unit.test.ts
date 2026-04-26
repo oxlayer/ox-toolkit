@@ -47,7 +47,7 @@ describe('Use Case Patterns', () => {
 
   // Test implementation of CommandUseCase
   class DeleteTodoUseCase implements CommandUseCase<{ id: string }> {
-    async execute(input: { id: string }): Promise<void> {
+    async execute(_input: { id: string }): Promise<void> {
       // Delete logic here
     }
   }
@@ -192,7 +192,7 @@ describe('Use Case Patterns', () => {
       let sideEffectExecuted = false;
 
       class SideEffectCommandUseCase implements CommandUseCase<{ id: string }> {
-        async execute(input: { id: string }): Promise<void> {
+        async execute(_input: { id: string }): Promise<void> {
           sideEffectExecuted = true;
         }
       }
@@ -267,7 +267,7 @@ describe('Use Case Patterns', () => {
       }
 
       const validate = new ValidateUseCase();
-      const double = new DoubleUseCase();
+      const _double = new DoubleUseCase();
 
       const validationResult = await validate.execute({ value: -5 });
       expect(validationResult.isErr()).toBe(true);

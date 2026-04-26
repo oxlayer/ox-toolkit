@@ -1,5 +1,5 @@
 import { S3Client as AwsS3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, DeleteObjectsCommand, HeadObjectCommand, CopyObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
-import type { S3Config, UploadOptions, UploadResult, DownloadOptions, DownloadResult, ListOptions, ListResult, PresignedUrlOptions } from './types.js';
+import type { S3Config, UploadOptions, UploadResult, DownloadOptions, DownloadResult, ListOptions, ListResult, _PresignedUrlOptions } from './types.js';
 
 /**
  * S3 client using AWS SDK v3

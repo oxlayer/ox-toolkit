@@ -6,7 +6,7 @@
  * Generic workspace data management - apps define their own entity types.
  */
 
-import { observable, syncState, Observable } from '@legendapp/state';
+import { observable, syncState } from '@legendapp/state';
 import { synced } from '@legendapp/state/sync';
 import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/local-storage';
 import type { WorkspaceData } from '../types';

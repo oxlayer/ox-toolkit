@@ -57,7 +57,7 @@ program
   .argument('[project-name]', 'Name of the project')
   .option('-d, --defaults', 'Use default options')
   .option('-t, --template <name>', 'Template to use (base, tenancy)')
-  .action(async (projectName?: string, options) => {
+  .action(async (projectName: string | undefined, options) => {
     try {
       await createBackend(projectName, options);
     } catch (error) {

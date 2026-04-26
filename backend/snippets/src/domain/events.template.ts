@@ -112,9 +112,7 @@ export abstract class LifecycleEventTemplate<TPayload extends { aggregateId: str
    */
   abstract readonly aggregateType: string;
 
-  constructor(payload: TPayload, metadata?: { correlationId?: string; causationId?: string }) {
-    super(payload, metadata);
-  }
+  
 }
 
 /**

@@ -2,7 +2,7 @@
  * Blueprint system for reusable realm configurations
  */
 
-import type { BlueprintConfig, ClientConfig, KeycloakBootstrapConfig } from '../types/config.js';
+import type { BlueprintConfig, _ClientConfig, KeycloakBootstrapConfig } from '../types/config.js';
 import type { ClientTemplate } from '../types/config.js';
 import { PLATFORM_REALM_MAPPERS, CLIENT_REALM_MAPPERS } from './protocol-mappers.js';
 

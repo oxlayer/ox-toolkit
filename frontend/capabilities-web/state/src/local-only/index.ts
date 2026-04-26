@@ -125,7 +125,7 @@ export function initLocalOnlyMode(config: LocalOnlyConfig): void {
  */
 export async function exportLocalWorkspace(
   workspaceId: string,
-  options: LocalExportOptions = {}
+  _options: LocalExportOptions = {}
 ): Promise<WorkspaceExport> {
   console.log('[LocalOnly] Exporting workspace:', workspaceId);
 
@@ -134,13 +134,13 @@ export async function exportLocalWorkspace(
 
   // Generate export data
   const exportData = await exportManager.exportWorkspace(workspaceId, {
-    getWorkspace: (id: string) => {
+    getWorkspace: (_id: string) => {
       // In local-only mode, workspace should be in local storage
       // The caller can provide a getWorkspace function, or we return null
       // and rely on the workspace data export
       return null;
     },
-    getWorkspaceData: (id: string) => {
+    getWorkspaceData: (_id: string) => {
       // In local-only mode, get data from local storage
       // This would be provided by the app or use pureStorage
       return null;
@@ -187,7 +187,7 @@ export async function importLocalWorkspace(
   }
 
   // Lazy-load import manager
-  const { importManager } = require('../export/import-manager');
+  const { _importManager } = require('../export/import-manager');
 
   try {
     // Import would use the importManager but it requires more setup
@@ -306,7 +306,7 @@ export function exportToJson(exportData: WorkspaceExport): string {
 export function importFromJson(jsonString: string): WorkspaceExport {
   try {
     return JSON.parse(jsonString) as WorkspaceExport;
-  } catch (error) {
+  } catch (_error) {
     throw new Error('Invalid export JSON format');
   }
 }

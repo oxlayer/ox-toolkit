@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
-import { DatabasePool, type DatabaseConnectionConfig, type ConnectionResult } from '../database-pool';
+import { DatabasePool, type DatabaseConnectionConfig, type _ConnectionResult } from '../database-pool';
 
 // Mock postgres
 const mockEnd = jest.fn();

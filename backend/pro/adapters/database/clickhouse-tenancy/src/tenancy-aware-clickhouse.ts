@@ -148,16 +148,16 @@ class SharedClickHouseClient implements ClickHouseClient {
     }
   ) { }
 
-  async query<T>(query: string, options?: QueryOptions): Promise<QueryResult<T>> {
+  async query<T>(query: string, _options?: QueryOptions): Promise<QueryResult<T>> {
     // Inject tenant_id filter into WHERE clause
-    const filteredQuery = this.injectTenantFilter(query);
+    const _filteredQuery = this.injectTenantFilter(query);
     // TODO: Execute query on ClickHouse
     return { data: [], rows: 0 };
   }
 
   async insert(table: string, data: Record<string, any>[]): Promise<void> {
     // Automatically add tenant_id to data
-    const enrichedData = data.map(row => ({
+    const _enrichedData = data.map(row => ({
       ...row,
       tenant_id: this.config.tenantId,
     }));
@@ -204,7 +204,7 @@ class SharedClickHouseClient implements ClickHouseClient {
  * Uses tenant-specific ClickHouse database.
  * Used for dedicated database isolation strategy (B2B).
  */
-class DedicatedClickHouseClient implements ClickHouseClient {
+class _DedicatedClickHouseClient implements ClickHouseClient {
   constructor(
     private config: {
       tenantId: string;
@@ -216,12 +216,12 @@ class DedicatedClickHouseClient implements ClickHouseClient {
     }
   ) { }
 
-  async query<T>(query: string, options?: QueryOptions): Promise<QueryResult<T>> {
+  async query<T>(_query: string, _options?: QueryOptions): Promise<QueryResult<T>> {
     // TODO: Execute query on tenant's ClickHouse database
     return { data: [], rows: 0 };
   }
 
-  async insert(table: string, data: Record<string, any>[]): Promise<void> {
+  async insert(_table: string, _data: Record<string, any>[]): Promise<void> {
     // TODO: Insert into tenant's ClickHouse database
     // No tenant_id injection needed - database is isolated
   }

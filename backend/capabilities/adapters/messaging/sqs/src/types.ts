@@ -1,4 +1,4 @@
-import type { SQSClientConfig } from '@aws-sdk/client-sqs';
+import type { _SQSClientConfig } from '@aws-sdk/client-sqs';
 
 /**
  * SQS connection configuration

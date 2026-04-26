@@ -29,7 +29,6 @@
 
 import { AsyncLocalStorage } from 'node:async_hooks';
 import type { TenantConfig } from './types.js';
-import { TenantNotFoundError, TenantNotReadyError } from './errors.js';
 
 /**
  * Keycloak Tenant Context from JWT
@@ -201,7 +200,7 @@ export class KeycloakTenantResolver {
    * @returns Tenant configuration
    * @throws Error if tenant context is not set
    */
-  async resolve(tenantId: string): Promise<TenantConfig> {
+  async resolve(_tenantId: string): Promise<TenantConfig> {
     const context = requireKeycloakContext();
 
     // Use workspace ID from context as the effective tenant ID

@@ -18,8 +18,8 @@ import {
   type ILeadRepository,
   type IUserRepositoryRef,
   type CrossChannelLink,
-  LinkedChannel,
-  LinkMethod,
+  _LinkedChannel,
+  _LinkMethod,
 } from '@oxlayer/snippets';
 
 // ============================================================================
@@ -64,7 +64,7 @@ class MockCrossChannelLinkRepository implements CrossChannelLinkRepository {
 
     if (input.email) {
       results = results.filter(l => {
-        const leadId = l.primaryIdentityId;
+        const _leadId = l.primaryIdentityId;
         // This would need actual lead/user lookup - simplified for test
         return l.linkEvidence.details?.matchValue === input.email;
       });

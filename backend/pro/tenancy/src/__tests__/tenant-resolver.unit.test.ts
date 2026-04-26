@@ -4,7 +4,7 @@
  * Tests tenant resolution, caching, and error handling.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
+import { describe, it, expect, beforeEach } from 'bun:test';
 import {
   InMemoryTenantResolver,
   CachedTenantResolver,
@@ -218,7 +218,7 @@ describe('Tenant Resolver', () => {
     it('should not cache non-ready tenants', async () => {
       try {
         await resolver.resolve('tenant-2');
-      } catch (e) {
+      } catch (_e) {
         // Expected to throw
       }
 

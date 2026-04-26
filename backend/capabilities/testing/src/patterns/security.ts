@@ -176,7 +176,7 @@ export const DOS_PATTERNS: SecurityPattern[] = [
  * ```
  */
 export function describeSecurityTests<TInput, TOutput>(
-  options: SecurityTestPatternOptions<TInput, TOutput>
+  _options: SecurityTestPatternOptions<TInput, TOutput>
 ): void {
   // Note: This is a template function. In your test files, you'll use the patterns
   // directly with your test framework (Vitest, Jest, etc.).
@@ -254,7 +254,7 @@ export interface ValidationTestOptions<TInput, TOutput> {
  * ```
  */
 export function createValidationTests<TInput, TOutput>(
-  options: ValidationTestOptions<TInput, TOutput>
+  _options: ValidationTestOptions<TInput, TOutput>
 ): void {
   // Note: This is a template function. In your test files, you'll use the patterns
   // directly with your test framework.

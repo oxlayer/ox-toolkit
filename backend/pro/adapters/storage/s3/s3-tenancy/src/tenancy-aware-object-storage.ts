@@ -240,25 +240,25 @@ export class TenancyAwareObjectStorage implements StorageResolver<ObjectStorageC
     return prefixedKey.substring(this.config.prefix.length + 1);
   }
 
-  async upload(key: string, body: Buffer | string, options?: UploadOptions): Promise<UploadResult> {
+  async upload(key: string, _body: Buffer | string, _options?: UploadOptions): Promise<UploadResult> {
     const prefixedKey = this.prefixKey(key);
     // TODO: Upload to Object Storage
     return { key: prefixedKey };
   }
 
   async download(key: string): Promise<DownloadResult> {
-    const prefixedKey = this.prefixKey(key);
+    const _prefixedKey = this.prefixKey(key);
     // TODO: Download from Object Storage
     return { key, body: Buffer.from('') };
   }
 
   async delete(key: string): Promise<void> {
-    const prefixedKey = this.prefixKey(key);
+    const _prefixedKey = this.prefixKey(key);
     // TODO: Delete from Object Storage
   }
 
   async list(prefix?: string): Promise<ListResult> {
-    const fullPrefix = prefix ? this.prefixKey(prefix) : this.config.prefix;
+    const _fullPrefix = prefix ? this.prefixKey(prefix) : this.config.prefix;
       // TODO: List objects from Object Storage with prefix
     return { objects: [] };
   }
@@ -290,7 +290,7 @@ class DedicatedObjectStorageClient implements ObjectStorageClient {
     }
   ) { }
 
-  async upload(key: string, body: Buffer | string, options?: UploadOptions): Promise<UploadResult> {
+  async upload(key: string, _body: Buffer | string, _options?: UploadOptions): Promise<UploadResult> {
     // TODO: Upload to Object Storage using tenant credentials
     return { key };
   }
@@ -300,11 +300,11 @@ class DedicatedObjectStorageClient implements ObjectStorageClient {
     return { key, body: Buffer.from('') };
   }
 
-  async delete(key: string): Promise<void> {
+  async delete(_key: string): Promise<void> {
     // TODO: Delete from Object Storage
   }
 
-  async list(prefix?: string): Promise<ListResult> {
+  async list(_prefix?: string): Promise<ListResult> {
     // TODO: List objects from Object Storage
     return { objects: [] };
   }

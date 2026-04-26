@@ -212,7 +212,7 @@ export function getEnvVarAsJson<const T>(
 
   try {
     return JSON.parse(value) as T;
-  } catch (error) {
+  } catch (_error) {
     throw new Error(
       `Environment variable '${key}' is not valid JSON: ${value}`
     );

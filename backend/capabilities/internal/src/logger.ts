@@ -259,13 +259,13 @@ export class Logger {
     }
 
     // Log additional metadata (excluding standard fields)
-    const standardFields = ['timestamp', 'level', 'context', 'message', 'error'];
-    const hasExtra = Object.keys(entry).some((key) => !standardFields.includes(key));
+    const standardFields = new Set(['timestamp', 'level', 'context', 'message', 'error']);
+    const hasExtra = Object.keys(entry).some((key) => !standardFields.has(key));
 
     if (hasExtra) {
       const extra: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(entry)) {
-        if (!standardFields.includes(key)) {
+        if (!standardFields.has(key)) {
           extra[key] = value;
         }
       }

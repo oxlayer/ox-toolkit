@@ -8,8 +8,7 @@ import {
 } from './cache.js';
 import {
     CacheConfig,
-    defaultCacheConfig,
-    EvictionPolicy
+    defaultCacheConfig
 } from './policies.js';
 import { defaultKeyBuilder } from './cache-key.js';
 
@@ -105,7 +104,7 @@ export class DefaultCache implements Cache {
         const namespacedKey = this.getNamespacedKey(key);
         try {
             return await this.store.exists(namespacedKey);
-        } catch (error) {
+        } catch (_error) {
             return false;
         }
     }

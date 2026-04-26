@@ -7,7 +7,16 @@
     "style": "off"
   },
   "rules": {
-    "no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
     "no-restricted-properties": [
       "error",
       {
@@ -18,7 +27,9 @@
     ],
     "no-console": "off",
     "typescript/no-explicit-any": "warn",
-    "typescript/no-non-null-assertion": "warn"
+    "typescript/no-non-null-assertion": "warn",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-uses-react": "off"
   },
   "overrides": [
     {
@@ -49,6 +60,8 @@
     "**/*.d.ts",
     "**/*.min.js",
     "**/templates/**",
+    "**/*.template.ts",
+    "**/__tests__/**",
     "**/.specify/**"
   ]
 }

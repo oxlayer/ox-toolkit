@@ -100,7 +100,7 @@ class SharedQuickwitClient implements SearchClient {
     }
   ) { }
 
-  async search(index: string, query: string, options?: SearchOptions): Promise<SearchResult> {
+  async search(index: string, query: string, _options?: SearchOptions): Promise<SearchResult> {
     // Add tenant_id filter to query
     const tenantQuery = query.includes('tenant_id')
       ? query
@@ -113,7 +113,7 @@ class SharedQuickwitClient implements SearchClient {
 
   async index(index: string, documents: Document[]): Promise<void> {
     // Automatically add tenant_id to documents
-    const enrichedDocs = documents.map(doc => ({
+    const _enrichedDocs = documents.map(doc => ({
       ...doc,
       tags: {
         ...doc.tags,
@@ -136,13 +136,13 @@ class DedicatedQuickwitClient implements SearchClient {
     }
   ) { }
 
-  async search(index: string, query: string, options?: SearchOptions): Promise<SearchResult> {
+  async search(index: string, query: string, _options?: SearchOptions): Promise<SearchResult> {
     // TODO: Search in tenant's dedicated index
     console.log(`[Quickwit-${this.config.tenantId}] Searching ${this.config.index}: ${query}`);
     return { hits: [], totalHits: 0, latency: 0 };
   }
 
-  async index(index: string, documents: Document[]): Promise<void> {
+  async index(_index: string, _documents: Document[]): Promise<void> {
     // TODO: Index in tenant's dedicated index
     // No tenant_id injection needed - index is isolated
   }

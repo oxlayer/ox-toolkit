@@ -1,7 +1,7 @@
 import type { Context, Next } from 'hono';
 import { TelemetryClient } from './client.js';
 import type { OpenTelemetryMiddlewareOptions } from './types.js';
-import { SpanStatusCode, trace, type Span } from '@opentelemetry/api';
+import { SpanStatusCode, type Span } from '@opentelemetry/api';
 
 export interface TelemetryVariables {
   telemetry: TelemetryClient;

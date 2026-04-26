@@ -4,8 +4,8 @@
  * Tests Row-Level Security management for multi-tenant PostgreSQL databases.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
-import { RLSManager, createRLSManager, type RLSPolicyConfig, type TableMetadata } from '../rls-manager';
+import { describe, it, expect, beforeEach } from 'bun:test';
+import { RLSManager, createRLSManager, type RLSPolicyConfig, type _TableMetadata } from '../rls-manager';
 
 // Mock Database
 const createMockDatabase = () => {
@@ -64,7 +64,7 @@ const createMockDatabase = () => {
 
     if (query.includes('pg_policies')) {
       const result: any[] = [];
-      for (const [table, tablePolicies] of policies.entries()) {
+      for (const [_table, tablePolicies] of policies.entries()) {
         for (const policy of tablePolicies) {
           result.push({ policyname: policy });
         }

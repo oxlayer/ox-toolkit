@@ -75,7 +75,7 @@ export class RabbitMQEventBus implements EventBus {
     // Validate URL format
     try {
       new URL(config.url);
-    } catch (error) {
+    } catch (_error) {
       throw new Error(`[RabbitMQEventBus] Invalid URL format: ${config.url}`);
     }
 

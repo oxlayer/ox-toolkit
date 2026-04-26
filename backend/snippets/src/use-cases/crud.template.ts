@@ -265,7 +265,7 @@ export abstract class UpdateUseCaseTemplate<
   }
 
   protected trackChanges(input: TInput): Record<string, unknown> {
-    const { id, ...changes } = input as any;
+    const { _id, ...changes } = input as any;
     return changes;
   }
 

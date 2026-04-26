@@ -1,4 +1,4 @@
-import type { Filter, Sort, UpdateFilter } from 'mongodb';
+import type { Filter, Sort, _UpdateFilter } from 'mongodb';
 
 /**
  * MongoDB connection configuration

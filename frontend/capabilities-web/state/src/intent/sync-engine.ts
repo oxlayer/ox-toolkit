@@ -24,7 +24,6 @@
  */
 
 import { observable, batch } from '@legendapp/state';
-import type { DeliveryStatus } from '../types';
 import type { IntentLogEntry } from './intent-log';
 import type { IntentPolicy } from './policy';
 import {

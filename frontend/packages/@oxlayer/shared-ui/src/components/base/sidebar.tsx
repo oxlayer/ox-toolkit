@@ -85,6 +85,7 @@ function SidebarProvider({
       }
 
       // This sets the cookie to keep the sidebar state.
+      // oxlint-disable-next-line no-document-cookie -- intentional sync write for SSR persistence
       document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
     },
     [setOpenProp, open]

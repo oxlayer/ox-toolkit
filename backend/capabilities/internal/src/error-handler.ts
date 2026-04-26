@@ -114,8 +114,8 @@ export function sanitizeError(
  * Always returns generic messages - actual errors are logged only.
  */
 export function getUserMessage(
-  error: Error | unknown,
-  options: ErrorHandlerOptions
+  _error: Error | unknown,
+  _options: ErrorHandlerOptions
 ): string {
   // Always use generic messages - never leak error details to clients
   // Logs contain the full error details

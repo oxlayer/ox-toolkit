@@ -38,7 +38,7 @@ function walkDir(dir: string, baseDir: string = dir): { path: string; content: s
 function generateEmbeddedDocs() {
   const files = walkDir(DOCS_DIR);
 
-  const imports: string[] = [];
+  const _imports: string[] = [];
   const exports: string[] = [];
 
   for (const file of files) {

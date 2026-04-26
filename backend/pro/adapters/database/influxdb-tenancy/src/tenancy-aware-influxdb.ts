@@ -41,9 +41,7 @@ import type {
   TenantConfig,
 } from '@oxlayer/pro-tenancy';
 import {
-  TenantNotFoundError,
-  UnsupportedIsolationModeError,
-} from '@oxlayer/pro-tenancy';
+  } from '@oxlayer/pro-tenancy';
 
 /**
  * InfluxDB routing configuration for a tenant

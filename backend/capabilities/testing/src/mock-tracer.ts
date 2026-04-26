@@ -115,7 +115,7 @@ export class MockTracer {
    * span.end();
    * ```
    */
-  startSpan(name: string, options?: MockSpanOptions): MockSpan {
+  startSpan(_name: string, _options?: MockSpanOptions): MockSpan {
     this.spanCounter++;
     return {
       setAttribute: () => { },
