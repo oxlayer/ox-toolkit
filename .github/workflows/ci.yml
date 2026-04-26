@@ -60,7 +60,7 @@ jobs:
         run: bun run test
 
       - name: Build
-        run: turbo run build --filter='!website'
+        run: bunx turbo run build --filter='!website'
         # docs/website (Docusaurus) build is broken on the Node version the
         # bun-action ships with (ProgressPlugin schema incompat). Re-enable
         # by removing the filter once Docusaurus / Node align.
