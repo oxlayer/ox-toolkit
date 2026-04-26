@@ -1,0 +1,26 @@
+Business Source License 1.1
+
+Licensor: OxLayer
+Licensed Work: OxLayer Pro (the contents of this `backend/pro/` directory and
+               its subdirectories)
+Additional Use Grant: You may use the Licensed Work for non-production
+                      purposes (development, testing, evaluation), and for
+                      production use in a single deployment serving a single
+                      organization with up to 100 monthly active end users.
+                      For any other production use, including multi-tenant
+                      offerings, managed services, or use exceeding the above
+                      limit, you must obtain a commercial license from the
+                      Licensor.
+Change Date: Four years from the date each file was first published under
+             this License.
+Change License: Apache License, Version 2.0
+
+For information about alternative licensing arrangements for the Licensed
+Work, please contact the Licensor.
+
+The full text of the Business Source License 1.1 is available at:
+https://mariadb.com/bsl11/
+
+Notice: The Business Source License (this document, or the "License") is not
+an Open Source license. However, the Licensed Work will eventually be made
+available under an Open Source license, as stated in this License.
