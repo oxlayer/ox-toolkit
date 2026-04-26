@@ -1,13 +1,9 @@
 {
-  "name": "oxlayer",
+  "name": "ox-toolkit",
   "version": "0.0.1",
   "private": true,
   "packageManager": "bun@1.2.13",
   "workspaces": [
-    "apps/*",
-    "apps/*/backend/*",
-    "apps/*/frontend/*",
-    "apps/*/packages/*",
     "backend",
     "backend/foundation",
     "backend/foundation/*",
@@ -31,9 +27,6 @@
   ],
   "scripts": {
     "infra": "cd ./infra_oxlayer && docker-compose up -d",
-    "keycloak": "node ./apps/control-panel/backend/api/node_modules/@oxlayer/cli-keycloak/dist/bin/index.js bootstrap --config ./apps/control-panel/backend/api/keycloak.config.json",
-    "panel": "bun --filter @oxlayer/control-panel-dashboard dev",
-    "panel:api": "bun --filter @oxlayer/control-panel-api dev",
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "oxlint && eslint .",
@@ -48,10 +41,6 @@
     "cli:release": "cd ./cli && ./release.sh",
     "channels": "turbo run build --filter='./channels/**' --filter='!./channels/release/**'",
     "channels:release": "cd ./channels && ./release.sh",
-    "sdk:build-scripts": "tsup --config scripts/sdk-release/tsup.config.ts",
-    "sdk:version": "node scripts/sdk-release/dist/generate-version.js",
-    "sdk:manifest": "node scripts/sdk-release/dist/generate-manifest.js",
-    "sdk:release": "bun run sdk:build-scripts && node scripts/sdk-release/dist/generate-manifest.js $(bun run sdk:version)",
     "prepare": "lefthook install"
   },
   "devDependencies": {
