@@ -62,18 +62,6 @@ Filters for `bun --filter` / `turbo --filter`:
 Start: `bun run infra` (delegates to docker-compose).
 Stop:  `cd infra_oxlayer && docker-compose down`.
 
-## SDK release pipeline (`scripts/sdk-release/`)
-
-| Step       | Command                                  | Output                                  |
-|------------|------------------------------------------|------------------------------------------|
-| Build scripts | `bun run sdk:build-scripts`           | `scripts/sdk-release/dist/`              |
-| Version    | `bun run sdk:version`                    | stdout: `2026_MM_DD_NNN`                 |
-| Manifest   | `bun run sdk:manifest`                   | `release-sdk/<version>/manifest.json`    |
-| Full       | `bun run sdk:release`                    | runs all three                           |
-
-GitHub Actions: `.github/workflows/sdk-release.yml` (manual + push to main
-on backend/frontend/cli/channels paths).
-
 ## MCP server (`mcp_oxlayer/`)
 
 Embedded docs server. Bundled at `mcp_oxlayer/dist/index.js`. Configure
@@ -109,8 +97,6 @@ False positives the `cortex audit` verb should ignore:
 - **`.claude/rules/oxlayer-ops.md`** — this file. Mentions forbidden
   identifiers in documentation form.
 - **`.claude/skills/cortex/SKILL.md`** — documents the audit regex.
-- **`backend/scripts/provision-tenant.ts:AKIAIOSFODNN7EXAMPLE`** —
-  AWS-official example access key. Not a real credential.
 - **`/home/linuxbrew/`** — Linuxbrew's default install prefix. Not a
   personal path.
 - **`bun.lock`, `pnpm-lock.yaml`** (if present) — lockfiles. Hashes
@@ -123,22 +109,14 @@ The `audit` verb passes these as `--exclude` flags to grep.
 
 ## Deploy targets
 
-OxLayer is a toolkit; the public repo doesn't ship deploys. The
-`apps/control-panel/` reference implementation can optionally be
-deployed by operators. Configure deploy targets here when one is
-provisioned. Until then, `cortex deploy` aborts with
-"no deploy target configured".
+OxLayer toolkit is a library — it doesn't ship deploys of its own.
+Consumer repos (your apps) declare their own deploy targets. Until a
+target is configured here, `cortex deploy` aborts with "no deploy
+target configured".
 
 | Target name | Type   | Endpoint / namespace | Notes                          |
 |-------------|--------|-----------------------|--------------------------------|
-| _(none)_    | —      | —                     | configure in this table first  |
-
-Example future entry:
-
-```
-| panel-prd   | docker | docker compose -f apps/control-panel/docker-compose.prd.yml | local-only demo |
-| panel-fly   | fly.io | apps/control-panel — flyctl deploy                          | requires FLY_API_TOKEN |
-```
+| _(none)_    | —      | —                     | configure per-consumer-repo    |
 
 ## Benchmark targets
 

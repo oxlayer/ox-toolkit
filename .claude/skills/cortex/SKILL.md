@@ -1,7 +1,7 @@
 ---
 name: "cortex"
-description: "OxLayer dev pipeline skill — verbs: setup, check, test, build, bench, infra, sdk, mcp, publish, deploy, logs, actions, audit, packages. Read 'cortex:<verb>' as one namespaced surface."
-argument-hint: "<verb> [args] — verb ∈ {setup|check|test|build|bench|infra|sdk|mcp|publish|deploy|logs|actions|audit|packages|help}"
+description: "OxLayer dev pipeline skill — verbs: setup, check, test, build, bench, infra, mcp, publish, deploy, logs, actions, audit, packages. Read 'cortex:<verb>' as one namespaced surface."
+argument-hint: "<verb> [args] — verb ∈ {setup|check|test|build|bench|infra|mcp|publish|deploy|logs|actions|audit|packages|help}"
 compatibility: "OxLayer monorepo only — depends on .claude/rules/oxlayer-ops.md."
 metadata:
   source: "specs/_template/"
@@ -22,7 +22,6 @@ cortex test      [--filter=<glob>] [--package=<name>]
 cortex build     [--filter=<glob>] [--force]
 cortex bench     [--package=<name>] [--baseline=<ref>]
 cortex infra     <up|down|status|logs <service>>
-cortex sdk       <version|manifest|release>
 cortex mcp       <serve|build|docs>
 cortex publish   <local|npm> [--package=<name>] [--dry-run]
 cortex deploy    [--check | --logs | --watch | --restart] --target=<name>
@@ -244,44 +243,6 @@ cd infra_oxlayer && docker-compose logs <service> --since=<since> --tail=200 [-f
 For `--follow`: `run_in_background: true`. Return shell id +
 `BashOutput` instructions.
 
-## Verb: `sdk`
-
-Wrapper around the SDK release pipeline.
-
-```
-cortex sdk version       — print next version (no side effects)
-cortex sdk manifest      — generate manifest.json for current version
-cortex sdk release       — full pipeline (write op — confirm)
-```
-
-### `version`
-
-```bash
-bun run sdk:version
-```
-
-Outputs `2026_MM_DD_NNN`. Read-only — safe.
-
-### `manifest`
-
-```bash
-bun run sdk:manifest
-```
-
-Generates `release-sdk/<version>/manifest.json`. Show the file path +
-size summary.
-
-### `release`
-
-Confirm first ("Build and stage SDK release `<version>`? yes/no"). Then:
-
-```bash
-bun run sdk:release
-```
-
-After: print artifact paths + suggest `git push origin --tags` if a
-tag was created.
-
 ## Verb: `mcp`
 
 Operations on the MCP server (`mcp_oxlayer/`).
@@ -386,16 +347,16 @@ target is configured there, every invocation aborts with:
 > No deploy target configured. Add an entry to
 > `.claude/rules/oxlayer-ops.md` § Deploy targets.
 
-OxLayer is a toolkit; `apps/control-panel/` is the only deployable
-reference impl. The verb is intentionally generic so adding a target
-is config-only.
+OxLayer toolkit is a library — it doesn't ship deploys of its own. The
+verb is intentionally generic so any consumer repo can extend it by
+adding entries to `oxlayer-ops.md § Deploy targets`.
 
 ```
-cortex deploy --target=panel-prd                    — default action: --check
-cortex deploy --target=panel-prd --check            — "did the latest deploy work?"
-cortex deploy --target=panel-prd --logs             — failed-step logs from last deploy
-cortex deploy --target=panel-prd --watch            — stream rollout
-cortex deploy --target=panel-prd --restart          — write op (confirms)
+cortex deploy --target=<name>                       — default action: --check
+cortex deploy --target=<name> --check               — "did the latest deploy work?"
+cortex deploy --target=<name> --logs                — failed-step logs from last deploy
+cortex deploy --target=<name> --watch               — stream rollout
+cortex deploy --target=<name> --restart             — write op (confirms)
 ```
 
 ### Resolving target
@@ -638,11 +599,11 @@ should be `"Apache-2.0"` or `"private": true`.
 ## Hard rules
 
 - **Read-only by default.** Write ops are `cortex infra down --volumes`,
-  `cortex sdk release`, `cortex actions rerun`. All confirm before
-  running.
-- **Single source of truth.** Workspace filters, infra ports, SDK
-  pipeline, leak patterns live in `.claude/rules/oxlayer-ops.md`.
-  Read fresh; don't embed.
+  `cortex publish`, `cortex deploy --restart`, `cortex actions rerun`.
+  All confirm before running.
+- **Single source of truth.** Workspace filters, infra ports, leak
+  patterns live in `.claude/rules/oxlayer-ops.md`. Read fresh; don't
+  embed.
 - **No new credentials.** Reuses `gh auth login`, `bun`, `docker`.
   Missing dep → print install command + abort.
 - **Apache↔BSL boundary is sacred.** Don't move code across

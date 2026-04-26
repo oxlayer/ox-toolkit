@@ -1,522 +1,156 @@
-# OxLayer Private SDK Distribution System
+# OxLayer Toolkit
 
-A complete private SDK distribution system for distributing compiled SDK packages with controlled access, capability-based licensing, and automated distribution via CI/CD.
+Node.js + React toolkit for production-grade multi-tenant SaaS applications.
+A monorepo of foundation kits, capabilities, adapters, and a shared UI
+library that consumers (your apps) import as workspace dependencies.
 
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Quick Start](#quick-start)
-- [How It Works](#how-it-works)
-- [SDK Commands Reference](#sdk-commands-reference)
-- [Development](#development)
-- [Deployment](#deployment)
-
----
-
-## Overview
-
-The OxLayer SDK Distribution System enables you to:
-
-- **Distribute compiled SDK packages** without exposing source code
-- **Control access** via API keys and organization-based licensing
-- **Define capability limits** (not boolean on/off flags) for different license tiers
-- **Automate releases** via GitHub Actions with R2/S3 storage
-- **Manage everything** through a web control panel
-
-### What Gets Distributed
-
-| Package Type | Description |
-|--------------|-------------|
-| **Backend SDK** | Foundation kits, capabilities, proprietary adapters |
-| **Frontend SDK** | State management, UI components, web adapters |
-| **CLI Tools** | `create-backend`, `create-frontend` scaffolding tools |
-| **Channels** | Web, WhatsApp communication adapters |
-
----
-
-## Architecture
+## What's inside
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    GitHub CI/CD Pipeline                    │
-│  • Build all packages → Generate manifest → Upload to R2   │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│              Cloudflare R2 / AWS S3 Storage                 │
-│  /releases/2025_02_08_001/                                  │
-│    ├── manifest.json                                         │
-│    ├── backend-sdk.zip                                       │
-│    ├── frontend-sdk.zip                                      │
-│    └── ...                                                   │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                  oxlayer CLI (Consumers)                     │
-│  $ oxlayer install 2025_02_08_001                            │
-│  $ oxlayer resolve                                           │
-└─────────────────────────────────────────────────────────────┘
-                              ↑
-┌─────────────────────────────────────────────────────────────┐
-│              Control Panel (Web UI)                          │
-│  • Organization & Developer management                       │
-│  • License & API key management                              │
-│  • Capability configuration                                  │
-└─────────────────────────────────────────────────────────────┘
+backend/
+  foundation/       Domain primitives — entities, value objects, repositories,
+                    app/http/persistence/testing kits.  Apache 2.0.
+  capabilities/     Single-responsibility capabilities (auth, cache, queues,
+                    search, telemetry, …) and adapters (Postgres, Redis,
+                    RabbitMQ, …).  Apache 2.0.
+  pro/              Multi-tenant adapters and tenancy primitives.
+                    Business Source License 1.1 — see backend/pro/LICENSE.
+  snippets/         Code templates the create-backend CLI generates.
+frontend/
+  packages/
+    @oxlayer/shared-ui/   Shared React component library.
+    @{acme,globex,initech,template}/ui/   Brand customization examples.
+  capabilities-web/state/ Offline-first sync engine for the browser.
+cli/
+  create-backend/   Project scaffolder (Hono + capabilities + tenancy).
+  create-frontend/  Project scaffolder (React + shared-ui + auth).
+  keycloak/         Keycloak realm bootstrap CLI.
+mcp_oxlayer/        MCP server with embedded architecture docs.
+specs/              Spec-driven development artifacts.
+.specify/           SpecKit scaffolding.
+.claude/            Project rules and skills (cortex skill, oxlayer-ops rules).
 ```
 
----
-
-## Quick Start
-
-### Prerequisites
-
-- Node.js >= 18
-- pnpm >= 9
-- Cloudflare R2 account or AWS S3 bucket
-- PostgreSQL database (for control panel)
-
-### 1. Install Dependencies
+## Quick start
 
 ```bash
-# Install all monorepo dependencies
-pnpm install
+git clone https://github.com/oxlayer/ox-toolkit.git
+cd ox-toolkit
+bun install
+bun run typecheck
+bun run lint
 ```
 
-### 2. Configure Environment
+### Consuming the toolkit from a sibling project
 
-Create `.env` files for each service:
+OxLayer is designed to be consumed via Bun workspace from a sibling clone.
+Layout:
 
-**Control Panel API** (`apps/control-panel/backend/api/.env`):
-```env
-DATABASE_URL=postgresql://user:pass@localhost:5432/oxlayer
-OXLAYER_ENCRYPTION_KEY=your-encryption-key
+```
+~/2027/
+├── oxlayer/ox-toolkit/                  ← this repo
+└── your-org/your-app/                   ← consumer
 ```
 
-**Control Panel Frontend** (`apps/control-panel/frontend/dashboard/.env`):
-```env
-VITE_API_URL=http://localhost:3001
-```
+In your consumer's `package.json`:
 
-**GitHub Secrets** (for CI/CD):
-```yaml
-R2_ACCESS_KEY_ID      # Cloudflare R2 access key
-R2_SECRET_ACCESS_KEY  # Cloudflare R2 secret key
-R2_ENDPOINT           # https://<account_id>.r2.cloudflarestorage.com
-R2_BUCKET_NAME        # Your bucket name
-```
-
-### 3. Start Services
-
-```bash
-# Start Control Panel Backend
-cd apps/control-panel/backend/api
-pnpm dev
-
-# Start Control Panel Frontend (another terminal)
-cd apps/control-panel/frontend/dashboard
-pnpm dev
-```
-
-### 4. Create First Organization
-
-1. Open http://localhost:5173
-2. Click "New Organization"
-3. Configure license tiers and capability limits
-
----
-
-## How It Works
-
-### Release Flow
-
-1. **Trigger Release** → GitHub Action or manual dispatch
-2. **Generate Version** → Auto-increment `YYYY_MM_DD_NNN`
-3. **Build Packages** → Compile backend, frontend, CLI, channels
-4. **Generate Manifest** → Create `manifest.json` with all packages
-5. **Upload to R2/S3** → Store artifacts with signed URLs
-6. **Create GitHub Release** → Tag and release notes
-
-### Installation Flow
-
-1. **Authenticate** → `oxlayer login` (stores API key)
-2. **Resolve Capabilities** → `oxlayer resolve` (shows available features)
-3. **Install SDK** → `oxlayer install 2025_02_08_001`
-4. **Verify Integrity** → SHA256 checksum validation
-5. **Extract to Vendor** → `.capabilities-vendor/VERSION/`
-6. **Run Hooks** → Post-install setup scripts
-
-### Capability Resolution
-
-**❌ Never do this:**
-```typescript
-if (await isLicensed()) {  // Boolean check
-  // Run feature
+```json
+{
+  "workspaces": [
+    "apps/*/*",
+    "packages/*",
+    "../../oxlayer/ox-toolkit/backend/foundation/*",
+    "../../oxlayer/ox-toolkit/backend/capabilities",
+    "../../oxlayer/ox-toolkit/backend/capabilities/*",
+    "../../oxlayer/ox-toolkit/backend/capabilities/adapters/*/*",
+    "../../oxlayer/ox-toolkit/backend/capabilities/telemetry/*",
+    "../../oxlayer/ox-toolkit/backend/pro/tenancy",
+    "../../oxlayer/ox-toolkit/backend/pro/adapters/*/*",
+    "../../oxlayer/ox-toolkit/cli/keycloak",
+    "../../oxlayer/ox-toolkit/frontend/packages/@oxlayer/*"
+  ]
 }
 ```
 
-**✅ Do this instead:**
-```typescript
-const config = await resolveCapabilities({
-  projectId,
-  environment,
-  requested: ['auth', 'storage']
-});
+Then in any of your packages:
 
-// Returns:
+```json
 {
-  auth: {
-    maxRealms: 10,      // Actual limits
-    sso: true,
-    rbac: true
-  },
-  storage: {
-    encryption: true,
-    maxStorageGb: 1000
+  "dependencies": {
+    "@oxlayer/foundation-domain-kit": "workspace:*",
+    "@oxlayer/capabilities-auth": "workspace:*",
+    "@oxlayer/capabilities-adapters-postgres": "workspace:*",
+    "@oxlayer/pro-tenancy": "workspace:*"
   }
 }
-
-// Use limits in code
-if (config.auth.sso) {
-  enableSSO();
-}
-if (realms.length >= config.auth.maxRealms) {
-  throw new Error('Realm limit exceeded');
-}
 ```
 
-### License Tiers
+`bun install` in the consumer resolves the `workspace:*` references via
+filesystem symlink to the sibling clone. Edit toolkit code, save, the
+consumer sees the change immediately.
 
-| Tier | Developers | Projects | Features |
-|------|------------|----------|----------|
-| **Starter** | 5 | 3 | Basic capabilities |
-| **Professional** | 25 | 20 | Advanced features |
-| **Enterprise** | 100 | Unlimited | All features + custom |
+## Tooling
 
----
+| Tool | Why | Version |
+|---|---|---|
+| **Bun** | Package manager + workspace runner | `1.2.13+` |
+| **Turborepo** | Task orchestration with input/output cache | `2.9+` |
+| **Lefthook** | Fast git hooks (pre-commit + pre-push) | `1.13+` |
+| **oxlint** | Rust-based linter, ~50× ESLint | `0.15+` |
+| **eslint** | Flat config with `typescript-eslint` for IDE | `9+` |
 
-## SDK Commands Reference
-
-The `oxlayer` CLI is the primary interface for consumers of your SDK.
-
-### Authentication
-
-#### `oxlayer login`
-
-Authenticate with the OxLayer Control Panel.
+Standard scripts:
 
 ```bash
-oxlayer login
-# Or with key directly:
-oxlayer login --key oxl_kjhsd7832...
+bun run typecheck    # turbo run typecheck across all packages
+bun run lint         # oxlint + eslint
+bun run test         # turbo run test
+bun run build        # turbo run build with topological order
 ```
 
-**Options:**
-- `-k, --key <key>` - API key (prompts if not provided)
-- `-e, --environment <env>` - Environment (default: development)
+## Spec-driven development
 
-#### `oxlayer logout`
+Substantial work starts in [`specs/`](./specs/README.md) using
+[SpecKit](https://github.com/github/spec-kit). Slash commands for Claude
+Code: `/speckit-constitution`, `/speckit-specify`, `/speckit-plan`,
+`/speckit-tasks`, `/speckit-implement`. Live in [`.claude/skills/`](./.claude/skills/).
 
-Remove stored API key.
+The non-negotiable engineering principles live in
+[`.specify/memory/constitution.md`](./.specify/memory/constitution.md).
 
-```bash
-oxlayer logout
-```
+## Cortex skill
 
----
-
-### Status & Diagnostics
-
-#### `oxlayer status`
-
-Show installation and authentication status.
-
-```bash
-oxlayer status
-oxlayer status --verbose
-```
-
-**Output:**
-```
-OxLayer SDK Status
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-✓ Authenticated
-  Environment: development
-  Vendor directory: .capabilities-vendor
-
-Project
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✓ package.json found
-  Project type: backend
-  Package manager: pnpm
-  TypeScript: Yes
-
-Installation
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✓ SDK version 2025_02_08_001 installed
-  Location: .capabilities-vendor/2025_02_08_001/
-```
-
-#### `oxlayer doctor`
-
-Run diagnostics to troubleshoot issues.
-
-```bash
-oxlayer doctor
-oxlayer doctor --verbose --fix
-```
-
-**Checks:**
-- Authentication status
-- API connectivity
-- Project structure
-- TypeScript configuration
-- SDK installation integrity
-- `.gitignore` configuration
-- Node version compatibility
-- Capability availability
-
----
-
-### Installation
-
-#### `oxlayer install [version]`
-
-Download and install SDK packages.
-
-```bash
-# Install latest version
-oxlayer install
-
-# Install specific version
-oxlayer install 2025_02_08_001
-
-# Install specific packages
-oxlayer install 2025_02_08_001 --packages backend-sdk frontend-sdk
-
-# Force reinstall
-oxlayer install 2025_02_08_001 --force
-
-# Dry run
-oxlayer install 2025_02_08_001 --dry-run
-```
-
-**Options:**
-- `-p, --packages <packages...>` - Specific packages to install
-- `-e, --environment <env>` - Environment
-- `--dry-run` - Show what would be installed
-- `-f, --force` - Force reinstall
-- `--save` - Add to dependencies
-- `--save-dev` - Add to devDependencies
-
-#### `oxlayer update`
-
-Update SDK to the latest version.
-
-```bash
-oxlayer update
-oxlayer update --dry-run
-```
-
-#### `oxlayer check`
-
-Quick check for SDK updates.
-
-```bash
-oxlayer check
-```
-
----
-
-### Capabilities
-
-#### `oxlayer resolve`
-
-Resolve and display available capabilities.
-
-```bash
-oxlayer resolve
-oxlayer resolve --verbose --environment production
-```
-
-**Output:**
-```
-Available Capabilities for Development
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-┌─────────────────┬─────────────────────────────────────┐
-│ Capability      │ Limits                                │
-├─────────────────┼─────────────────────────────────────┤
-│ auth            │ maxRealms: 10, sso, rbac              │
-│ storage         │ encryption, maxStorageGb: 1000        │
-│ search          │ maxResults: 10000                     │
-│ vector          │ maxCollections: 50, hybridSearch      │
-└─────────────────┴─────────────────────────────────────┘
-
-Usage Example:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-import { resolveCapabilities } from '@oxlayer/capabilities-internal';
-
-const config = await resolveCapabilities({
-  projectId: 'my-project',
-  environment: 'development',
-  requested: ['auth', 'storage']
-});
-
-if (config.auth.sso) {
-  // Enable SSO
-}
-```
-
-#### `oxlayer diff [from-version] [to-version]`
-
-Compare capabilities between SDK versions.
-
-```bash
-# Compare current to latest
-oxlayer diff
-
-# Compare two specific versions
-oxlayer diff 2025_01_01_001 2025_02_08_001
-
-# Detailed view
-oxlayer diff 2025_01_01_001 2025_02_08_001 --verbose
-```
-
-**Output:**
-```
-Capability Diff: 2025_01_01_001 → 2025_02_08_001
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-✓ 1 capability(ies) added
-ℹ 2 capability(ies) modified
-
-Detailed Changes
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-+ search (new)
-    maxResults: 10000
-
-~ auth (modified)
-  maxRealms: 1 → 5
-  sso: ✗ disabled → ✓ enabled
-
-~ storage (modified)
-  encryption: ✗ disabled → ✓ enabled
-  maxStorageGb: 100 → 1000
-```
-
----
-
-### Telemetry
-
-#### `oxlayer telemetry`
-
-Manage anonymous usage tracking.
-
-```bash
-# Show status
-oxlayer telemetry status
-
-# Enable telemetry
-oxlayer telemetry enable
-
-# Disable telemetry
-oxlayer telemetry disable
-```
-
-**What we collect:**
-- CLI version
-- Node version
-- Platform (OS)
-- Command used
-- SDK version (if applicable)
-
-**What we NEVER collect:**
-- Code or file contents
-- Personal information
-- Project names or paths
-
----
-
-## Development
-
-### Project Structure
+The `cortex` skill is a verb-dispatcher for OxLayer's dev pipeline:
 
 ```
-oxlayer/
-├── apps/
-│   └── control-panel/
-│       ├── backend/api/          # Control Panel API
-│       └── frontend/dashboard/   # Control Panel UI
-├── backend/                       # SDK packages
-│   ├── foundation/               # Base kits
-│   ├── capabilities/             # Capability implementations
-│   └── pro/                      # Proprietary/enterprise features
-├── cli/
-│   └── sdk-installer/            # Consumer CLI tool
-├── frontend/                      # Frontend SDK packages
-├── channels/                      # Channel adapters
-└── scripts/
-    └── sdk-release/              # Release automation scripts
+cortex setup     fresh install + topo build
+cortex check     typecheck + lint + test on affected
+cortex test      turbo run test with filtering
+cortex build     turbo run build with filtering
+cortex bench     run benchmarks
+cortex infra     docker-compose for local infra
+cortex mcp       MCP server operations
+cortex audit     open-source readiness scan
+cortex packages  workspace inspection
 ```
 
-### Building SDKs
-
-```bash
-# Build all backend packages
-pnpm backend:build
-
-# Build all frontend packages
-pnpm frontend:build
-
-# Create a release
-pnpm sdk:release
-```
-
-### Local Development
-
-```bash
-# Build SDK installer
-cd cli/sdk-installer
-pnpm build
-pnpm link --global
-
-# Test commands
-oxlayer status
-oxlayer doctor
-```
-
----
-
-## Deployment
-
-### Control Panel
-
-1. **Build and push Docker images**
-2. **Configure environment variables**
-3. **Run migrations**
-4. **Start services**
-
-### CI/CD
-
-The GitHub workflows are automatically triggered:
-- On push to `main` (builds all packages)
-- On manual dispatch (creates releases)
-
-Configure secrets in GitHub Settings for R2/S3 access.
-
----
+See [.claude/skills/cortex/SKILL.md](./.claude/skills/cortex/SKILL.md).
 
 ## License
 
-Proprietary. All rights reserved.
+The repository ships under a mixed-license model:
 
----
+- **Apache 2.0** for everything except `backend/pro/`. See [`LICENSE`](./LICENSE).
+- **Business Source License 1.1** for `backend/pro/`. See
+  [`backend/pro/LICENSE`](./backend/pro/LICENSE). Source-available with an
+  additional use grant for non-production and small single-tenant
+  deployments. Multi-tenant production use requires a commercial license.
 
-## Support
+## Contributing
 
-Run `oxlayer doctor` for diagnostics, or contact support for issues.
+Contributions are welcome to the Apache 2.0 portions. The BSL portion
+(`backend/pro/`) is also open to contributions, with the standard CLA
+that accepts the BSL terms.
+
+See `CLAUDE.md` and `.claude/rules/oxlayer-ops.md` for the project's
+engineering conventions.

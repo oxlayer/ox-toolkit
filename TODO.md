@@ -11,9 +11,8 @@ to close. Cross-reference with `cortex check` and CI dashboards.
 
 OxLayer's policy is that environment variables are read **only** through
 `@oxlayer/capabilities-internal/env`, with each package declaring its
-own schema in an `env.ts`. New code already does this; ~108 legacy call
-sites across `apps/control-panel/`, `apps/tower/`, and several
-`backend/capabilities/adapters/*` still read `process.env` directly.
+own schema in an `env.ts`. New code already does this; legacy call sites
+in `backend/capabilities/adapters/*` still read `process.env` directly.
 
 The `eslint` rule is set to `warn` until those are migrated. Once the
 warning count is zero, tighten back to `error` (delete the `warn`
@@ -21,8 +20,6 @@ comment in `eslint.config.mjs`).
 
 ### Files with direct reads (snapshot, regenerate via `bun run lint | grep no-restricted-properties`)
 
-- `apps/control-panel/backend/api/src/{config,controllers,services,middleware,infrastructure,index}.ts`
-- `apps/tower/src/main/**` and `apps/tower/src/main.ts`
 - `backend/capabilities/adapters/database/{influxdb,mongo,postgres}/src/client.ts`
 - `backend/capabilities/adapters/messaging/sqs/src/client.ts`
 - `backend/capabilities/adapters/search/quickwit/src/{client,indexer,searcher}.ts`
@@ -129,9 +126,9 @@ The `cortex bench` verb expects packages with a `bench` script in
 ## 6. Deploy targets (skill placeholder)
 
 `cortex deploy` aborts with "no deploy target configured" until an
-entry is added to `.claude/rules/oxlayer-ops.md` § Deploy targets.
-The `apps/control-panel/` reference impl is the natural first target
-(docker-compose for self-hosted, Fly.io for hosted demo).
+entry is added to `.claude/rules/oxlayer-ops.md` § Deploy targets. The
+toolkit itself is a library — deploy targets only matter for repos that
+consume it and ship products. Configure on a per-consumer basis.
 
 ---
 
