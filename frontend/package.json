@@ -4,12 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter './packages/**' dev",
-    "build": "pnpm --filter './packages/**' build",
-    "lint": "pnpm --filter './packages/**' lint",
-    "test": "pnpm --filter './packages/**' test",
-    "clean": "pnpm --filter './packages/**' clean",
-    "typecheck": "pnpm --filter './packages/**' typecheck"
+    "dev": "bun --filter './packages/**' dev",
+    "build": "bun --filter './packages/**' build",
+    "lint": "bun --filter './packages/**' lint",
+    "test": "bun --filter './packages/**' test",
+    "clean": "bun --filter './packages/**' clean",
+    "typecheck": "bun --filter './packages/**' typecheck"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
