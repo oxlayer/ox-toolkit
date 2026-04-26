@@ -10,7 +10,8 @@
   },
   "scripts": {
     "lint": "oxlint src",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"no tests\" && exit 0"
   },
   "dependencies": {
     "@oxlayer/shared-ui": "workspace:*"
