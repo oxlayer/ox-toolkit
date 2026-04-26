@@ -1,7 +1,7 @@
 ---
 name: "cortex"
-description: "OxLayer dev pipeline skill — verbs: setup, check, test, build, infra, sdk, mcp, actions, audit, packages. Read 'cortex:<verb>' as one namespaced surface."
-argument-hint: "<verb> [args] — verb ∈ {setup|check|test|build|infra|sdk|mcp|actions|audit|packages|help}"
+description: "OxLayer dev pipeline skill — verbs: setup, check, test, build, bench, infra, sdk, mcp, publish, deploy, logs, actions, audit, packages. Read 'cortex:<verb>' as one namespaced surface."
+argument-hint: "<verb> [args] — verb ∈ {setup|check|test|build|bench|infra|sdk|mcp|publish|deploy|logs|actions|audit|packages|help}"
 compatibility: "OxLayer monorepo only — depends on .claude/rules/oxlayer-ops.md."
 metadata:
   source: "specs/_template/"
@@ -17,12 +17,16 @@ verb-specific.
 
 ```
 cortex setup     [--clean]                                     fresh install + topo build
-cortex check     [--filter=<glob>] [--since=HEAD^]             ready-to-PR check (typecheck+lint+test)
+cortex check     [--filter=<glob>] [--since=HEAD^]             ready-to-PR check
 cortex test      [--filter=<glob>] [--package=<name>]
 cortex build     [--filter=<glob>] [--force]
+cortex bench     [--package=<name>] [--baseline=<ref>]
 cortex infra     <up|down|status|logs <service>>
 cortex sdk       <version|manifest|release>
 cortex mcp       <serve|build|docs>
+cortex publish   <local|npm> [--package=<name>] [--dry-run]
+cortex deploy    [--check | --logs | --watch | --restart] --target=<name>
+cortex logs      <target> [--since=5m] [--grep=<pattern>] [--follow]
 cortex actions   [list | view <id> | watch <id> | rerun <id>] [--limit=10]
 cortex audit                                                   open-source readiness scan
 cortex packages  <list|deps|drift|license>
@@ -155,6 +159,42 @@ bunx turbo run build --filter=<scope>
 Report cache hits/misses (Turbo prints this). On dist drift detection
 (source newer than dist), warn and suggest `cortex build --force`.
 
+## Verb: `bench`
+
+Run benchmarks. Reads packages with a `bench` script in package.json
+(see `oxlayer-ops.md` § Benchmark targets — empty until benches are
+added).
+
+```
+cortex bench                              — all packages with bench script
+cortex bench --package=@oxlayer/foo
+cortex bench --baseline=main              — diff against ref's last bench
+```
+
+### Pre-flight
+
+1. Find packages with `bench` script:
+   ```bash
+   find . -name package.json -not -path '*/node_modules/*' -not -path '*/dist/*' \
+     | xargs jq -r 'select(.scripts.bench) | .name' 2>/dev/null
+   ```
+2. If none, abort with "no benchmarks defined yet — add a `bench`
+   script to a package.json to start".
+
+### Execution
+
+```bash
+bunx turbo run bench --filter=<scope> --output-logs=full
+```
+
+Save results to `.turbo/cortex-bench/<git-sha>.json`. With
+`--baseline`: diff against the latest run from that ref. Format:
+
+```
+@oxlayer/foundation-domain-kit: 12,400 ops/s (+2.1% vs main)
+@oxlayer/capabilities-cache:    98,200 ops/s (-0.3% vs main)
+```
+
 ## Verb: `infra`
 
 Wrapper around the local docker-compose stack at `infra_oxlayer/`.
@@ -277,6 +317,157 @@ bun --filter @oxlayer/mcp run docs:embed
 If the script doesn't exist (check package.json scripts first), abort
 with the manual recipe from `mcp_oxlayer/README.md`.
 
+## Verb: `publish`
+
+Publish workspace packages. Two destinations:
+
+- `local` — Verdaccio at `localhost:4873` (started via
+  `cortex infra up verdaccio`). For internal SDK consumption testing.
+- `npm` — public registry. **Only Apache 2.0 packages.** Anything
+  under `backend/pro/**` is BSL — never publish to npm.
+
+```
+cortex publish local                          — all publishable packages → Verdaccio
+cortex publish local --package=@oxlayer/foo
+cortex publish npm --dry-run                  — show what would publish
+cortex publish npm --package=@oxlayer/foundation-domain-kit
+```
+
+### Pre-flight (every publish)
+
+1. **License gate**: refuse `npm` destination for any package whose
+   path is under `backend/pro/**` or whose `package.json` license is
+   not `Apache-2.0`. Print: "package <name> is BSL/private — only
+   `cortex publish local` is allowed".
+2. **Build artifact**: verify `dist/` exists and is newer than `src/`.
+   If stale, suggest `cortex build --filter=<pkg>` first.
+3. **Version bump**: read `package.json` version. Compare to last
+   published (`npm view <name> version`). If unchanged, abort with
+   "version not bumped — `bun --filter <pkg> npm version patch` first".
+4. **Token**:
+   - `local`: read `${VERDACCIO_TOKEN}` from env or `.npmrc.example`.
+     If missing, suggest `pnpm token add --registry http://localhost:4873/`.
+   - `npm`: read `${NPM_TOKEN}` from env. If missing, abort with
+     "set NPM_TOKEN; never commit to .npmrc".
+
+### Execution
+
+Always **confirm before write**:
+
+```
+About to publish 3 packages to <local|npm>:
+  - @oxlayer/foundation-domain-kit@0.2.0
+  - @oxlayer/foundation-app-kit@0.2.0
+  - @oxlayer/capabilities-cache@0.3.1
+Proceed? yes/no
+```
+
+On `yes`:
+
+```bash
+# local
+bun --filter <pkg> publish --registry http://localhost:4873/
+
+# npm
+bun --filter <pkg> publish --access public
+```
+
+`--dry-run`: pass `--dry-run` to bun publish; print tarball contents
++ predicted version, no upload.
+
+After: print published URLs (`https://www.npmjs.com/package/<name>` or
+`http://localhost:4873/-/package/<name>`).
+
+## Verb: `deploy`
+
+Deploy a target from `oxlayer-ops.md` § Deploy targets. Until a
+target is configured there, every invocation aborts with:
+
+> No deploy target configured. Add an entry to
+> `.claude/rules/oxlayer-ops.md` § Deploy targets.
+
+OxLayer is a toolkit; `apps/control-panel/` is the only deployable
+reference impl. The verb is intentionally generic so adding a target
+is config-only.
+
+```
+cortex deploy --target=panel-prd                    — default action: --check
+cortex deploy --target=panel-prd --check            — "did the latest deploy work?"
+cortex deploy --target=panel-prd --logs             — failed-step logs from last deploy
+cortex deploy --target=panel-prd --watch            — stream rollout
+cortex deploy --target=panel-prd --restart          — write op (confirms)
+```
+
+### Resolving target
+
+1. Read `oxlayer-ops.md` § Deploy targets table.
+2. If `<name>` not found, list available targets + abort.
+3. Dispatch by target type:
+   - `docker` → `docker compose -f <file> ps|logs|up|restart`
+   - `fly.io` → `flyctl status|logs|deploy|restart`
+   - `k8s`    → `kubectl get|logs|rollout`
+
+### `--check` (default)
+
+Run target-specific status query in parallel with the equivalent of
+`cortex actions list --limit=3`:
+
+```
+✓ panel-prd (docker)
+  api: 1/1 healthy (image abc123, 14m old)
+  dashboard: 1/1 healthy (image abc123, 14m old)
+✓ Recent CI runs:
+  2026-04-26 03:10 success push main "ci: …" #482
+```
+
+### `--logs`
+
+Last 200 lines of failing-step / failing-pod / failing-container
+output, depending on target type. If everything is healthy, say so
+and bail.
+
+### `--watch`
+
+Stream the rollout. `run_in_background: true`. Return shell id +
+`BashOutput` instructions.
+
+### `--restart`
+
+Write op. Confirm first ("Restart `<target>`? yes/no"). Then dispatch
+to the target type's restart command. After: tail status for 60s.
+
+## Verb: `logs`
+
+Generic logs fetcher. Two modes based on first argument:
+
+```
+cortex logs <infra-service>          — alias for `cortex infra logs <service>`
+cortex logs <deploy-target>          — fetch from a deploy target
+```
+
+Resolution: if `<arg>` matches a service in `oxlayer-ops.md` §
+Local infrastructure, treat as infra. If it matches a deploy target,
+dispatch via that target's logs command. Otherwise, list both
+catalogs + abort.
+
+```
+cortex logs postgres --since=10m              → infra logs postgres
+cortex logs panel-prd --grep=ERROR --follow   → deploy logs from panel-prd
+```
+
+### Common flags
+
+`--since=<duration>` (default `5m`), `--grep=<pattern>`,
+`--follow` (background, returns shell id), `--tail=<N>` (default 200
+for non-follow).
+
+### Output rules
+
+- If empty: "No matching lines in <target> --since <since>" — don't
+  pretend.
+- Highlight `[ERROR]`, `WARN`, `5XX`, `FATAL`, `panic` patterns.
+- For non-follow: print just matched lines, no preamble.
+
 ## Verb: `actions`
 
 ```
@@ -326,43 +517,66 @@ gh run rerun <id> --repo oxlayer/oxlayer --failed
 
 Open-source readiness scan. Codifies the pre-public checks. Read-only.
 
-### Steps (each output a line `✓` or `❌`)
+Self-references in `.claude/rules/oxlayer-ops.md` § Audit allowlist
+are excluded — those files document the patterns intentionally.
 
-1. **Secret patterns** in working tree:
+### Excludes (applied to every check)
+
+```bash
+# Common excludes used by every step
+EXCLUDE_PATHS=(
+  ':!node_modules' ':!.git'
+  ':!bun.lock' ':!pnpm-lock.yaml' ':!package-lock.json' ':!yarn.lock'
+  ':!.claude/rules/oxlayer-ops.md'    # docs the rules
+  ':!.claude/skills/cortex/SKILL.md'  # docs the regex
+  ':!**/templates/**'                  # CLI scaffolding
+  ':!**/dist/**' ':!**/build/**'
+)
+```
+
+### Steps (each emits `✓` or `❌`)
+
+1. **Secret patterns** (excluding `AKIAIOSFODNN7EXAMPLE` — official
+   AWS docs example):
    ```bash
-   grep -rEn '(npm_[A-Za-z0-9]{30,}|ghp_[A-Za-z0-9]{30,}|xoxb-[A-Za-z0-9-]+|AKIA[A-Z0-9]{16}|sk_live_)' \
-     --include='*.ts' --include='*.tsx' --include='*.json' --include='*.md' \
-     --include='*.yaml' --include='*.yml' --include='*.sh' --include='*.env*' \
-     . 2>/dev/null | grep -v node_modules | grep -v '\.git/'
+   git grep -nE '(npm_[A-Za-z0-9]{30,}|ghp_[A-Za-z0-9]{30,}|xoxb-[A-Za-z0-9-]+|AKIA[A-Z0-9]{16}|sk_live_)' -- "${EXCLUDE_PATHS[@]}" \
+     | grep -v 'AKIAIOSFODNN7EXAMPLE'
    ```
 
-2. **Forbidden identifiers** (case-insensitive — patterns from
-   `oxlayer-ops.md`):
+2. **Forbidden identifiers** (case-insensitive):
    ```bash
-   grep -rEni '(fatorh|eureca|localiza|bradesco)' \
-     --include='*.ts' --include='*.tsx' --include='*.json' --include='*.md' \
-     . | grep -v node_modules | grep -v '\.git/' | grep -v bun.lock | grep -v pnpm-lock
+   git grep -niE '\b(fatorh|eureca|localiza|bradesco)\b' -- "${EXCLUDE_PATHS[@]}" \
+     | grep -viE '(localization|localize)'   # word-stem false positives
    ```
 
-3. **`.env` / `.npmrc` not in `.gitignore`**:
+3. **`.env` / `.npmrc` tracked in git** (must be 0):
    ```bash
-   git check-ignore .env apps/*/backend/api/.env .npmrc backend/*/.npmrc
+   git ls-files | grep -E '(^|/)(\.env$|\.env\.local|\.env\.production|\.npmrc$)'
    ```
+   `.env.example` and `.npmrc.example` are fine.
 
-4. **LICENSE present**:
+4. **LICENSE files present**:
    ```bash
    test -f LICENSE && test -f backend/pro/LICENSE
    ```
 
-5. **No personal paths** in committed files:
+5. **Personal paths in committed files** (excluding `/home/linuxbrew/`
+   which is Linuxbrew's standard install prefix):
    ```bash
-   git grep -E '(/home/[a-z]+|/Users/[a-zA-Z]+/)' -- '*.ts' '*.md' '*.json' '*.yaml' '*.yml'
+   git grep -nE '(/home/[a-z]+|/Users/[a-zA-Z]+/)' -- '*.ts' '*.md' '*.json' '*.yaml' '*.yml' "${EXCLUDE_PATHS[@]}" \
+     | grep -v '/home/linuxbrew/'
    ```
+
+6. **License declaration consistency** (delegates to
+   `cortex packages license`):
+   - `backend/pro/**` should be `BUSL-1.1` (or `SEE LICENSE IN LICENSE`).
+   - Outside `backend/pro/**`: `Apache-2.0` or `"private": true`.
 
 ### Output
 
-Pass/fail summary table. On any fail: list the offending files +
-suggested fix (rotate secret, sanitize identifier, add to `.gitignore`).
+Pass/fail table. On any fail: list offending files + suggested fix
+(rotate secret, sanitize identifier, add to `.gitignore`,
+`git rm --cached`, etc).
 
 Final verdict: `READY FOR PUBLIC` (all green) or `BLOCKED` (with
 specific TODOs).

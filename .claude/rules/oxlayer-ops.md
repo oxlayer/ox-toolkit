@@ -102,6 +102,49 @@ commit/push):
 The regex pack lives in the `cortex audit` verb. Add new patterns there
 when the project sees them.
 
+## Audit allowlist
+
+False positives the `cortex audit` verb should ignore:
+
+- **`.claude/rules/oxlayer-ops.md`** — this file. Mentions forbidden
+  identifiers in documentation form.
+- **`.claude/skills/cortex/SKILL.md`** — documents the audit regex.
+- **`backend/scripts/provision-tenant.ts:AKIAIOSFODNN7EXAMPLE`** —
+  AWS-official example access key. Not a real credential.
+- **`/home/linuxbrew/`** — Linuxbrew's default install prefix. Not a
+  personal path.
+- **`bun.lock`, `pnpm-lock.yaml`** (if present) — lockfiles. Hashes
+  may match secret regexes by coincidence.
+- Any path containing `/templates/` — `create-frontend` /
+  `create-backend` ship template files that may include placeholder
+  tokens.
+
+The `audit` verb passes these as `--exclude` flags to grep.
+
+## Deploy targets
+
+OxLayer is a toolkit; the public repo doesn't ship deploys. The
+`apps/control-panel/` reference implementation can optionally be
+deployed by operators. Configure deploy targets here when one is
+provisioned. Until then, `cortex deploy` aborts with
+"no deploy target configured".
+
+| Target name | Type   | Endpoint / namespace | Notes                          |
+|-------------|--------|-----------------------|--------------------------------|
+| _(none)_    | —      | —                     | configure in this table first  |
+
+Example future entry:
+
+```
+| panel-prd   | docker | docker compose -f apps/control-panel/docker-compose.prd.yml | local-only demo |
+| panel-fly   | fly.io | apps/control-panel — flyctl deploy                          | requires FLY_API_TOKEN |
+```
+
+## Benchmark targets
+
+Packages with `bench` script in `package.json`. Empty until benches
+are added. `cortex bench` runs `turbo run bench --filter=<name>`.
+
 ## License boundaries
 
 | Path                | License                            |
