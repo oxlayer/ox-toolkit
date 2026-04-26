@@ -25,8 +25,22 @@ while IFS= read -r f; do
   name=$(jq -r '.name // empty' "$f")
   version=$(jq -r '.version // empty' "$f")
   private=$(jq -r '.private // false' "$f")
+  license=$(jq -r '.license // empty' "$f")
 
   if [[ "$name" != "@oxlayer/"* || "$private" == "true" ]]; then
+    continue
+  fi
+
+  # License gate: only publish Apache-2.0 (or MIT) to public npm.
+  # backend/pro/** is BSL — never publish to public registry.
+  if [[ "$f" == *"backend/pro/"* ]]; then
+    echo "[skip] $name: under backend/pro/ (BSL — not publishable to public npm)"
+    skipped=$((skipped + 1))
+    continue
+  fi
+  if [[ "$license" != "Apache-2.0" && "$license" != "MIT" ]]; then
+    echo "[skip] $name: license is '$license' (only Apache-2.0 or MIT allowed)"
+    skipped=$((skipped + 1))
     continue
   fi
 

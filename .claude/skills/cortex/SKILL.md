@@ -23,7 +23,7 @@ cortex build     [--filter=<glob>] [--force]
 cortex bench     [--package=<name>] [--baseline=<ref>]
 cortex infra     <up|down|status|logs <service>>
 cortex mcp       <serve|build|docs>
-cortex publish   <local|npm> [--package=<name>] [--dry-run]
+cortex publish   [--dry-run] [--watch]                         dispatches the GitHub Actions Publish to npm workflow
 cortex deploy    [--check | --logs | --watch | --restart] --target=<name>
 cortex logs      <target> [--since=5m] [--grep=<pattern>] [--follow]
 cortex actions   [list | view <id> | watch <id> | rerun <id>] [--limit=10]
@@ -280,64 +280,75 @@ with the manual recipe from `mcp_oxlayer/README.md`.
 
 ## Verb: `publish`
 
-Publish workspace packages. Two destinations:
+Dispatch the GitHub Actions `Publish to npm` workflow. The workflow
+authenticates via the `NPM_TOKEN` repo secret and runs
+`scripts/publish-packages.sh`, which iterates all `@oxlayer/*`
+packages and publishes those that pass these gates:
 
-- `local` — Verdaccio at `localhost:4873` (started via
-  `cortex infra up verdaccio`). For internal SDK consumption testing.
-- `npm` — public registry. **Only Apache 2.0 packages.** Anything
-  under `backend/pro/**` is BSL — never publish to npm.
+- `private != true`
+- not under `backend/pro/**` (BSL — public npm forbidden)
+- `license` is `Apache-2.0` or `MIT`
+- the `name@version` is not already on the registry
 
 ```
-cortex publish local                          — all publishable packages → Verdaccio
-cortex publish local --package=@oxlayer/foo
-cortex publish npm --dry-run                  — show what would publish
-cortex publish npm --package=@oxlayer/foundation-domain-kit
+cortex publish              — trigger workflow, real publish (with confirm)
+cortex publish --dry-run    — trigger workflow with dry_run=true (no upload)
+cortex publish --watch      — also tail the run via `gh run watch`
 ```
 
 ### Pre-flight (every publish)
 
-1. **License gate**: refuse `npm` destination for any package whose
-   path is under `backend/pro/**` or whose `package.json` license is
-   not `Apache-2.0`. Print: "package <name> is BSL/private — only
-   `cortex publish local` is allowed".
-2. **Build artifact**: verify `dist/` exists and is newer than `src/`.
-   If stale, suggest `cortex build --filter=<pkg>` first.
-3. **Version bump**: read `package.json` version. Compare to last
-   published (`npm view <name> version`). If unchanged, abort with
-   "version not bumped — `bun --filter <pkg> npm version patch` first".
-4. **Token**:
-   - `local`: read `${VERDACCIO_TOKEN}` from env or `.npmrc.example`.
-     If missing, suggest `pnpm token add --registry http://localhost:4873/`.
-   - `npm`: read `${NPM_TOKEN}` from env. If missing, abort with
-     "set NPM_TOKEN; never commit to .npmrc".
+1. **Branch + remote check**: `git rev-parse --abbrev-ref HEAD == "main"`
+   and `git rev-parse HEAD == git rev-parse origin/main`. If local
+   diverges from remote, abort: "push first, the workflow runs from
+   `main` HEAD on GitHub".
+2. **Repo gate**: `gh repo view oxlayer/ox-toolkit --json visibility`
+   must return `PUBLIC`. If not, abort: "ox-toolkit is private — npm
+   publish only runs from the public repo".
+3. **Secret gate**: `gh secret list --repo oxlayer/ox-toolkit | grep -q '^NPM_TOKEN'`.
+   If missing, abort: "set the `NPM_TOKEN` secret in repo settings
+   first".
+4. **License audit (local mirror of the script's gate)**:
+   ```bash
+   find . -maxdepth 6 -name package.json -not -path '*/node_modules/*' \
+     | while read f; do
+         name=$(jq -r '.name // empty' "$f")
+         license=$(jq -r '.license // ""' "$f")
+         private=$(jq -r '.private // false' "$f")
+         path_under_pro=$([[ "$f" == *backend/pro/* ]] && echo true || echo false)
+         [[ "$name" == "@oxlayer/"* && "$private" == "false" \
+            && "$path_under_pro" == "false" \
+            && "$license" =~ ^(Apache-2\.0|MIT)$ ]] \
+           && echo "$name@$(jq -r .version "$f")"
+       done | sort
+   ```
+   Print the candidate list. If empty, abort. If any package the
+   operator expected is missing, surface why (private, BSL, missing
+   license).
 
 ### Execution
 
-Always **confirm before write**:
+Confirm before write — the workflow runs against the live npm registry:
 
 ```
-About to publish 3 packages to <local|npm>:
-  - @oxlayer/foundation-domain-kit@0.2.0
-  - @oxlayer/foundation-app-kit@0.2.0
-  - @oxlayer/capabilities-cache@0.3.1
-Proceed? yes/no
+About to dispatch `Publish to npm` workflow on oxlayer/ox-toolkit (main).
+Will publish (or dry-run) N packages. Proceed? yes/no
 ```
 
 On `yes`:
 
 ```bash
-# local
-bun --filter <pkg> publish --registry http://localhost:4873/
+# real publish
+gh workflow run "Publish to npm" --repo oxlayer/ox-toolkit
 
-# npm
-bun --filter <pkg> publish --access public
+# dry-run
+gh workflow run "Publish to npm" --repo oxlayer/ox-toolkit --field dry_run=true
 ```
 
-`--dry-run`: pass `--dry-run` to bun publish; print tarball contents
-+ predicted version, no upload.
+If `--watch`: capture the run id from `gh run list --repo oxlayer/ox-toolkit --workflow "Publish to npm" --limit=1 --json databaseId --jq '.[0].databaseId'` and `gh run watch <id> --repo oxlayer/ox-toolkit --exit-status`.
 
-After: print published URLs (`https://www.npmjs.com/package/<name>` or
-`http://localhost:4873/-/package/<name>`).
+After completion: print the run URL and a summary line
+(`N published, M skipped, K failed`) extracted from the run logs.
 
 ## Verb: `deploy`
 

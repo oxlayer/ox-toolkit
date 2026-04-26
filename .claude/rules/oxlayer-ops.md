@@ -53,7 +53,6 @@ Filters for `bun --filter` / `turbo --filter`:
 | Redis         | 6379       | Cache + bullmq                              |
 | RabbitMQ      | 5672 / 15672 | capabilities-events / messaging          |
 | Keycloak      | 8080       | capabilities-auth                           |
-| Verdaccio     | 4873       | local npm registry for `bun publish`        |
 | Grafana       | 3000       | Observability stack                         |
 | Prometheus    | 9090       | Metrics                                     |
 | OTel Collector | 4317/4318 | OpenTelemetry ingest                        |

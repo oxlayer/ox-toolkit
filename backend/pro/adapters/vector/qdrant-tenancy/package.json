@@ -39,5 +39,6 @@
   "homepage": "https://github.com/oxlayer/ox-toolkit#readme",
   "bugs": {
     "url": "https://github.com/oxlayer/ox-toolkit/issues"
-  }
+  },
+  "license": "BUSL-1.1"
 }

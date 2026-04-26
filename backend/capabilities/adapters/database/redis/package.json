@@ -52,5 +52,6 @@
   "homepage": "https://github.com/oxlayer/ox-toolkit#readme",
   "bugs": {
     "url": "https://github.com/oxlayer/ox-toolkit/issues"
-  }
+  },
+  "license": "Apache-2.0"
 }
