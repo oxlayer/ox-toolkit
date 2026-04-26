@@ -1,7 +1,7 @@
 "use client";
 
 import type * as React from "react";
-import { cn } from "../../lib/utils";
+import { cn } from "@oxlayer/shared-ui";
 
 export interface LabelTechProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
   required?: boolean;

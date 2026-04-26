@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "motion/react";
-import { cn, type CornerPosition } from "../../lib/utils";
+import { cn, type CornerPosition } from "@oxlayer/shared-ui";
 import {
   Card,
   CardHeader,
@@ -12,8 +12,8 @@ import {
   CardFooter,
   CardAction,
   CardToolbar,
-} from "../base/card";
-import { CornerFiducials } from "../patterns/corner-fiducials";
+} from "@oxlayer/shared-ui";
+import { CornerFiducials } from "@oxlayer/shared-ui";
 
 const transition = { duration: 0.3, ease: [0.4, 0, 0.2, 1] as const };
 const CORNER_SIZE = "12px";

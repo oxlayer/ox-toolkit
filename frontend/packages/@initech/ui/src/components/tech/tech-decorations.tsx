@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
-import { cn } from "../../lib/utils";
+import { cn } from "@oxlayer/shared-ui";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 

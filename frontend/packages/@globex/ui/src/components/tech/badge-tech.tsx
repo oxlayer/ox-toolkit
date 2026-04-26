@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "../../lib/utils";
-import { Badge, type BadgeProps } from "../base/badge";
+import { cn } from "@oxlayer/shared-ui";
+import { Badge, type BadgeProps } from "@oxlayer/shared-ui";
 
 interface BadgeTechProps extends Omit<BadgeProps, "variant"> {
   children: React.ReactNode;

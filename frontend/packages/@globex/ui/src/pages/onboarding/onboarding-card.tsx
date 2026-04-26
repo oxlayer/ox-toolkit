@@ -9,7 +9,7 @@ import {
   CardTechTitle,
 } from "../../components/tech/card-tech";
 import { TechDivider } from "../../components/tech/tech-decorations";
-import { cn } from "../../lib/utils";
+import { cn } from "@oxlayer/shared-ui";
 
 interface OnboardingCardProps {
   children: ReactNode;

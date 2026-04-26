@@ -1,22 +1,7 @@
 {
+  "extends": "../../../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "lib": [
-      "ESNext"
-    ],
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
     "allowJs": false,
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "allowSyntheticDefaultImports": true,
-    "isolatedModules": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "."
   },
@@ -25,6 +10,12 @@
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.template.ts"
   ]
 }

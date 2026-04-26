@@ -3,8 +3,8 @@
 import { motion } from "motion/react";
 import type * as React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
-import { cn } from "../../lib/utils";
-import { Button } from "../base/button";
+import { cn } from "@oxlayer/shared-ui";
+import { Button } from "@oxlayer/shared-ui";
 
 const MotionButton = motion.create(Button);
 

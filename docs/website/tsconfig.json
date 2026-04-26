@@ -1,8 +1,16 @@
 {
-  // This file is not used in compilation. It is here just for a nice editor experience.
-  "extends": "@docusaurus/tsconfig",
+  "extends": "../../tsconfig.frontend.json",
   "compilerOptions": {
     "baseUrl": "."
   },
-  "exclude": [".docusaurus", "build"]
+  "exclude": [
+    ".docusaurus",
+    "build",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.template.ts"
+  ]
 }

@@ -11,7 +11,7 @@ import {
   StepperSeparator,
   StepperTitle,
   StepperTrigger,
-} from "../../components/base/stepper";
+} from "@oxlayer/shared-ui";
 import {
   OnboardingCard,
   OnboardingCardContent,

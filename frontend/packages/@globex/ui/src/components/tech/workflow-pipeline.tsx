@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 
-import { cn } from "../../lib/utils";
+import { cn } from "@oxlayer/shared-ui";
 
 const PRIMARY_COLOR = "#84cc16";
 const PRIMARY_GLOW_COLOR = "rgba(132, 204, 22, 0.6)";

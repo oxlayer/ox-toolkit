@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "../../lib/utils";
+import { cn } from "@oxlayer/shared-ui";
 import { BadgeTech } from "./badge-tech";
 import { TechCrosshair } from "./tech-decorations";
 

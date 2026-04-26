@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "../../lib/utils";
-import { StaticSlashBar } from "../patterns/static-slash-bar";
+import { cn } from "@oxlayer/shared-ui";
+import { StaticSlashBar } from "@oxlayer/shared-ui";
 
 export interface TechStepHeaderProps {
   title: string;

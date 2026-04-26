@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "../../components/base/button";
-import { Field, FieldControl, FieldError, FieldLabel } from "../../components/base/field";
-import { Input } from "../../components/base/input";
-import { Spinner } from "../../components/base/spinner";
+import { Button } from "@oxlayer/shared-ui";
+import { Field, FieldControl, FieldError, FieldLabel } from "@oxlayer/shared-ui";
+import { Input } from "@oxlayer/shared-ui";
+import { Spinner } from "@oxlayer/shared-ui";
 import { TechStepHeader } from "../../components/tech/tech-step-header";
-import { useAppForm } from "../../hooks/use-app-form";
-import { formatFieldErrors } from "../../lib/form-utils";
-import { cn } from "../../lib/utils";
+import { useAppForm } from "@oxlayer/shared-ui";
+import { formatFieldErrors } from "@oxlayer/shared-ui";
+import { cn } from "@oxlayer/shared-ui";
 import { organizationSchema, type OrganizationFormData } from "./schemas";
 
 interface OrganizationStepProps {

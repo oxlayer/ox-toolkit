@@ -8,9 +8,6 @@
 // Re-export everything from shared-ui
 export * from '@oxlayer/shared-ui';
 
-// Re-export styles from shared-ui
-export { defaultStyles } from '@oxlayer/shared-ui/styles';
-export { defaultWebStyles } from '@oxlayer/shared-ui/web-styles';
 
 // ============================================================================
 // TECH DESIGN SYSTEM (Brand-Specific)

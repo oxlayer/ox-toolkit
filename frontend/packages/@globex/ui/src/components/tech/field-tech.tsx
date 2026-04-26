@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { cn } from "../../lib/utils";
+import { cn } from "@oxlayer/shared-ui";
 import { LabelTech, type LabelTechProps } from "./label-tech";
 import { InputTech, type InputTechProps } from "./input-tech";
 
