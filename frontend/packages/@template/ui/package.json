@@ -17,7 +17,10 @@
     "typecheck": "tsc --noEmit",
     "storybook": "storybook dev -p 6007",
     "build-storybook": "storybook build",
-    "test": "echo \"no tests\" && exit 0"
+    "test": "echo \"no tests\" && exit 0",
+    "build": "echo \"no build (component library — consumed via tsx imports)\" && exit 0",
+    "dev": "echo \"no dev (storybook is the dev surface)\" && exit 0",
+    "clean": "echo \"no build artifacts to clean\" && exit 0"
   },
   "dependencies": {
     "@base-ui/react": "1.0.0",
