@@ -38,5 +38,18 @@
     "scaffold",
     "template",
     "generator"
-  ]
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oxlayer/ox-toolkit.git",
+    "directory": "cli/create-backend"
+  },
+  "homepage": "https://github.com/oxlayer/ox-toolkit#readme",
+  "bugs": {
+    "url": "https://github.com/oxlayer/ox-toolkit/issues"
+  }
 }

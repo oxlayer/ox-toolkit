@@ -20,5 +20,18 @@
   },
   "devDependencies": {
     "@types/node": "25.0.10"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oxlayer/ox-toolkit.git",
+    "directory": "backend"
+  },
+  "homepage": "https://github.com/oxlayer/ox-toolkit#readme",
+  "bugs": {
+    "url": "https://github.com/oxlayer/ox-toolkit/issues"
   }
 }

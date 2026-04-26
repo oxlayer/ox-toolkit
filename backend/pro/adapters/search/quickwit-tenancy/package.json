@@ -26,5 +26,18 @@
   },
   "engines": {
     "bun": ">=1.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oxlayer/ox-toolkit.git",
+    "directory": "backend/pro/adapters/search/quickwit-tenancy"
+  },
+  "homepage": "https://github.com/oxlayer/ox-toolkit#readme",
+  "bugs": {
+    "url": "https://github.com/oxlayer/ox-toolkit/issues"
   }
 }

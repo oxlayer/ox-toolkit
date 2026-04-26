@@ -32,5 +32,18 @@
     "@types/node": "^20.0.0",
     "tsup": "latest",
     "typescript": "latest"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oxlayer/ox-toolkit.git",
+    "directory": "backend/snippets"
+  },
+  "homepage": "https://github.com/oxlayer/ox-toolkit#readme",
+  "bugs": {
+    "url": "https://github.com/oxlayer/ox-toolkit/issues"
   }
 }

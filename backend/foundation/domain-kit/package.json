@@ -3,10 +3,12 @@
   "version": "0.1.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/oxlayer/foundation.git"
+    "url": "git+https://github.com/oxlayer/ox-toolkit.git",
+    "directory": "backend/foundation/domain-kit"
   },
   "publishConfig": {
-    "registry": "http://localhost:4873/"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "description": "Core domain primitives: entities, value objects, repository interfaces, and domain errors",
   "type": "module",
@@ -48,5 +50,9 @@
     "tsup": "latest",
     "typescript": "^5.9.3"
   },
-  "peerDependencies": {}
+  "peerDependencies": {},
+  "homepage": "https://github.com/oxlayer/ox-toolkit#readme",
+  "bugs": {
+    "url": "https://github.com/oxlayer/ox-toolkit/issues"
+  }
 }

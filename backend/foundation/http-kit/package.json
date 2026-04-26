@@ -3,10 +3,12 @@
   "version": "0.1.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/oxlayer/foundation.git"
+    "url": "git+https://github.com/oxlayer/ox-toolkit.git",
+    "directory": "backend/foundation/http-kit"
   },
   "publishConfig": {
-    "registry": "http://localhost:4873/"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "description": "HTTP layer primitives: controllers, error mapping, middleware utilities",
   "type": "module",
@@ -55,5 +57,9 @@
     "tsup": "latest",
     "typescript": "^5.9.3",
     "zod": "^4.1.9"
+  },
+  "homepage": "https://github.com/oxlayer/ox-toolkit#readme",
+  "bugs": {
+    "url": "https://github.com/oxlayer/ox-toolkit/issues"
   }
 }

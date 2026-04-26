@@ -3,10 +3,12 @@
   "version": "0.1.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/oxlayer/foundation.git"
+    "url": "git+https://github.com/oxlayer/ox-toolkit.git",
+    "directory": "backend/foundation/persistence-kit"
   },
   "publishConfig": {
-    "registry": "http://localhost:4873/"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "description": "Persistence layer utilities: repository patterns, cursor pagination, query builders",
   "type": "module",
@@ -42,5 +44,9 @@
     "bun-types": "1.3.6",
     "tsup": "latest",
     "typescript": "^5.9.3"
+  },
+  "homepage": "https://github.com/oxlayer/ox-toolkit#readme",
+  "bugs": {
+    "url": "https://github.com/oxlayer/ox-toolkit/issues"
   }
 }
