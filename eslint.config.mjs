@@ -15,6 +15,7 @@ export default tseslint.config(
       '**/out/**',
       '**/.next/**',
       '**/.turbo/**',
+      '**/.docusaurus/**',
       '**/.specify/**',
       '**/coverage/**',
       '**/*.d.ts',
