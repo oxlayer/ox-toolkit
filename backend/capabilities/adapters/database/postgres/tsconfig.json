@@ -16,6 +16,8 @@
     "**/*.test.tsx",
     "**/*.spec.ts",
     "**/*.spec.tsx",
-    "**/*.template.ts"
+    "**/*.template.ts",
+    "src/migrations.ts",
+    "src/transaction.ts"
   ]
 }

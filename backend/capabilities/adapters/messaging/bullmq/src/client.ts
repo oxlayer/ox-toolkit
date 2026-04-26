@@ -1,5 +1,5 @@
 import { Queue, Worker, QueueEvents } from 'bullmq';
-import type { BullMQConfig, _BullMQQueueConfig, BullMQQueues, BullMQWorkers, BullMQQueueEvents } from './types.js';
+import type { BullMQConfig, BullMQQueues, BullMQWorkers, BullMQQueueEvents } from './types.js';
 import type { RedisClient } from '@oxlayer/capabilities-adapters-redis';
 
 export class BullMQClient {

@@ -1,6 +1,6 @@
 import type { MongoClientWrapper } from './client.js';
 import type { FindOptions, UpdateOptions, AggregatePipeline, IndexSpec } from './types.js';
-import type { Document, Filter, UpdateFilter, WithId, OptionalUnlessRequiredId, _Sort } from 'mongodb';
+import type { Document, Filter, UpdateFilter, WithId, OptionalUnlessRequiredId } from 'mongodb';
 
 /**
  * Collection wrapper for type-safe operations

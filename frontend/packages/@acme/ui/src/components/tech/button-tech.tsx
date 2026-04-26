@@ -6,7 +6,8 @@ import { tv, type VariantProps } from "tailwind-variants";
 import { cn } from "@oxlayer/shared-ui/lib";
 import { Button } from "@oxlayer/shared-ui";
 
-const MotionButton = motion.create(Button);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const MotionButton: any = motion.create(Button);
 
 const buttonTech = tv({
   slots: {

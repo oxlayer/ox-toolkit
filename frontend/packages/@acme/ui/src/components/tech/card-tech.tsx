@@ -12,8 +12,8 @@ import {
   CardFooter,
   CardAction,
   CardToolbar,
-} from "@oxlayer/shared-ui/components/base/card";
-import { CornerFiducials } from "@oxlayer/shared-ui/components/patterns/corner-fiducials";
+  CornerFiducials,
+} from "@oxlayer/shared-ui";
 
 const transition = { duration: 0.3, ease: [0.4, 0, 0.2, 1] as const };
 const CORNER_SIZE = "12px";

@@ -43,8 +43,9 @@ function TextField({
   return (
     <Field>
       {label && (
-        <FieldLabel htmlFor={computedId} required={required ?? false}>
+        <FieldLabel htmlFor={computedId}>
           {label}
+          {required && <span aria-hidden="true"> *</span>}
         </FieldLabel>
       )}
       <FieldControl
@@ -88,8 +89,9 @@ function SelectField({
   return (
     <Field>
       {label && (
-        <FieldLabel htmlFor={field.name} required={required ?? false}>
+        <FieldLabel htmlFor={field.name}>
           {label}
+          {required && <span aria-hidden="true"> *</span>}
         </FieldLabel>
       )}
       <Select
@@ -139,7 +141,7 @@ function SubmitButton({
   return (
     <Button
       type="submit"
-      variant="primary"
+      variant="default"
       size="default"
       disabled={disabled || isSubmitting || !isFormValid}
       className={className}

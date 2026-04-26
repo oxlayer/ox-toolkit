@@ -222,7 +222,7 @@ async function sendQuery(method: string, key?: string, value?: string): Promise<
     workerPort!.postMessage({
       type: 'sqlite-query',
       query: { method, key, value },
-    } as CoordinatorMessage, self.location.origin);
+    } as CoordinatorMessage);
   });
 }
 
@@ -253,7 +253,7 @@ export const sharedSqliteStorage: SharedSQLiteAdapter = {
       workerPort!.postMessage({
         type: 'register',
         clientId,
-      } as CoordinatorMessage, self.location.origin);
+      } as CoordinatorMessage);
 
       // Initialize SQLite
       await sendQuery('init');

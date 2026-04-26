@@ -13,7 +13,7 @@ export function authMiddleware(options: AuthMiddlewareOptions = {}) {
     enableJwt = true,
     jwtSecret = process.env.JWT_SECRET || '',
     publicPaths = ['/health', '/docs', '/openapi.json', '/reference'],
-    _adminOnlyRoutes = ['/organizations', '/users', '/keycloak'],
+    adminOnlyRoutes: _adminOnlyRoutes = ['/organizations', '/users', '/keycloak'],
     enableTenancy = false,
   } = options;
 

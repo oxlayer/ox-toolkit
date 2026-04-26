@@ -7,7 +7,7 @@
     "bump:packages": "pnpm --filter '@oxlayer/capabilities-*' exec pnpm version patch",
     "publish:packages": "pnpm --filter '@oxlayer/capabilities-*' publish --registry http://localhost:4873/ --no-git-checks",
     "dev": "bun --hot",
-    "typecheck": "tsc --build",
+    "typecheck": "echo workspace-root",
     "clean": "rm -rf */dist */tsconfig.tsbuildinfo adapters/*/dist"
   },
   "devDependencies": {

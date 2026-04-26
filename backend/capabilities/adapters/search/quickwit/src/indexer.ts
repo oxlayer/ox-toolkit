@@ -1,4 +1,4 @@
-import type { QuickwitConfig, IndexConfig, _SearchDocument } from './types.js';
+import type { QuickwitConfig, IndexConfig } from './types.js';
 
 /**
  * Quickwit indexer wrapper

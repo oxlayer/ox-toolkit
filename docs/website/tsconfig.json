@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.frontend.json",
   "compilerOptions": {
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@site/*": ["./*"]
+    }
   },
   "exclude": [
     ".docusaurus",

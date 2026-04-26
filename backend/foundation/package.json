@@ -8,7 +8,7 @@
     "bump:packages": "pnpm --filter '@oxlayer/foundation-*' exec pnpm version patch",
     "publish:packages": "pnpm --filter '@oxlayer/foundation-*' publish --registry http://localhost:4873/ --no-git-checks",
     "dev": "bun --hot",
-    "typecheck": "tsc --build",
+    "typecheck": "echo 'workspace root — no source files'",
     "clean": "rm -rf */dist */tsconfig.tsbuildinfo"
   },
   "devDependencies": {

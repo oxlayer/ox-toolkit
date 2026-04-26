@@ -15,7 +15,7 @@ export interface KeycloakMiddlewareOptions {
 export function keycloakMiddleware(options: KeycloakMiddlewareOptions = {}) {
   const {
     publicPaths = ['/health', '/auth/login', '/auth/callback', '/reference', '/openapi.json', '/docs'],
-    _adminOnlyRoutes = ['/organizations', '/users', '/keycloak'],
+    adminOnlyRoutes: _adminOnlyRoutes = ['/organizations', '/users', '/keycloak'],
     config,
   } = options;
 

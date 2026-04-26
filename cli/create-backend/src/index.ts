@@ -127,6 +127,11 @@ async function createBackend(projectName: string | undefined, options: CreateOpt
     projectName = response.name;
   }
 
+  if (!projectName) {
+    console.log(chalk.yellow('Cancelled.'));
+    process.exit(0);
+  }
+
   const targetDir = path.resolve(process.cwd(), projectName);
 
   // Check if directory exists

@@ -1,4 +1,4 @@
-import type { QueueOptions, WorkerOptions, _JobsOptions } from 'bullmq';
+import type { QueueOptions, WorkerOptions } from 'bullmq';
 
 export interface BullMQQueueConfig {
   name: string;

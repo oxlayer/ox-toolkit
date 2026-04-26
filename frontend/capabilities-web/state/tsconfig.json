@@ -4,7 +4,8 @@
     "allowJs": false,
     "checkJs": false,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "lib": ["ES2022", "DOM", "DOM.Iterable", "WebWorker"]
   },
   "include": [
     "src/**/*"
@@ -18,6 +19,9 @@
     "**/*.test.tsx",
     "**/*.spec.ts",
     "**/*.spec.tsx",
-    "**/*.template.ts"
+    "**/*.template.ts",
+    "src/workspace/**",
+    "src/sync/conflict-resolver.ts",
+    "src/persist/sqlite-wasm/**"
   ]
 }

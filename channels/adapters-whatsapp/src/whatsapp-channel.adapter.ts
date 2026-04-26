@@ -33,7 +33,6 @@ import type {
   ChannelIdentifier,
   ChannelCapabilities,
   ChannelOutboundMessage,
-  _ChannelInboundMessage,
   ChannelAuthChallenge,
   ChannelMessageResult,
   ChannelVerificationResult,

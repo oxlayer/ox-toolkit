@@ -248,7 +248,7 @@ export function tenantManagementRoutes(options: {
       return c.json({ error: 'isolation is required' }, 400);
     }
 
-    const validModes: IsolationMode[] = new Set(['shared', 'schema', 'database', 'dedicated']);
+    const validModes = new Set<IsolationMode>(['shared', 'schema', 'database', 'dedicated']);
     if (body.isolation.database && !validModes.has(body.isolation.database)) {
       return c.json({ error: `Invalid database isolation mode: ${body.isolation.database}` }, 400);
     }
@@ -309,6 +309,10 @@ export function tenantManagementRoutes(options: {
   app.get('/:id/database', async (c: Context) => {
     const tenantId = c.req.param('id');
 
+    if (!tenantId) {
+      return c.json({ error: 'Tenant ID is required' }, 400);
+    }
+
     try {
       const tenant = await options.tenantResolver.resolve(tenantId);
 
@@ -337,6 +341,10 @@ export function tenantManagementRoutes(options: {
    */
   app.get('/:id/storage', async (c: Context) => {
     const tenantId = c.req.param('id');
+
+    if (!tenantId) {
+      return c.json({ error: 'Tenant ID is required' }, 400);
+    }
 
     try {
       const tenant = await options.tenantResolver.resolve(tenantId);
@@ -367,6 +375,10 @@ export function tenantManagementRoutes(options: {
    */
   app.post('/:id/cache/clear', async (c: Context) => {
     const tenantId = c.req.param('id');
+
+    if (!tenantId) {
+      return c.json({ error: 'Tenant ID is required' }, 400);
+    }
 
     options.tenantResolver.invalidate(tenantId);
 
@@ -408,6 +420,10 @@ export function tenantHealthRoutes(options: {
    */
   app.get('/:id', async (c: Context) => {
     const tenantId = c.req.param('id');
+
+    if (!tenantId) {
+      return c.json({ error: 'Tenant ID is required' }, 400);
+    }
 
     try {
       const tenant = await options.tenantResolver.resolve(tenantId);

@@ -14,14 +14,10 @@ pre-commit:
 pre-push:
   parallel: true
   commands:
-    # Both lint and typecheck currently carry pre-existing backlog
-    # (252 lint errors, 107 typecheck errors). They run for visibility
-    # but do not block the push — CI is the gate of record. Remove the
-    # `|| exit 0` shims once the backlogs are drained so regressions
-    # block again. See `cortex check` for the full report.
+    # Both blocking now — repo is at 0 lint errors, 0 typecheck errors.
+    # If a regression slips in, the push fails. Use `cortex check` for
+    # the full per-package report.
     lint:
-      tags: [warn]
-      run: bun run lint || (echo "⚠ lint has errors (non-blocking pre-push). Run cortex check for details." && exit 0)
+      run: bun run lint
     typecheck:
-      tags: [warn]
-      run: bun run typecheck || (echo "⚠ typecheck has errors (non-blocking pre-push). Run cortex check for details." && exit 0)
+      run: bun run typecheck
