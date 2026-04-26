@@ -1,0 +1,8 @@
+# Bun runtime + package manager config
+# https://bun.sh/docs/runtime/bunfig
+
+[install]
+# Treat missing peer deps as warnings, not errors
+peer = true
+# Auto-install missing deps when running scripts
+auto = "fallback"

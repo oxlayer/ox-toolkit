@@ -1,0 +1,20 @@
+# Lefthook config — fast git hooks runner
+# https://lefthook.dev
+#
+# Pre-commit: only lint staged files (must be fast).
+# Pre-push: heavier checks before sharing.
+
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{ts,tsx,js,jsx,mjs,cjs}"
+      run: bunx oxlint {staged_files}
+
+pre-push:
+  parallel: false
+  commands:
+    lint:
+      run: bun run lint
+    typecheck:
+      run: bun run typecheck

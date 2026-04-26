@@ -10,7 +10,11 @@ scripts/sdk-release/dist/
 
 # Build artifacts
 dist/
+build/
 *.tsbuildinfo
+.turbo/
+.next/
+coverage/
 
 # Environment files (never commit real values)
 .env

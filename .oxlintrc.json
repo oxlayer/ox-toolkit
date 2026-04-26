@@ -1,0 +1,50 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn",
+    "style": "off"
+  },
+  "rules": {
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+    "no-restricted-properties": [
+      "error",
+      {
+        "object": "process",
+        "property": "env",
+        "message": "Use the centralized env loader from @oxlayer/capabilities-internal/env. Declare env schemas in package env.ts files instead."
+      }
+    ],
+    "no-console": "off",
+    "typescript/no-explicit-any": "warn",
+    "typescript/no-non-null-assertion": "warn"
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/internal/env/**",
+        "**/env.ts",
+        "**/*.config.{ts,js,mjs,cjs}",
+        "**/scripts/**",
+        "**/__tests__/**",
+        "**/*.test.{ts,tsx,js,jsx}",
+        "**/*.spec.{ts,tsx,js,jsx}",
+        "**/templates/**",
+        "**/dist/**"
+      ],
+      "rules": {
+        "no-restricted-properties": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.next/**",
+    "**/coverage/**",
+    "**/*.d.ts",
+    "**/templates/**"
+  ]
+}
