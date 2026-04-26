@@ -32,7 +32,7 @@ Add to your Claude Desktop config (`claude_desktop_config.json`):
   "mcpServers": {
     "oxlayer": {
       "command": "node",
-      "args": ["${OXLAYER_REPO}/mcp_oxlayer/dist/index.js"]
+      "args": ["/absolute/path/to/oxlayer/mcp_oxlayer/dist/index.js"]
     }
   }
 }

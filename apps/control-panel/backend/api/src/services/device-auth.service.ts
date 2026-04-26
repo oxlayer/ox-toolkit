@@ -17,7 +17,10 @@ import type { IDeviceSessionRepository } from '../repositories/index.js';
 import type { DeviceSession, Environment } from '../domain/index.js';
 import { KeycloakSyncService } from './keycloak-sync.service.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'replace-with-strong-random-secret';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required for device auth');
+}
 const JWT_EXPIRES_IN = '7d';  // Device tokens are valid for 7 days
 
 /**

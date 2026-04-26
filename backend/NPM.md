@@ -4,7 +4,7 @@ pnpm adduser --registry http://localhost:4873/
 
 curl -XPUT -H "Content-Type: application/json" -d '{"name":"admin","password":"admin"}' http://localhost:4873/-/user/org.couchdb.user:admin 2>/dev/null || echo "Auth setup may need manual intervention"
 
-pnpm token add --registry http://localhost:4873/ --token ${VERDACCIO_TOKEN}== 2>&1 || true
+pnpm token add --registry http://localhost:4873/ --token "${VERDACCIO_TOKEN}" 2>&1 || true
 
 cd /path/to/oxlayer/foundation && pnpm run --recursive build 2>&1
 

@@ -1,9 +1,8 @@
 /**
- * @globex/ui
+ * Brand UI package
  *
- * Globex brand UI components.
  * Re-exports all shared components from @oxlayer/shared-ui
- * and adds Globex-specific tech design system components.
+ * and adds brand-specific tech design system components.
  */
 
 // Re-export everything from shared-ui
@@ -14,7 +13,7 @@ export { defaultStyles } from '@oxlayer/shared-ui/styles';
 export { defaultWebStyles } from '@oxlayer/shared-ui/web-styles';
 
 // ============================================================================
-// GLOBEX TECH DESIGN SYSTEM (Brand-Specific)
+// TECH DESIGN SYSTEM (Brand-Specific)
 // ============================================================================
 
 export { BadgeTech } from "./components/tech/badge-tech";
@@ -69,7 +68,7 @@ export {
 } from "./components/tech/workflow-pipeline";
 
 // ============================================================================
-// GLOBEX ONBOARDING (Brand-Specific)
+// ONBOARDING (Brand-Specific)
 // ============================================================================
 
 export {

@@ -10,7 +10,7 @@
  * - Design tokens
  * - Global styles
  *
- * Brand packages (@acme/ui, @globex/ui, @initech/ui) should:
+ * Brand packages (e.g. @template/ui) should:
  * 1. Import and re-export shared components
  * 2. Add brand-specific customizations
  * 3. Override design tokens via CSS variables
