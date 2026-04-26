@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-adapters-rabbitmq",
-  "version": "1.0.4",
+  "version": "0.1.0",
   "description": "RabbitMQ adapter for @oxlayer/capabilities event bus",
   "type": "module",
   "main": "./dist/index.js",

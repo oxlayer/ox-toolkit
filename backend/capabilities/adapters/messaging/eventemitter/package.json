@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-adapters-eventemitter",
-  "version": "1.0.3",
+  "version": "0.1.0",
   "description": "EventEmitter adapter for @oxlayer/capabilities event bus (built-in Node/Bun)",
   "type": "module",
   "main": "./dist/index.js",

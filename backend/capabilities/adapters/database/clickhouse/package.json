@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-adapters-clickhouse",
-  "version": "1.0.3",
+  "version": "0.1.0",
   "description": "ClickHouse adapter for @oxlayer/capabilities",
   "type": "module",
   "main": "./dist/index.js",

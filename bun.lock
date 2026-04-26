@@ -22,13 +22,14 @@
     },
     "backend": {
       "name": "@oxlayer/backend",
-      "version": "0.0.1",
+      "version": "0.1.0",
       "devDependencies": {
         "@types/node": "25.0.10",
       },
     },
     "backend/capabilities": {
       "name": "@oxlayer/capabilities",
+      "version": "0.1.0",
       "devDependencies": {
         "@types/jsonwebtoken": "latest",
         "tsup": "latest",
@@ -37,7 +38,7 @@
     },
     "backend/capabilities/adapters/bitwarden-secrets": {
       "name": "@oxlayer/capabilities-adapters-bitwarden-secrets",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-internal": "workspace:*",
       },
@@ -48,7 +49,7 @@
     },
     "backend/capabilities/adapters/database/clickhouse": {
       "name": "@oxlayer/capabilities-adapters-clickhouse",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@clickhouse/client": "^1.2.0",
         "@oxlayer/capabilities-internal": "workspace:*",
@@ -60,7 +61,7 @@
     },
     "backend/capabilities/adapters/database/influxdb": {
       "name": "@oxlayer/capabilities-adapters-influxdb",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@influxdata/influxdb-client": "^1.33.0",
         "@oxlayer/capabilities-internal": "workspace:*",
@@ -73,7 +74,7 @@
     },
     "backend/capabilities/adapters/database/mongo": {
       "name": "@oxlayer/capabilities-adapters-mongo",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-internal": "workspace:*",
         "mongodb": "^6.3.0",
@@ -85,7 +86,7 @@
     },
     "backend/capabilities/adapters/database/postgres": {
       "name": "@oxlayer/capabilities-adapters-postgres",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-internal": "workspace:*",
         "drizzle-orm": "^0.45.1",
@@ -98,7 +99,7 @@
     },
     "backend/capabilities/adapters/database/redis": {
       "name": "@oxlayer/capabilities-adapters-redis",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-internal": "workspace:*",
         "ioredis": "^5.0.0",
@@ -119,7 +120,7 @@
     },
     "backend/capabilities/adapters/messaging/bullmq": {
       "name": "@oxlayer/capabilities-adapters-bullmq",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-adapters-redis": "workspace:*",
         "@oxlayer/capabilities-events": "workspace:*",
@@ -145,7 +146,7 @@
     },
     "backend/capabilities/adapters/messaging/bullmq-scheduler": {
       "name": "@oxlayer/capabilities-adapters-bullmq-scheduler",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-adapters-redis": "workspace:*",
         "@oxlayer/capabilities-internal": "workspace:*",
@@ -159,7 +160,7 @@
     },
     "backend/capabilities/adapters/messaging/eventemitter": {
       "name": "@oxlayer/capabilities-adapters-eventemitter",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-events": "workspace:*",
       },
@@ -170,7 +171,7 @@
     },
     "backend/capabilities/adapters/messaging/mqtt": {
       "name": "@oxlayer/capabilities-adapters-mqtt",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-events": "workspace:*",
         "mqtt": "^5.0.0",
@@ -183,7 +184,7 @@
     },
     "backend/capabilities/adapters/messaging/rabbitmq": {
       "name": "@oxlayer/capabilities-adapters-rabbitmq",
-      "version": "1.0.4",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-events": "workspace:*",
         "@oxlayer/capabilities-internal": "workspace:*",
@@ -212,7 +213,7 @@
     },
     "backend/capabilities/adapters/messaging/sqs": {
       "name": "@oxlayer/capabilities-adapters-sqs",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@aws-sdk/client-sqs": "^3.0.0",
         "@oxlayer/capabilities-events": "workspace:*",
@@ -231,7 +232,7 @@
     },
     "backend/capabilities/adapters/search/quickwit": {
       "name": "@oxlayer/capabilities-adapters-search-quickwit",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-internal": "workspace:*",
       },
@@ -248,7 +249,7 @@
     },
     "backend/capabilities/adapters/storage/object-storage": {
       "name": "@oxlayer/capabilities-adapters-object-storage",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@aws-sdk/client-s3": "^3.969.0",
         "@oxlayer/capabilities-internal": "workspace:*",
@@ -269,7 +270,7 @@
     },
     "backend/capabilities/adapters/vector/qdrant": {
       "name": "@oxlayer/capabilities-adapters-qdrant",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-internal": "workspace:*",
         "@qdrant/js-client-rest": "^1.12.0",
@@ -287,7 +288,7 @@
     },
     "backend/capabilities/auth": {
       "name": "@oxlayer/capabilities-auth",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "hono": "^4.0.0",
         "jsonwebtoken": "^9.0.2",
@@ -301,7 +302,7 @@
     },
     "backend/capabilities/cache": {
       "name": "@oxlayer/capabilities-cache",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "devDependencies": {
         "tsup": "latest",
         "typescript": "latest",
@@ -309,7 +310,7 @@
     },
     "backend/capabilities/events": {
       "name": "@oxlayer/capabilities-events",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "hono": "^4.0.0",
       },
@@ -328,7 +329,7 @@
     },
     "backend/capabilities/internal": {
       "name": "@oxlayer/capabilities-internal",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "devDependencies": {
         "tsup": "latest",
         "typescript": "latest",
@@ -336,7 +337,7 @@
     },
     "backend/capabilities/metrics": {
       "name": "@oxlayer/capabilities-metrics",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "hono": "^4.0.0",
       },
@@ -347,7 +348,7 @@
     },
     "backend/capabilities/openapi": {
       "name": "@oxlayer/capabilities-openapi",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "hono": "^4.0.0",
         "zod": "^3.22.0",
@@ -362,7 +363,7 @@
     },
     "backend/capabilities/queues": {
       "name": "@oxlayer/capabilities-queues",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "devDependencies": {
         "tsup": "latest",
         "typescript": "latest",
@@ -370,7 +371,7 @@
     },
     "backend/capabilities/scheduler": {
       "name": "@oxlayer/capabilities-scheduler",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-internal": "workspace:*",
       },
@@ -381,7 +382,7 @@
     },
     "backend/capabilities/search": {
       "name": "@oxlayer/capabilities-search",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "devDependencies": {
         "tsup": "latest",
         "typescript": "latest",
@@ -389,7 +390,7 @@
     },
     "backend/capabilities/telemetry": {
       "name": "@oxlayer/capabilities-telemetry",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "dependencies": {
         "@opentelemetry/api": "1.9.0",
         "@opentelemetry/api-logs": "0.57.1",
@@ -414,7 +415,7 @@
     },
     "backend/capabilities/telemetry/quickwit": {
       "name": "@oxlayer/capabilities-telemetry-quickwit",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "devDependencies": {
         "tsup": "latest",
         "typescript": "latest",
@@ -430,7 +431,7 @@
     },
     "backend/capabilities/testing": {
       "name": "@oxlayer/capabilities-testing",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "devDependencies": {
         "tsup": "latest",
         "typescript": "latest",
@@ -448,7 +449,7 @@
     },
     "backend/capabilities/vector": {
       "name": "@oxlayer/capabilities-vector",
-      "version": "1.0.3",
+      "version": "0.1.0",
       "devDependencies": {
         "tsup": "latest",
         "typescript": "latest",
@@ -456,6 +457,7 @@
     },
     "backend/foundation": {
       "name": "@oxlayer/foundation",
+      "version": "0.1.0",
       "devDependencies": {
         "bun-types": "^1.3.6",
         "tsup": "latest",
@@ -464,7 +466,7 @@
     },
     "backend/foundation/app-kit": {
       "name": "@oxlayer/foundation-app-kit",
-      "version": "0.1.1",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/foundation-domain-kit": "workspace:*",
       },
@@ -476,7 +478,7 @@
     },
     "backend/foundation/domain-kit": {
       "name": "@oxlayer/foundation-domain-kit",
-      "version": "0.1.1",
+      "version": "0.1.0",
       "devDependencies": {
         "bun-types": "1.3.6",
         "tsup": "latest",
@@ -485,7 +487,7 @@
     },
     "backend/foundation/http-kit": {
       "name": "@oxlayer/foundation-http-kit",
-      "version": "0.1.1",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/foundation-domain-kit": "workspace:*",
       },
@@ -504,7 +506,7 @@
     },
     "backend/foundation/persistence-kit": {
       "name": "@oxlayer/foundation-persistence-kit",
-      "version": "0.1.1",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/foundation-domain-kit": "workspace:*",
       },
@@ -516,7 +518,7 @@
     },
     "backend/foundation/testing-kit": {
       "name": "@oxlayer/foundation-testing-kit",
-      "version": "0.1.1",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/foundation-app-kit": "workspace:*",
         "@oxlayer/foundation-domain-kit": "workspace:*",
@@ -529,6 +531,7 @@
     },
     "backend/pro": {
       "name": "@oxlayer/pro",
+      "version": "0.1.0",
       "devDependencies": {
         "bun-types": "^1.3.6",
         "tsup": "latest",
@@ -537,7 +540,7 @@
     },
     "backend/pro/adapters/database/clickhouse-tenancy": {
       "name": "@oxlayer/pro-adapters-clickhouse-tenancy",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-adapters-bitwarden-secrets": "workspace:*",
         "@oxlayer/pro-tenancy": "workspace:*",
@@ -549,7 +552,7 @@
     },
     "backend/pro/adapters/database/influxdb-tenancy": {
       "name": "@oxlayer/pro-adapters-influxdb-tenancy",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@influxdata/influxdb-client": "1.35.0",
         "@oxlayer/pro-tenancy": "workspace:*",
@@ -561,7 +564,7 @@
     },
     "backend/pro/adapters/database/mongo-tenancy": {
       "name": "@oxlayer/pro-adapters-mongo-tenancy",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/pro-tenancy": "workspace:*",
         "mongodb": "^6.0.0",
@@ -573,7 +576,7 @@
     },
     "backend/pro/adapters/database/postgres-tenancy": {
       "name": "@oxlayer/pro-adapters-postgres-tenancy",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-internal": "workspace:*",
         "@oxlayer/pro-tenancy": "workspace:*",
@@ -587,7 +590,7 @@
     },
     "backend/pro/adapters/database/redis-tenancy": {
       "name": "@oxlayer/pro-adapters-redis-tenancy",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-cache": "workspace:*",
         "@oxlayer/pro-tenancy": "workspace:*",
@@ -599,7 +602,7 @@
     },
     "backend/pro/adapters/messaging/mqtt-tenancy": {
       "name": "@oxlayer/pro-adapters-mqtt-tenancy",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/pro-tenancy": "workspace:*",
       },
@@ -610,7 +613,7 @@
     },
     "backend/pro/adapters/messaging/rabbitmq-tenancy": {
       "name": "@oxlayer/pro-adapters-rabbitmq-tenancy",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/pro-tenancy": "workspace:*",
       },
@@ -621,7 +624,7 @@
     },
     "backend/pro/adapters/messaging/sqs-tenancy": {
       "name": "@oxlayer/pro-adapters-sqs-tenancy",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/pro-tenancy": "workspace:*",
       },
@@ -632,7 +635,7 @@
     },
     "backend/pro/adapters/search/quickwit-tenancy": {
       "name": "@oxlayer/pro-adapters-quickwit-tenancy",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-search": "workspace:*",
         "@oxlayer/pro-tenancy": "workspace:*",
@@ -656,7 +659,7 @@
     },
     "backend/pro/adapters/vector/qdrant-tenancy": {
       "name": "@oxlayer/pro-adapters-qdrant-tenancy",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-vector": "workspace:*",
         "@oxlayer/pro-tenancy": "workspace:*",
@@ -668,7 +671,7 @@
     },
     "backend/pro/tenancy": {
       "name": "@oxlayer/pro-tenancy",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/capabilities-cache": "workspace:*",
         "@oxlayer/capabilities-metrics": "workspace:*",
@@ -682,7 +685,7 @@
     },
     "backend/snippets": {
       "name": "@oxlayer/snippets",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "devDependencies": {
         "@types/node": "^20.0.0",
         "tsup": "latest",
@@ -701,7 +704,7 @@
     },
     "channels/adapters-web": {
       "name": "@oxlayer/capabilities-adapters-web",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@oxlayer/snippets": "workspace:*",
         "hono": "^4.11.4",
@@ -714,7 +717,7 @@
     },
     "cli/create-backend": {
       "name": "@oxlayer/create-backend",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "bin": "./dist/index.cjs",
       "dependencies": {
         "commander": "^12.0.0",
@@ -734,7 +737,7 @@
     },
     "cli/create-frontend": {
       "name": "@oxlayer/create-frontend",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "bin": "./dist/index.cjs",
       "dependencies": {
         "chalk": "^4.1.2",
@@ -753,7 +756,7 @@
     },
     "cli/keycloak": {
       "name": "@oxlayer/cli-keycloak",
-      "version": "1.0.1",
+      "version": "0.1.0",
       "bin": {
         "keycloak": "./dist/bin/index.js",
       },
@@ -802,7 +805,7 @@
     },
     "frontend/capabilities-web/state": {
       "name": "@oxlayer/capabilities-web-state",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@legendapp/state": "3.0.0-beta.43",
       },
@@ -917,7 +920,7 @@
     },
     "frontend/packages/@oxlayer/shared-ui": {
       "name": "@oxlayer/shared-ui",
-      "version": "0.0.1",
+      "version": "0.1.0",
       "dependencies": {
         "@base-ui/react": "1.0.0",
         "@dnd-kit/core": "6.3.1",
@@ -1048,7 +1051,7 @@
     },
     "mcp_oxlayer": {
       "name": "@oxlayer/mcp",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "bin": {
         "mcp": "dist/index.js",
       },

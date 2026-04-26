@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/pro-adapters-mongo-tenancy",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "MongoDB multi-tenant document storage adapter for tenant-isolated collections",
   "type": "module",
   "main": "./dist/index.js",

@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-adapters-sqs",
-  "version": "1.0.3",
+  "version": "0.1.0",
   "description": "AWS SQS adapter for @oxlayer/capabilities event bus",
   "type": "module",
   "main": "./dist/index.js",

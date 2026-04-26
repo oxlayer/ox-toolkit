@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-queues",
-  "version": "1.0.3",
+  "version": "0.1.0",
   "description": "Queues capability for @oxlayer/capabilities - defines job queue semantics and interfaces",
   "type": "module",
   "main": "./dist/index.js",

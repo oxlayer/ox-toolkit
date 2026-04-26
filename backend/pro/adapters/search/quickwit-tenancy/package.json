@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/pro-adapters-quickwit-tenancy",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Quickwit multi-tenant search adapter for tenant-isolated log analytics",
   "type": "module",
   "main": "./dist/index.js",

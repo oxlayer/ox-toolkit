@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/create-backend",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Scaffold a new OxLayer backend API with PostgreSQL, Redis, RabbitMQ, and observability",
   "type": "module",
   "bin": "./dist/index.cjs",

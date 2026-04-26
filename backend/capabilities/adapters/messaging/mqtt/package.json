@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-adapters-mqtt",
-  "version": "1.0.3",
+  "version": "0.1.0",
   "description": "MQTT adapter for @oxlayer/capabilities event bus - compatible with Mosquitto, HiveMQ, EMQX, RabbitMQ, ActiveMQ, VerneMQ",
   "type": "module",
   "main": "./dist/index.js",

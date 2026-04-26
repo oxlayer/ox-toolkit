@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-openapi",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "OpenAPI documentation middleware for Hono",
   "type": "module",
   "main": "./dist/index.js",

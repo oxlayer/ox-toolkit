@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-auth",
-  "version": "1.0.3",
+  "version": "0.1.0",
   "description": "Unified authentication middleware for Hono with JWT and Keycloak support",
   "type": "module",
   "main": "./dist/index.js",

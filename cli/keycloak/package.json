@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/cli-keycloak",
-  "version": "1.0.1",
+  "version": "0.1.0",
   "description": "Keycloak realm and client bootstrapping CLI for OxLayer",
   "type": "module",
   "bin": {

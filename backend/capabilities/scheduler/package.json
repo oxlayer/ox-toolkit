@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-scheduler",
-  "version": "1.0.3",
+  "version": "0.1.0",
   "description": "Scheduler capability for @oxlayer/capabilities",
   "type": "module",
   "main": "./dist/index.js",

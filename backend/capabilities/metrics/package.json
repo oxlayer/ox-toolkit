@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-metrics",
-  "version": "1.0.3",
+  "version": "0.1.0",
   "description": "Metrics collection middleware for Hono",
   "type": "module",
   "main": "./dist/index.js",

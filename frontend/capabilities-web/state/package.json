@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-web-state",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Local-first state management with Legend-State for OxLayer web apps",
   "type": "module",
   "main": "./dist/index.js",

@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-adapters-object-storage",
-  "version": "1.0.3",
+  "version": "0.1.0",
   "description": "Object storage adapter for @oxlayer/capabilities",
   "type": "module",
   "main": "./dist/index.js",

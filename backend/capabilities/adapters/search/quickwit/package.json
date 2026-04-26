@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-adapters-search-quickwit",
-  "version": "1.0.3",
+  "version": "0.1.0",
   "description": "Quickwit search adapter for @oxlayer/capabilities",
   "type": "module",
   "main": "./dist/index.js",

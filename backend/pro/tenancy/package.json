@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/pro-tenancy",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Multi-tenancy capability for Hono - tenant resolution and resource isolation",
   "type": "module",
   "main": "./dist/index.js",

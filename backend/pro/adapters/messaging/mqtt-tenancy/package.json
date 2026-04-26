@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/pro-adapters-mqtt-tenancy",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "MQTT multi-tenant messaging adapter for tenant-isolated pub/sub",
   "type": "module",
   "main": "./dist/index.js",

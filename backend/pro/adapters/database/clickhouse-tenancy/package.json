@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/pro-adapters-clickhouse-tenancy",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "ClickHouse multi-tenant analytics adapter for tenant-isolated analytics",
   "type": "module",
   "main": "./dist/index.js",

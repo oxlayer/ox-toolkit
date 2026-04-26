@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-testing",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Shared testing infrastructure for OxLayer apps",
   "type": "module",
   "main": "./dist/index.js",

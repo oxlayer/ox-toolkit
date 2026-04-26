@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/pro-adapters-qdrant-tenancy",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Qdrant multi-tenant vector search adapter for tenant-isolated embeddings",
   "type": "module",
   "main": "./dist/index.js",
