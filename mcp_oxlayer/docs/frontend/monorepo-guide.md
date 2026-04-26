@@ -30,7 +30,7 @@ frontend/
     │       └── package.json
     │
     ├── @acme/
-    │   └── ui/                   # 🟢 ALO BRAND (customizations)
+    │   └── ui/                   # 🟢 ACME BRAND (customizations)
     │       ├── src/
     │       │   ├── components/
     │       │   │   └── tech/     # Brand-specific components
@@ -52,7 +52,7 @@ frontend/
 | Package | Purpose | Contains |
 |---------|---------|----------|
 | **@oxlayer/shared-ui** | Shared UI library | All base components, utilities, design tokens |
-| **@acme/ui** | Alo brand | Brand overrides, Alo-specific components |
+| **@acme/ui** | Acme brand | Brand overrides, Acme-specific components |
 | **@globex/ui** | Globex brand | Brand overrides, Globex-specific components |
 | **@initech/ui** | Initech brand | Brand overrides, Initech-specific components |
 

@@ -4,7 +4,7 @@ Complete guide to building OxLayer-compliant frontend applications using React, 
 
 ## Overview
 
-This guide documents the frontend patterns used across OxLayer projects (globex, notas), including:
+This guide documents the frontend patterns used across OxLayer projects, including:
 
 - **React Setup**: Component architecture with Radix UI primitives
 - **Tailwind CSS**: v3/v4 with design tokens and dark mode

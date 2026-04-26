@@ -145,9 +145,15 @@ export class KeycloakService {
 
       // Check if this is a device-issued token (uses symmetric HS256)
       const DEVICE_AUTH_KEY_ID = 'oxlayer-device-auth-key';
-      const DEVICE_AUTH_SECRET = process.env.JWT_SECRET || 'replace-with-strong-random-secret';
+      const DEVICE_AUTH_SECRET = process.env.JWT_SECRET;
 
       if (kid === DEVICE_AUTH_KEY_ID) {
+        if (!DEVICE_AUTH_SECRET) {
+          return {
+            valid: false,
+            error: 'JWT_SECRET is not configured; cannot verify device tokens',
+          };
+        }
         // Device-issued token - verify with local secret
         try {
           const payload = jwt.verify(token, DEVICE_AUTH_SECRET, {
@@ -306,7 +312,12 @@ export class KeycloakService {
   }
 
   /**
-   * Identifica o tipo de usuário baseado no client Keycloak (azp)
+   * Identifies the user type based on the Keycloak client (azp claim).
+   *
+   * Matching is configurable via env vars (comma-separated substring patterns):
+   *   OXLAYER_MEMBER_AZP_PATTERNS  (default: "app")
+   *   OXLAYER_STAFF_AZP_PATTERNS      (default: "people,admin")
+   *
    * @returns 'member' | 'staff' | null
    */
   async getUserTypeFromToken(authHeader: string): Promise<'member' | 'staff' | null> {
@@ -315,20 +326,20 @@ export class KeycloakService {
       return null;
     }
 
-    const payload = validation.payload;
-    const azp = payload.azp || payload.client_id;
+    const azp = (validation.payload.azp || validation.payload.client_id) as string | undefined;
+    if (!azp) return null;
 
-    // app.example.com → member
-    if (azp?.includes('app.example.com') || azp === 'example-app' || azp?.includes('app')) {
-      return 'member';
-    }
+    const memberPatterns = (process.env.OXLAYER_MEMBER_AZP_PATTERNS || 'app')
+      .split(',')
+      .map((p) => p.trim())
+      .filter(Boolean);
+    const adminPatterns = (process.env.OXLAYER_STAFF_AZP_PATTERNS || 'people,admin')
+      .split(',')
+      .map((p) => p.trim())
+      .filter(Boolean);
 
-    // people.example.com ou admin.example.com → staff
-    if (azp?.includes('people.example.com') || azp?.includes('admin.example.com')
-      || azp === 'example-people' || azp === 'example-admin'
-      || azp?.includes('people') || azp?.includes('admin')) {
-      return 'staff';
-    }
+    if (memberPatterns.some((p) => azp.includes(p))) return 'member';
+    if (adminPatterns.some((p) => azp.includes(p))) return 'staff';
 
     return null;
   }
