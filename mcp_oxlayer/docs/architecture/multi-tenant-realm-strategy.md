@@ -25,7 +25,7 @@ This document outlines the implementation of a **platform-grade, multi-realm, mu
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐         │
 │  │realm-admin   │  │realm-acme    │  │realm-globex  │         │
 │  │platform roles│  │owner/super/  │  │owner/super/  │         │
-│  │              │  │manager/cand. │  │manager/cand. │         │
+│  │              │  │manager/mbr. │  │manager/mbr. │         │
 │  └──────────────┘  └──────────────┘  └──────────────┘         │
 │                                                                  │
 │  Each Realm:                                                     │

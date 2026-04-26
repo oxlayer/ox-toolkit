@@ -5,7 +5,7 @@
  * Core invariant: Contacts are subjects of workflows, NOT users.
  *
  * @example
- * end-users from client → Contact entity
+ * end-user contacts from client → Contact entity
  * Survey recipients → Contact entity
  * External users → Contact entity
  * They CANNOT login, have NO permissions, NO IAM
@@ -18,7 +18,7 @@ describe('Contact Entity', () => {
   describe('Creation and Core Invariants', () => {
     it('should create contact with external user ID', () => {
       const contact = Contact.create({
-        externalUserId: 'hr_client_123_candidate_456',
+        externalUserId: 'client_123_member_456',
         tenantId: 'client_abc',
         name: 'Jane Doe',
         email: 'jane@example.com',
@@ -27,7 +27,7 @@ describe('Contact Entity', () => {
       });
 
       expect(contact.id).toBeDefined();
-      expect(contact.externalUserId).toBe('hr_client_123_candidate_456');
+      expect(contact.externalUserId).toBe('client_123_member_456');
       expect(contact.tenantId).toBe('client_abc');
       expect(contact.name).toBe('Jane Doe');
       expect(contact.email).toBe('jane@example.com');
@@ -68,24 +68,24 @@ describe('Contact Entity', () => {
       expect(contact.hasResponded()).toBe(false); // Not yet responded
     });
 
-    it('should create end-user contact', () => {
+    it('should create end-user contact contact', () => {
       const member = Contact.create({
-        externalUserId: 'hr_system_candidate_789',
+        externalUserId: 'system_member_789',
         tenantId: 'acme_corp',
         name: 'John Smith',
         email: 'john.smith@acme.com',
         phone: '+15559876543',
         source: 'hr_import',
         sourceDetails: {
-          campaignId: 'spring_2024_hiring',
+          campaignId: 'spring_2024_campaign',
           importBatchId: 'batch_456',
         },
       });
 
-      expect(member.externalUserId).toBe('hr_system_candidate_789');
+      expect(member.externalUserId).toBe('system_member_789');
       expect(member.tenantId).toBe('acme_corp');
       expect(member.name).toBe('John Smith');
-      expect(member.sourceDetails?.campaignId).toBe('spring_2024_hiring');
+      expect(member.sourceDetails?.campaignId).toBe('spring_2024_campaign');
     });
 
     it('should create survey recipient contact', () => {
@@ -335,18 +335,18 @@ _      const contact = Contact.create({
   });
 
   describe('Real-World Scenarios', () => {
-    it('should handle end-user from client system', async () => {
-      // Scenario: Client uploads list of end-users
+    it('should handle end-user contact from client system', async () => {
+      // Scenario: Client uploads list of end-user contacts
       const members = [
         {
-          externalUserId: 'hr_client_acme_candidate_001',
+          externalUserId: 'client_acme_member_001',
           tenantId: 'acme_corp',
           name: 'Jane Doe',
           email: 'jane.doe@acme.com',
           phone: '+15550000001',
         },
         {
-          externalUserId: 'hr_client_acme_candidate_002',
+          externalUserId: 'client_acme_member_002',
           tenantId: 'acme_corp',
           name: 'John Smith',
           email: 'john.smith@acme.com',
@@ -365,7 +365,7 @@ _      const contact = Contact.create({
       );
 
       expect(contacts).toHaveLength(2);
-      expect(contacts[0].externalUserId).toBe('hr_client_acme_candidate_001');
+      expect(contacts[0].externalUserId).toBe('client_acme_member_001');
       expect(contacts[0].tenantId).toBe('acme_corp');
       expect(contacts[1].status).toBe('pending');
     });
@@ -522,7 +522,7 @@ _      const contact = Contact.create({
     it('should handle HR agency managing multiple clients', () => {
       // Scenario: HR agency uses system to manage members for multiple client companies
       const clientACandidate = Contact.create({
-        externalUserId: 'agency_client_a_candidate_001',
+        externalUserId: 'agency_client_a_member_001',
         tenantId: 'client_a_corp',
         name: 'Member for Client A',
         email: 'member@clienta.com',
@@ -530,7 +530,7 @@ _      const contact = Contact.create({
       });
 
       const clientBCandidate = Contact.create({
-        externalUserId: 'agency_client_b_candidate_001',
+        externalUserId: 'agency_client_b_member_001',
         tenantId: 'client_b_corp',
         name: 'Member for Client B',
         email: 'member@clientb.com',

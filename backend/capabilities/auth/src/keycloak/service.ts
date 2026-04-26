@@ -316,7 +316,7 @@ export class KeycloakService {
    *
    * Matching is configurable via env vars (comma-separated substring patterns):
    *   OXLAYER_MEMBER_AZP_PATTERNS  (default: "app")
-   *   OXLAYER_STAFF_AZP_PATTERNS      (default: "people,admin")
+   *   OXLAYER_STAFF_AZP_PATTERNS   (default: "people,admin")
    *
    * @returns 'member' | 'staff' | null
    */
@@ -333,13 +333,13 @@ export class KeycloakService {
       .split(',')
       .map((p) => p.trim())
       .filter(Boolean);
-    const adminPatterns = (process.env.OXLAYER_STAFF_AZP_PATTERNS || 'people,admin')
+    const staffPatterns = (process.env.OXLAYER_STAFF_AZP_PATTERNS || 'people,admin')
       .split(',')
       .map((p) => p.trim())
       .filter(Boolean);
 
     if (memberPatterns.some((p) => azp.includes(p))) return 'member';
-    if (adminPatterns.some((p) => azp.includes(p))) return 'staff';
+    if (staffPatterns.some((p) => azp.includes(p))) return 'staff';
 
     return null;
   }

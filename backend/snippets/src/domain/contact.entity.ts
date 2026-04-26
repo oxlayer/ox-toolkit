@@ -5,7 +5,7 @@
  * They are NOT users and NOT necessarily leads.
  *
  * Examples:
- * - end-users provided by a client
+ * - end-user contacts provided by a client
  * - Survey recipients
  * - WhatsApp numbers uploaded by a customer
  * - External users with external_user_id
@@ -14,9 +14,9 @@
  *
  * @example
  * ```typescript
- * // end-user uploaded by client
+ * // end-user contact uploaded by client
  * const member = Contact.create({
- *   externalUserId: 'hr_client_123_candidate_456',
+ *   externalUserId: 'client_123_member_456',
  *   tenantId: 'client_abc',
  *   name: 'Jane Doe',
  *   email: 'jane@example.com',
@@ -241,7 +241,7 @@ export class Contact extends TimestampedEntityTemplate<ContactProps> {
    * @example
    * ```typescript
    * const contact = Contact.create({
-   *   externalUserId: 'hr_123_candidate_456',
+   *   externalUserId: 'sys_123_member_456',
    *   tenantId: 'client_abc',
    *   name: 'John Doe',
    *   email: 'john@example.com',

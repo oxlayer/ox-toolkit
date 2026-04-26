@@ -283,10 +283,10 @@ Emit an event envelope directly.
 Publish a message directly to a specific exchange with an explicit routing key and payload. This method creates the event envelope automatically and provides a simple way to publish events without defining DomainEvent classes.
 
 ```typescript
-await eventBus.publish('acme.events', 'exam.assigned', {
+await eventBus.publish('acme.events', 'task.assigned', {
   assignmentId: '123',
-  examId: 'exam-001',
-  candidateId: 'member-001',
+  taskId: 'task-001',
+  memberId: 'member-001',
 });
 ```
 

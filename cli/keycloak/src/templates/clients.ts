@@ -42,7 +42,7 @@ export const CLIENT_TEMPLATES: Record<ClientTemplate, Partial<ResolvedClientConf
   },
 
   'app-client': {
-    description: 'Member portal client (public)',
+    description: 'End-user app client (public)',
     enabled: true,
     publicClient: true,
     standardFlowEnabled: true,

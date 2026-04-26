@@ -55,8 +55,8 @@ function hasRequiredRoles(userRoles: string[], requiredRoles: string[]): boolean
  * // Client realm guard (owner/supervisor/manager)
  * app.use('/api/people', clientGuard());
  *
- * // Member guard (hard workspace lock)
- * app.use('/api/member', memberGuard());
+ * // Member guard (hard workspace lock — end users only)
+ * app.use('/api/app', memberGuard());
  * ```
  */
 export function roleGuard(options: RoleGuardOptions): MiddlewareHandler {
@@ -173,10 +173,10 @@ export function clientGuard(
 
 /**
  * Member guard
- * Restricts access to members only (hard workspace lock)
+ * Restricts access to end-user members only (hard workspace lock).
  *
- * Members can ONLY access their own workspace
- * No cross-workspace access allowed
+ * Members can ONLY access their own workspace; no cross-workspace
+ * access allowed. Use this for the end-user-facing app surface.
  *
  * @example
  * ```ts
