@@ -72,7 +72,7 @@ export class KeycloakAdminClient {
       return;
     }
 
-    const realmConfig = {
+    const realmConfig: Record<string, unknown> = {
       realm: config.name,
       enabled: true,
       displayName: config.displayName || config.name,
@@ -92,6 +92,19 @@ export class KeycloakAdminClient {
       failureFactor: config.security?.failureFactor ?? 30,
       organizationsEnabled: config.organizationsEnabled ?? true,
     };
+
+    // Token + session lifespans — only emit when caller passes them.
+    // Omitting keeps Keycloak's defaults (5min/30min/10h) which are
+    // aggressive for SPA UX. Production callers should always set these.
+    if (config.tokens?.accessTokenLifespan !== undefined) {
+      realmConfig.accessTokenLifespan = config.tokens.accessTokenLifespan;
+    }
+    if (config.tokens?.ssoSessionIdleTimeout !== undefined) {
+      realmConfig.ssoSessionIdleTimeout = config.tokens.ssoSessionIdleTimeout;
+    }
+    if (config.tokens?.ssoSessionMaxLifespan !== undefined) {
+      realmConfig.ssoSessionMaxLifespan = config.tokens.ssoSessionMaxLifespan;
+    }
 
     const response = await fetch(`${this.config.url}/admin/realms`, {
       method: 'POST',

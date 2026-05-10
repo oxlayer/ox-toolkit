@@ -76,6 +76,29 @@ export interface RealmConfig {
   organizationsEnabled?: boolean;
   organizations?: OrganizationConfig[];
   workspaces?: WorkspaceConfig[];
+  /**
+   * Token + session lifespan settings (all in seconds). When omitted,
+   * Keycloak's defaults apply (5min/30min/10h) — defaults are
+   * aggressive for SPA UX (operator gets logged out / redirected to
+   * Keycloak every 30min idle). Production realms should set these
+   * explicitly to a workday-friendly cadence (e.g. 900/28800/43200 =
+   * 15min token / 8h idle / 12h max).
+   */
+  tokens?: RealmTokenConfig;
+}
+
+/**
+ * Token + session lifespans (all seconds). Maps directly to Keycloak's
+ * realm-level fields of the same name. Fields are optional — omitting
+ * leaves the corresponding Keycloak default in place.
+ */
+export interface RealmTokenConfig {
+  /** Access token TTL. Default 300 (5min). */
+  accessTokenLifespan?: number;
+  /** SSO session idle timeout — refresh-token lifetime under inactivity. Default 1800 (30min). */
+  ssoSessionIdleTimeout?: number;
+  /** SSO session max lifespan — absolute cap before forced re-login. Default 36000 (10h). */
+  ssoSessionMaxLifespan?: number;
 }
 
 /**
