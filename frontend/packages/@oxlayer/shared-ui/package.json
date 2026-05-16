@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/shared-ui",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Shared React UI primitives, components, hooks, and design tokens for OxLayer web apps (Tailwind v4, ESM, source-shipped TypeScript with prebuilt .d.ts)",
   "license": "Apache-2.0",
   "homepage": "https://github.com/oxlayer/ox-toolkit#readme",
@@ -80,7 +80,8 @@
     "test": "echo \"no tests\" && exit 0",
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc -p tsconfig.build.json --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "prepack": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
     "@base-ui/react": "1.0.0",
