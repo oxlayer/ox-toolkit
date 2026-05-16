@@ -1,7 +1,27 @@
 {
   "name": "@oxlayer/shared-ui",
   "version": "0.1.0",
-  "private": true,
+  "description": "Shared React UI primitives, components, hooks, and design tokens for OxLayer web apps (Tailwind v4, ESM, source-shipped TypeScript)",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/oxlayer/ox-toolkit#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oxlayer/ox-toolkit.git",
+    "directory": "frontend/packages/@oxlayer/shared-ui"
+  },
+  "bugs": {
+    "url": "https://github.com/oxlayer/ox-toolkit/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "src",
+    "README.md"
+  ],
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -93,6 +113,5 @@
     "storybook": "10.1.11",
     "typescript": "5.6.3",
     "vite": "7.3.1"
-  },
-  "license": "Apache-2.0"
+  }
 }
