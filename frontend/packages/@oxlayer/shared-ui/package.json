@@ -1,7 +1,7 @@
 {
   "name": "@oxlayer/shared-ui",
-  "version": "0.1.0",
-  "description": "Shared React UI primitives, components, hooks, and design tokens for OxLayer web apps (Tailwind v4, ESM, source-shipped TypeScript)",
+  "version": "0.1.1",
+  "description": "Shared React UI primitives, components, hooks, and design tokens for OxLayer web apps (Tailwind v4, ESM, source-shipped TypeScript with prebuilt .d.ts)",
   "license": "Apache-2.0",
   "homepage": "https://github.com/oxlayer/ox-toolkit#readme",
   "repository": {
@@ -20,23 +20,57 @@
   ],
   "files": [
     "src",
+    "dist",
     "README.md"
   ],
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./src/index.ts"
+    },
     "./styles": "./src/styles/globals.css",
     "./web-styles": "./src/styles/web-globals.css",
-    "./lib": "./src/lib/index.ts",
-    "./lib/*": "./src/lib/*.ts",
-    "./hooks": "./src/hooks/index.ts",
-    "./hooks/*": "./src/hooks/*.ts",
-    "./tokens": "./src/tokens/index.ts",
-    "./components/*": "./src/components/*",
-    "./components/base/*": "./src/components/base/*",
-    "./components/animation/*": "./src/components/animation/*",
-    "./components/patterns/*": "./src/components/patterns/*",
-    "./primitives": "./src/primitives/index.ts"
+    "./lib": {
+      "types": "./dist/lib/index.d.ts",
+      "default": "./src/lib/index.ts"
+    },
+    "./lib/*": {
+      "types": "./dist/lib/*.d.ts",
+      "default": "./src/lib/*.ts"
+    },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "default": "./src/hooks/index.ts"
+    },
+    "./hooks/*": {
+      "types": "./dist/hooks/*.d.ts",
+      "default": "./src/hooks/*.ts"
+    },
+    "./tokens": {
+      "types": "./dist/tokens/index.d.ts",
+      "default": "./src/tokens/index.ts"
+    },
+    "./components/*": {
+      "types": "./dist/components/*.d.ts",
+      "default": "./src/components/*"
+    },
+    "./components/base/*": {
+      "types": "./dist/components/base/*.d.ts",
+      "default": "./src/components/base/*"
+    },
+    "./components/animation/*": {
+      "types": "./dist/components/animation/*.d.ts",
+      "default": "./src/components/animation/*"
+    },
+    "./components/patterns/*": {
+      "types": "./dist/components/patterns/*.d.ts",
+      "default": "./src/components/patterns/*"
+    },
+    "./primitives": {
+      "types": "./dist/primitives/index.d.ts",
+      "default": "./src/primitives/index.ts"
+    }
   },
   "scripts": {
     "lint": "oxlint src",
@@ -44,9 +78,9 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "echo \"no tests\" && exit 0",
-    "build": "echo \"no build (component library — consumed via tsx imports)\" && exit 0",
-    "dev": "echo \"no dev (storybook is the dev surface)\" && exit 0",
-    "clean": "echo \"no build artifacts to clean\" && exit 0"
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@base-ui/react": "1.0.0",
