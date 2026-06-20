@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-cache",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Cache capability for @oxlayer/capabilities - defines cache semantics and interfaces",
   "type": "module",
   "main": "./dist/index.js",

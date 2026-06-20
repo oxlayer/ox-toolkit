@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/snippets",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Reusable code templates for OxLayer microservices",
   "type": "module",
   "main": "./dist/index.js",

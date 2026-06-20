@@ -67,8 +67,12 @@ jobs:
         run: bun install
 
       - name: Build all packages
-        run: bun run build || true
-        # docs/website build fails on Node 25 — non-blocking for publish.
+        # Exclude the docs `website` app (it fails to build and is never
+        # published) and pass --continue so one task's failure can't
+        # abort turbo before the publishable packages build their dist/.
+        # Without this, packages publish with an empty dist/ → consumers
+        # get "Cannot find module ... type declarations".
+        run: bunx turbo run build --filter='!website' --continue || true
 
       - name: Verify npm auth
         run: npm whoami
@@ -124,8 +128,12 @@ jobs:
         run: bun install
 
       - name: Build all packages
-        run: bun run build || true
-        # docs/website build fails on Node 25 — non-blocking for publish.
+        # Exclude the docs `website` app (it fails to build and is never
+        # published) and pass --continue so one task's failure can't
+        # abort turbo before the publishable packages build their dist/.
+        # Without this, packages publish with an empty dist/ → consumers
+        # get "Cannot find module ... type declarations".
+        run: bunx turbo run build --filter='!website' --continue || true
 
       # The BSL-1.1 backend/pro/** tier is skipped from public npm.
       # Publish the FULL @oxlayer scope (Apache + pro) to GitHub Packages

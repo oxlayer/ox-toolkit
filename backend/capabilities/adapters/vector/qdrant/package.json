@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-adapters-qdrant",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Qdrant vector database adapter for @oxlayer/capabilities",
   "type": "module",
   "main": "./dist/index.js",

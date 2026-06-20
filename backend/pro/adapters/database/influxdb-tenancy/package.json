@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/pro-adapters-influxdb-tenancy",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "InfluxDB multi-tenant time-series adapter for tenant-isolated metrics",
   "type": "module",
   "main": "./dist/index.js",

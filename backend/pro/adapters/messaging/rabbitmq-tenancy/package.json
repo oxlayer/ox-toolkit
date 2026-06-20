@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/pro-adapters-rabbitmq-tenancy",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "RabbitMQ multi-tenant queue adapter for tenant-isolated messaging",
   "type": "module",
   "main": "./dist/index.js",
