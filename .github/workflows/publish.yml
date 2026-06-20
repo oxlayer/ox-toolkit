@@ -24,6 +24,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      packages: write
 
     steps:
       - name: Checkout
@@ -71,8 +72,26 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish packages
+      - name: Publish packages (Apache-2.0 → public npm)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           DRY_RUN: ${{ inputs.dry_run }}
         run: bash scripts/publish-packages.sh
+
+      # The BSL-1.1 backend/pro/** tier is skipped from public npm above.
+      # Publish the FULL @oxlayer scope (Apache + pro) to GitHub Packages
+      # so consumers can pull the entire scope from one auth-gated
+      # registry (npm routes per-scope, not per-package). Uses the
+      # workflow GITHUB_TOKEN (packages:write) — no extra secret needed.
+      - name: Publish full @oxlayer scope to GitHub Packages (incl. BSL pro)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          # Ephemeral CI .npmrc — quoted heredoc so npm (not the shell)
+          # expands the token at read time. Never committed.
+          cat > .npmrc <<'NPMRC'
+          @oxlayer:registry=https://npm.pkg.github.com
+          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+          NPMRC
+          bash scripts/publish-github-packages.sh
