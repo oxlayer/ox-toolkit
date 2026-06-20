@@ -34,6 +34,19 @@ if [[ "${DRY_RUN:-false}" == "true" ]]; then
   echo
 fi
 
+# Build a map of every @oxlayer package name → its version. We use this
+# to convert `workspace:*` (and workspace:^ / ~ / <range>) inter-package
+# deps to concrete `^<version>` ranges before publishing. `npm publish`
+# does NOT convert the workspace protocol for a Bun monorepo, and
+# `bun publish` fails to resolve it in this layout — so we do it
+# deterministically here. Without this, published packages ship with
+# "@oxlayer/x": "workspace:*" deps and are uninstallable downstream.
+echo "Building @oxlayer name→version map…"
+OX_MAP=$(find . -maxdepth 6 -name "package.json" \
+    -not -path "*/node_modules/*" -not -path "*/dist/*" -not -path "*/.turbo/*" -not -path "*/.next/*" \
+    -exec jq -c 'select((.name // "") | startswith("@oxlayer/")) | {(.name): (.version // "")}' {} \; \
+  | jq -s 'add // {}')
+
 published=0
 skipped=0
 failed=0
@@ -73,17 +86,28 @@ while IFS= read -r f; do
   [[ "$f" == *"backend/pro/"* ]] && tier="BSL-pro"
   echo "[publish] $name@$version → GitHub Packages ($tier, from $pkg_dir)"
 
-  # publishConfig.registry in package.json points at public npmjs and
-  # takes precedence over a CLI --registry flag. Temporarily rewrite it
-  # to GitHub Packages for THIS publish, then restore — never leave the
-  # working tree mutated (restore even on failure).
+  # Temporarily rewrite package.json for THIS publish (restored on exit):
+  #   1. publishConfig.registry → GitHub Packages (it points at public
+  #      npmjs by default and takes precedence over a CLI --registry).
+  #   2. workspace:* inter-@oxlayer deps → ^<version> from OX_MAP, so the
+  #      published artifact is installable outside the workspace.
   if (
     cd "$pkg_dir"
     cp package.json .package.json.ghbak
     trap 'mv -f .package.json.ghbak package.json' EXIT
-    jq --arg r "$GH_REGISTRY" '.publishConfig.registry = $r | .publishConfig.access = "restricted"' \
-      .package.json.ghbak > package.json
-    bun publish --registry "$GH_REGISTRY" --access restricted $DRY_RUN_FLAG
+    jq --arg r "$GH_REGISTRY" --argjson map "$OX_MAP" '
+      def conv: if . == null then . else with_entries(
+        if (.value | type == "string") and (.value | startswith("workspace:")) and ($map[.key] != null)
+        then .value = "^" + $map[.key] else . end
+      ) end;
+      .publishConfig.registry = $r
+      | .publishConfig.access = "restricted"
+      | .dependencies |= conv
+      | .devDependencies |= conv
+      | .peerDependencies |= conv
+      | .optionalDependencies |= conv
+    ' .package.json.ghbak > package.json
+    npm publish --registry "$GH_REGISTRY" --access restricted $DRY_RUN_FLAG
   ); then
     published=$((published + 1))
   else

@@ -16,6 +16,15 @@ if [[ "${DRY_RUN:-false}" == "true" ]]; then
   echo
 fi
 
+# Map of @oxlayer name → version, used to convert workspace:* inter-
+# package deps to concrete ^<version> ranges before publishing (npm
+# publish does not convert the workspace protocol for a Bun monorepo).
+echo "Building @oxlayer name→version map…"
+OX_MAP=$(find . -maxdepth 6 -name "package.json" \
+    -not -path "*/node_modules/*" -not -path "*/dist/*" -not -path "*/.turbo/*" -not -path "*/.next/*" \
+    -exec jq -c 'select((.name // "") | startswith("@oxlayer/")) | {(.name): (.version // "")}' {} \; \
+  | jq -s 'add // {}')
+
 published=0
 skipped=0
 failed=0
@@ -58,7 +67,25 @@ while IFS= read -r f; do
 
   pkg_dir=$(dirname "$f")
   echo "[publish] $name@$version (from $pkg_dir)"
-  if (cd "$pkg_dir" && bun publish --access public $DRY_RUN_FLAG); then
+  # Convert workspace:* inter-@oxlayer deps → ^<version> before publish
+  # (restored on exit). Without this the published artifact ships
+  # "@oxlayer/x": "workspace:*" and is uninstallable downstream.
+  if (
+    cd "$pkg_dir"
+    cp package.json .package.json.npmbak
+    trap 'mv -f .package.json.npmbak package.json' EXIT
+    jq --argjson map "$OX_MAP" '
+      def conv: if . == null then . else with_entries(
+        if (.value | type == "string") and (.value | startswith("workspace:")) and ($map[.key] != null)
+        then .value = "^" + $map[.key] else . end
+      ) end;
+      .dependencies |= conv
+      | .devDependencies |= conv
+      | .peerDependencies |= conv
+      | .optionalDependencies |= conv
+    ' .package.json.npmbak > package.json
+    npm publish --access public $DRY_RUN_FLAG
+  ); then
     published=$((published + 1))
   else
     echo "[FAIL] $name@$version"
