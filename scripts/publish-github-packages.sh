@@ -107,7 +107,11 @@ while IFS= read -r f; do
       | .peerDependencies |= conv
       | .optionalDependencies |= conv
     ' .package.json.ghbak > package.json
-    npm publish --registry "$GH_REGISTRY" --access restricted $DRY_RUN_FLAG
+    # bun publish (not npm): GitHub Packages has no /-/whoami endpoint,
+    # so `npm publish`'s auth precheck falls back to npmjs and 401s. bun
+    # skips that. The jq step above already converted workspace:* → real
+    # versions, so bun has no workspace protocol left to resolve.
+    bun publish --registry "$GH_REGISTRY" --access restricted $DRY_RUN_FLAG
   ); then
     published=$((published + 1))
   else
