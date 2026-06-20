@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-telemetry-quickwit",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Quickwit telemetry backend for @oxlayer/capabilities",
   "type": "module",
   "main": "./dist/index.js",

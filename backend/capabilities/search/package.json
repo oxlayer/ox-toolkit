@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-search",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Search capability for @oxlayer/capabilities - defines search semantics and interfaces",
   "type": "module",
   "main": "./dist/index.js",

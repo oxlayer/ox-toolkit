@@ -96,16 +96,17 @@ while IFS= read -r f; do
     cp package.json .package.json.ghbak
     trap 'mv -f .package.json.ghbak package.json' EXIT
     jq --arg r "$GH_REGISTRY" --argjson map "$OX_MAP" '
-      def conv: if . == null then . else with_entries(
+      def conv: with_entries(
         if (.value | type == "string") and (.value | startswith("workspace:")) and ($map[.key] != null)
         then .value = "^" + $map[.key] else . end
-      ) end;
-      .publishConfig.registry = $r
-      | .publishConfig.access = "restricted"
-      | .dependencies |= conv
-      | .devDependencies |= conv
-      | .peerDependencies |= conv
-      | .optionalDependencies |= conv
+      );
+      # Only touch dep fields that are actually objects — never create a
+      # null field (pnpm throws "Cannot convert null to object" on e.g.
+      # "peerDependencies": null).
+      reduce ("dependencies","devDependencies","peerDependencies","optionalDependencies") as $f (
+        (.publishConfig.registry = $r | .publishConfig.access = "restricted");
+        if (.[$f] | type) == "object" then .[$f] |= conv else . end
+      )
     ' .package.json.ghbak > package.json
     # The jq step above already converted workspace:* → real versions, so
     # there's no workspace protocol left to resolve. The job's .npmrc

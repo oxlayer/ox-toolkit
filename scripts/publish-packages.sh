@@ -75,14 +75,15 @@ while IFS= read -r f; do
     cp package.json .package.json.npmbak
     trap 'mv -f .package.json.npmbak package.json' EXIT
     jq --argjson map "$OX_MAP" '
-      def conv: if . == null then . else with_entries(
+      def conv: with_entries(
         if (.value | type == "string") and (.value | startswith("workspace:")) and ($map[.key] != null)
         then .value = "^" + $map[.key] else . end
-      ) end;
-      .dependencies |= conv
-      | .devDependencies |= conv
-      | .peerDependencies |= conv
-      | .optionalDependencies |= conv
+      );
+      # Only touch dep fields that are objects — never create a null
+      # field (pnpm throws "Cannot convert null to object").
+      reduce ("dependencies","devDependencies","peerDependencies","optionalDependencies") as $f (.;
+        if (.[$f] | type) == "object" then .[$f] |= conv else . end
+      )
     ' .package.json.npmbak > package.json
     npm publish --access public $DRY_RUN_FLAG
   ); then

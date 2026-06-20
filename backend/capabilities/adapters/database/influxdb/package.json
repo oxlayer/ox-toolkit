@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-adapters-influxdb",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "InfluxDB adapter for @oxlayer/capabilities metrics",
   "type": "module",
   "main": "./dist/index.js",
