@@ -84,7 +84,7 @@ while IFS= read -r f; do
       | .peerDependencies |= conv
       | .optionalDependencies |= conv
     ' .package.json.npmbak > package.json
-    bun publish --access public $DRY_RUN_FLAG
+    npm publish --access public $DRY_RUN_FLAG
   ); then
     published=$((published + 1))
   else

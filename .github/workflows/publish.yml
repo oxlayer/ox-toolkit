@@ -137,9 +137,13 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRY_RUN: ${{ inputs.dry_run }}
         run: |
-          # Ephemeral CI .npmrc — quoted heredoc so npm (not the shell)
-          # expands the token at read time. Never committed.
-          cat > .npmrc <<'NPMRC'
+          # Ephemeral CI .npmrc (never committed). UNQUOTED heredoc so the
+          # shell writes the LITERAL token — bun doesn't expand ${VAR} in
+          # .npmrc. Set the DEFAULT registry to GitHub Packages too (not
+          # just the @oxlayer scope) so npm's whoami auth-precheck targets
+          # GitHub Packages instead of falling back to npmjs.
+          cat > .npmrc <<NPMRC
+          registry=https://npm.pkg.github.com
           @oxlayer:registry=https://npm.pkg.github.com
           //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
           NPMRC

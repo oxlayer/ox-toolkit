@@ -107,11 +107,11 @@ while IFS= read -r f; do
       | .peerDependencies |= conv
       | .optionalDependencies |= conv
     ' .package.json.ghbak > package.json
-    # bun publish (not npm): GitHub Packages has no /-/whoami endpoint,
-    # so `npm publish`'s auth precheck falls back to npmjs and 401s. bun
-    # skips that. The jq step above already converted workspace:* → real
-    # versions, so bun has no workspace protocol left to resolve.
-    bun publish --registry "$GH_REGISTRY" --access restricted $DRY_RUN_FLAG
+    # The jq step above already converted workspace:* → real versions, so
+    # there's no workspace protocol left to resolve. The job's .npmrc
+    # sets the DEFAULT registry to GitHub Packages, so npm's whoami
+    # precheck targets it (not npmjs) and auth succeeds.
+    npm publish --registry "$GH_REGISTRY" --access restricted $DRY_RUN_FLAG
   ); then
     published=$((published + 1))
   else
