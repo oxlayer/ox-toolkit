@@ -83,7 +83,7 @@ while IFS= read -r f; do
     trap 'mv -f .package.json.ghbak package.json' EXIT
     jq --arg r "$GH_REGISTRY" '.publishConfig.registry = $r | .publishConfig.access = "restricted"' \
       .package.json.ghbak > package.json
-    npm publish --registry "$GH_REGISTRY" $DRY_RUN_FLAG
+    bun publish --registry "$GH_REGISTRY" --access restricted $DRY_RUN_FLAG
   ); then
     published=$((published + 1))
   else

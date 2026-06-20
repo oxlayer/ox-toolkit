@@ -58,7 +58,7 @@ while IFS= read -r f; do
 
   pkg_dir=$(dirname "$f")
   echo "[publish] $name@$version (from $pkg_dir)"
-  if (cd "$pkg_dir" && npm publish --access public $DRY_RUN_FLAG); then
+  if (cd "$pkg_dir" && bun publish --access public $DRY_RUN_FLAG); then
     published=$((published + 1))
   else
     echo "[FAIL] $name@$version"
