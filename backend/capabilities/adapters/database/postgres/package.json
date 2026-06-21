@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-adapters-postgres",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "PostgreSQL adapter for @oxlayer/capabilities",
   "type": "module",
   "main": "./dist/index.js",
@@ -41,5 +41,8 @@
   "bugs": {
     "url": "https://github.com/oxlayer/ox-toolkit/issues"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "files": [
+    "dist"
+  ]
 }

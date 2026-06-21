@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-adapters-sqs",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "AWS SQS adapter for @oxlayer/capabilities event bus",
   "type": "module",
   "main": "./dist/index.js",
@@ -49,5 +49,8 @@
   "bugs": {
     "url": "https://github.com/oxlayer/ox-toolkit/issues"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "files": [
+    "dist"
+  ]
 }
