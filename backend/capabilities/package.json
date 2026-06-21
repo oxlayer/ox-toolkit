@@ -1,5 +1,6 @@
 {
   "name": "@oxlayer/capabilities",
+  "private": true,
   "description": "Core capabilities staples for backend",
   "type": "module",
   "scripts": {
