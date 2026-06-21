@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-auth",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "description": "Unified authentication middleware for Hono with JWT and Keycloak support",
   "type": "module",
   "main": "./dist/index.js",
@@ -42,5 +42,8 @@
   "bugs": {
     "url": "https://github.com/oxlayer/ox-toolkit/issues"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "files": [
+    "dist"
+  ]
 }

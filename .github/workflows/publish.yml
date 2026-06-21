@@ -16,15 +16,19 @@ env:
   TURBO_TELEMETRY_DISABLED: 1
   DO_NOT_TRACK: 1
 
+# Two independent publish targets, run in parallel so one's auth failing
+# can't block the other:
+#   • publish-npm            — Apache-2.0 packages → public npm (NPM_TOKEN)
+#   • publish-github-packages — full @oxlayer scope (incl. BSL pro) →
+#                               GitHub Packages (GITHUB_TOKEN)
 jobs:
-  publish:
-    name: Publish @oxlayer/* packages
+  publish-npm:
+    name: Publish Apache-2.0 packages → public npm
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       contents: read
       id-token: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,7 +59,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-publish-${{ github.sha }}
+          key: ${{ runner.os }}-turbo-publish-npm-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-turbo-
 
@@ -63,16 +67,92 @@ jobs:
         run: bun install
 
       - name: Build all packages
-        run: bun run build || true
-        # docs/website build fails on Node 25 — non-blocking for publish.
+        # Exclude the docs `website` app (it fails to build and is never
+        # published) and pass --continue so one task's failure can't
+        # abort turbo before the publishable packages build their dist/.
+        # Without this, packages publish with an empty dist/ → consumers
+        # get "Cannot find module ... type declarations".
+        run: bunx turbo run build --filter='!website' --continue || true
 
       - name: Verify npm auth
         run: npm whoami
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish packages
+      - name: Publish packages (Apache-2.0 → public npm)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           DRY_RUN: ${{ inputs.dry_run }}
         run: bash scripts/publish-packages.sh
+
+  publish-github-packages:
+    name: Publish full @oxlayer scope → GitHub Packages (incl. BSL pro)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.13
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cache Bun install
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock', '**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Cache Turborepo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-publish-gh-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build all packages
+        # Exclude the docs `website` app (it fails to build and is never
+        # published) and pass --continue so one task's failure can't
+        # abort turbo before the publishable packages build their dist/.
+        # Without this, packages publish with an empty dist/ → consumers
+        # get "Cannot find module ... type declarations".
+        run: bunx turbo run build --filter='!website' --continue || true
+
+      # The BSL-1.1 backend/pro/** tier is skipped from public npm.
+      # Publish the FULL @oxlayer scope (Apache + pro) to GitHub Packages
+      # so consumers can pull the entire scope from one auth-gated
+      # registry (npm routes per-scope, not per-package). Uses the
+      # workflow GITHUB_TOKEN (packages:write) — no extra secret needed.
+      - name: Publish full @oxlayer scope to GitHub Packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          # Ephemeral CI .npmrc (never committed). UNQUOTED heredoc so the
+          # shell writes the LITERAL token — bun doesn't expand ${VAR} in
+          # .npmrc. Set the DEFAULT registry to GitHub Packages too (not
+          # just the @oxlayer scope) so npm's whoami auth-precheck targets
+          # GitHub Packages instead of falling back to npmjs.
+          cat > .npmrc <<NPMRC
+          registry=https://npm.pkg.github.com
+          @oxlayer:registry=https://npm.pkg.github.com
+          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+          NPMRC
+          bash scripts/publish-github-packages.sh

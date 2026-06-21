@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-adapters-search-quickwit",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "description": "Quickwit search adapter for @oxlayer/capabilities",
   "type": "module",
   "main": "./dist/index.js",
@@ -47,5 +47,8 @@
   "bugs": {
     "url": "https://github.com/oxlayer/ox-toolkit/issues"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "files": [
+    "dist"
+  ]
 }

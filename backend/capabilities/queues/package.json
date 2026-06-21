@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/capabilities-queues",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "description": "Queues capability for @oxlayer/capabilities - defines job queue semantics and interfaces",
   "type": "module",
   "main": "./dist/index.js",
@@ -36,5 +36,8 @@
   "bugs": {
     "url": "https://github.com/oxlayer/ox-toolkit/issues"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "files": [
+    "dist"
+  ]
 }

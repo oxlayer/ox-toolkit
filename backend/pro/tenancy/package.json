@@ -1,6 +1,6 @@
 {
   "name": "@oxlayer/pro-tenancy",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "description": "Multi-tenancy capability for Hono - tenant resolution and resource isolation",
   "type": "module",
   "main": "./dist/index.js",
@@ -53,5 +53,8 @@
   "bugs": {
     "url": "https://github.com/oxlayer/ox-toolkit/issues"
   },
-  "license": "BUSL-1.1"
+  "license": "BUSL-1.1",
+  "files": [
+    "dist"
+  ]
 }
